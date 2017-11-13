@@ -1,0 +1,15 @@
+[
+    {
+        "modid": "lex",
+        "name": "LibEx",
+        "description": "A library for mods that add expansion, exploration, and experience to Minecraft.",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "authorList": [ "LogicTechCorp" ],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [ ],
+        "dependencies": [ ]
+    }
+]
