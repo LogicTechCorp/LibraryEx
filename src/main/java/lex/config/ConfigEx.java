@@ -1,6 +1,12 @@
 package lex.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
+import lex.util.BlockStateUtils;
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
@@ -62,22 +68,22 @@ public class ConfigEx implements IConfigEx
     {
         if(!Strings.isBlank(json))
         {
-            JsonElement rootElement = JSON_PARSER.parse(json);
+            JsonElement root = JSON_PARSER.parse(json);
 
-            if(rootElement != null)
+            if(root != null)
             {
-                if(rootElement.isJsonObject())
+                if(root.isJsonObject())
                 {
-                    for(Map.Entry<String, JsonElement> entry : rootElement.getAsJsonObject().entrySet())
+                    for(Map.Entry<String, JsonElement> entry : root.getAsJsonObject().entrySet())
                     {
                         JSON_ELEMENTS.put(entry.getKey(), entry.getValue());
                     }
                 }
-                else if(rootElement.isJsonArray())
+                else if(root.isJsonArray())
                 {
-                    for(int i = 0; i < rootElement.getAsJsonArray().size(); i++)
+                    for(int i = 0; i < root.getAsJsonArray().size(); i++)
                     {
-                        JSON_ELEMENTS.put(Integer.toString(i), rootElement.getAsJsonArray().get(i));
+                        JSON_ELEMENTS.put(Integer.toString(i), root.getAsJsonArray().get(i));
                     }
                 }
                 else
@@ -94,6 +100,66 @@ public class ConfigEx implements IConfigEx
         {
             LOGGER.warn("The {} config file is null or empty", CONFIG_NAME);
         }
+    }
+
+    @Override
+    public boolean isValid()
+    {
+        return !JSON_ELEMENTS.isEmpty();
+    }
+
+    @Override
+    public void addFallbackElement(String key, JsonElement element)
+    {
+        JSON_FALLBACK_ELEMENTS.put(key, element);
+    }
+
+    @Override
+    public Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+    @Override
+    public String getConfigName()
+    {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    public boolean hasElement(String key)
+    {
+        return JSON_ELEMENTS.containsKey(key);
+    }
+
+    @Override
+    public boolean hasFallbackElement(String key)
+    {
+        return JSON_FALLBACK_ELEMENTS.containsKey(key);
+    }
+
+    @Override
+    public JsonElement getElement(String key)
+    {
+        return JSON_ELEMENTS.get(key);
+    }
+
+    @Override
+    public JsonElement getFallbackElement(String key)
+    {
+        return JSON_FALLBACK_ELEMENTS.get(key);
+    }
+
+    @Override
+    public Map<String, JsonElement> getElements()
+    {
+        return ImmutableMap.copyOf(JSON_ELEMENTS);
+    }
+
+    @Override
+    public Map<String, JsonElement> getFallbackElements()
+    {
+        return ImmutableMap.copyOf(JSON_FALLBACK_ELEMENTS);
     }
 
     @Override
@@ -128,6 +194,23 @@ public class ConfigEx implements IConfigEx
     }
 
     @Override
+    public IBlockState getBlock(String key, IBlockState fallbackValue)
+    {
+        JsonObject root = new JsonObject();
+        JsonObject properties = new JsonObject();
+        root.addProperty("block", fallbackValue.getBlock().getRegistryName().toString());
+
+        for(Map.Entry<IProperty<?>, Comparable<?>> entry : fallbackValue.getProperties().entrySet())
+        {
+            properties.addProperty(entry.getKey().getName(), entry.getValue().toString());
+        }
+
+        root.add("properties", properties);
+        addFallbackElement(key, root);
+        return getBlock(key);
+    }
+
+    @Override
     public JsonObject getJsonObject(String key, JsonObject fallbackValue)
     {
         addFallbackElement(key, fallbackValue);
@@ -144,11 +227,11 @@ public class ConfigEx implements IConfigEx
     @Override
     public String getString(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isString())
+        if(hasElement(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isString())
         {
             return getElement(key).getAsString();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isString())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isString())
         {
             return getFallbackElement(key).getAsString();
         }
@@ -162,11 +245,11 @@ public class ConfigEx implements IConfigEx
     @Override
     public int getInt(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isNumber())
+        if(hasElement(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isNumber())
         {
             return getElement(key).getAsInt();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isNumber())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isNumber())
         {
             return getFallbackElement(key).getAsInt();
         }
@@ -181,11 +264,11 @@ public class ConfigEx implements IConfigEx
     @Override
     public float getFloat(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isNumber())
+        if(hasElement(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isNumber())
         {
             return getElement(key).getAsFloat();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isNumber())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isNumber())
         {
             return getFallbackElement(key).getAsFloat();
         }
@@ -199,11 +282,11 @@ public class ConfigEx implements IConfigEx
     @Override
     public boolean getBoolean(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isBoolean())
+        if(hasElement(key) && getElement(key).isJsonPrimitive() && getElement(key).getAsJsonPrimitive().isBoolean())
         {
             return getElement(key).getAsBoolean();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isBoolean())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonPrimitive() && getFallbackElement(key).getAsJsonPrimitive().isBoolean())
         {
             return getFallbackElement(key).getAsBoolean();
         }
@@ -215,13 +298,91 @@ public class ConfigEx implements IConfigEx
     }
 
     @Override
+    public IBlockState getBlock(String key)
+    {
+        JsonObject root;
+
+        if(hasElement(key) && getElement(key).isJsonObject())
+        {
+            root = getElement(key).getAsJsonObject();
+        }
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonObject())
+        {
+            root = getFallbackElement(key).getAsJsonObject();
+        }
+        else
+        {
+            LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
+            return Blocks.AIR.getDefaultState();
+        }
+
+        if(root.has("block"))
+        {
+            JsonElement blockName = root.get("block");
+
+            if(blockName.isJsonPrimitive() && blockName.getAsJsonPrimitive().isString())
+            {
+                Block block = Block.getBlockFromName(blockName.getAsString());
+                IBlockState state = block.getDefaultState();
+
+                if(root.has("properties"))
+                {
+                    JsonElement properties = root.get("properties");
+
+                    if(properties.isJsonObject())
+                    {
+                        for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
+                        {
+                            IProperty property = BlockStateUtils.getProperty(state, entry.getKey());
+
+                            if(property != null)
+                            {
+                                Comparable propertyValue = BlockStateUtils.getPropertyValue(property, entry.getValue().getAsString());
+
+                                if(propertyValue != null)
+                                {
+                                    state = state.withProperty(property, propertyValue);
+                                }
+                                else
+                                {
+                                    LOGGER.warn("The {} config file's {}'s {} property value is not a valid property value", CONFIG_NAME, key);
+                                }
+                            }
+                            else
+                            {
+                                LOGGER.warn("The {} config file's {}'s {} property value is not a valid property", CONFIG_NAME, key);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        LOGGER.warn("The {} config file's {}'s properties value is not a json object", CONFIG_NAME, key);
+                    }
+                }
+
+                return state;
+            }
+            else
+            {
+                LOGGER.warn("The {} config file's {}'s block value is not a string", CONFIG_NAME, key);
+                return Blocks.AIR.getDefaultState();
+            }
+        }
+        else
+        {
+            LOGGER.warn("The {} config file is missing the {}'s block value", CONFIG_NAME, key);
+            return Blocks.AIR.getDefaultState();
+        }
+    }
+
+    @Override
     public JsonObject getJsonObject(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonObject())
+        if(hasElement(key) && getElement(key).isJsonObject())
         {
             return getElement(key).getAsJsonObject();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonObject())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonObject())
         {
             return getFallbackElement(key).getAsJsonObject();
         }
@@ -235,11 +396,11 @@ public class ConfigEx implements IConfigEx
     @Override
     public JsonArray getJsonArray(String key)
     {
-        if(jsonElementsHave(key) && getElement(key).isJsonArray())
+        if(hasElement(key) && getElement(key).isJsonArray())
         {
             return getElement(key).getAsJsonArray();
         }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonArray())
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonArray())
         {
             return getFallbackElement(key).getAsJsonArray();
         }
@@ -248,48 +409,6 @@ public class ConfigEx implements IConfigEx
             LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
             return new JsonArray();
         }
-    }
-
-    @Override
-    public IConfigEx getJsonObjectAsConfig(String configName, String key)
-    {
-        JsonElement element;
-
-        if(jsonElementsHave(key) && getElement(key).isJsonObject())
-        {
-            element = getElement(key).getAsJsonObject();
-        }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonObject())
-        {
-            element = getFallbackElement(key).getAsJsonObject();
-        }
-        else
-        {
-            LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
-            return null;
-        }
-        return new ConfigEx(configName, element.toString());
-    }
-
-    @Override
-    public IConfigEx getJsonArrayAsConfig(String configName, String key)
-    {
-        JsonArray array;
-
-        if(jsonElementsHave(key) && getElement(key).isJsonArray())
-        {
-            array = getElement(key).getAsJsonArray();
-        }
-        else if(jsonFallbackElementsHave(key) && getFallbackElement(key).isJsonArray())
-        {
-            array = getFallbackElement(key).getAsJsonArray();
-        }
-        else
-        {
-            LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
-            return null;
-        }
-        return new ConfigEx(configName, array.toString());
     }
 
     @Override
@@ -304,28 +423,45 @@ public class ConfigEx implements IConfigEx
         return getJsonArrayAsConfig(WordUtils.capitalize(key), key);
     }
 
-    public void addFallbackElement(String key, JsonElement element)
+    @Override
+    public IConfigEx getJsonObjectAsConfig(String configName, String key)
     {
-        JSON_FALLBACK_ELEMENTS.put(key, element);
+        JsonElement root;
+
+        if(hasElement(key) && getElement(key).isJsonObject())
+        {
+            root = getElement(key).getAsJsonObject();
+        }
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonObject())
+        {
+            root = getFallbackElement(key).getAsJsonObject();
+        }
+        else
+        {
+            LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
+            return null;
+        }
+        return new ConfigEx(CONFIG_NAME + "." + configName, root.toString());
     }
 
-    public boolean jsonElementsHave(String key)
+    @Override
+    public IConfigEx getJsonArrayAsConfig(String configName, String key)
     {
-        return JSON_ELEMENTS.containsKey(key);
-    }
+        JsonArray root;
 
-    public boolean jsonFallbackElementsHave(String key)
-    {
-        return JSON_FALLBACK_ELEMENTS.containsKey(key);
-    }
-
-    public JsonElement getElement(String key)
-    {
-        return JSON_ELEMENTS.get(key);
-    }
-
-    public JsonElement getFallbackElement(String key)
-    {
-        return JSON_FALLBACK_ELEMENTS.get(key);
+        if(hasElement(key) && getElement(key).isJsonArray())
+        {
+            root = getElement(key).getAsJsonArray();
+        }
+        else if(hasFallbackElement(key) && getFallbackElement(key).isJsonArray())
+        {
+            root = getFallbackElement(key).getAsJsonArray();
+        }
+        else
+        {
+            LOGGER.warn("The {} config file is missing the {} value and it does not have a fallback value", CONFIG_NAME, key);
+            return null;
+        }
+        return new ConfigEx(CONFIG_NAME + "." + configName, root.toString());
     }
 }
