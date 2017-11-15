@@ -8,7 +8,7 @@ public class BiomeUtils
 {
     public static Biome.BiomeProperties configureBiome(String name, BiomeEx.Properties defaultProperties, IConfigEx config)
     {
-        if(config.isValid())
+        if(!config.isValid())
         {
             return new Biome.BiomeProperties("Null");
         }

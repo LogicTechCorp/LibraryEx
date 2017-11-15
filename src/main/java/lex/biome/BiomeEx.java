@@ -1,10 +1,20 @@
 package lex.biome;
 
+import com.google.gson.JsonElement;
 import lex.config.IConfigEx;
 import lex.util.BiomeUtils;
+import lex.util.JsonUtils;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.Map;
 
 public class BiomeEx extends Biome implements IBiomeEx
 {
@@ -14,9 +24,10 @@ public class BiomeEx extends Biome implements IBiomeEx
     public IBlockState oceanBlock = Blocks.WATER.getDefaultState();
     public int weight = 10;
 
-    public BiomeEx(String name, Properties defaultProperties, IConfigEx configIn)
+    public BiomeEx(String name, Properties defaultProperties, IConfigEx config)
     {
-        super(BiomeUtils.configureBiome(name, defaultProperties, configIn));
+        super(BiomeUtils.configureBiome(name, defaultProperties, config));
+        configure(config);
     }
 
     @Override
@@ -29,6 +40,50 @@ public class BiomeEx extends Biome implements IBiomeEx
         caveFloorBlock = config.getBlock("caveFloorBlock", caveFloorBlock);
         oceanBlock = config.getBlock("fillerBlock", oceanBlock);
         weight = config.getInt("weight", weight);
+
+        IConfigEx entitiesConfig = config.getSubConfig("entities");
+
+        for(Map.Entry<String, JsonElement> entry : entitiesConfig.getAll().entrySet())
+        {
+            if(entry.getValue().isJsonObject())
+            {
+                String entityName = entry.getKey();
+                IConfigEx entityConfig = entitiesConfig.getSubConfig(entityName);
+
+                if(entityConfig.has("creatureType") && JsonUtils.isString(entityConfig.get("creatureType")))
+                {
+                    String creatureTypeIdentifier = entityConfig.get("creatureType").getAsJsonPrimitive().getAsString();
+
+                    if(!Strings.isBlank(entityName) && !Strings.isBlank(creatureTypeIdentifier))
+                    {
+                        Class<? extends Entity> entityCls = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)).getEntityClass();
+
+                        if(entityCls != null && EntityLiving.class.isAssignableFrom(entityCls))
+                        {
+                            EnumCreatureType creatureType = entityConfig.getEnum("creatureType", EnumCreatureType.class, EnumCreatureType.CREATURE);
+
+                            int weight = entitiesConfig.getInt("weight", 10);
+                            int minGroupCount = entitiesConfig.getInt("minGroupCount", 1);
+                            int maxGroupCount = entitiesConfig.getInt("maxGroupCount", 4);
+
+                            getSpawnableList(creatureType).add(new SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
+                        }
+                        else
+                        {
+                            entitiesConfig.getLogger().warn("The {} config's entity class is null or not of the type EntityLiving", entitiesConfig.getName());
+                        }
+                    }
+                    else
+                    {
+                        entitiesConfig.getLogger().warn("The {} config's entity name or creatureType is blank", entitiesConfig.getName());
+                    }
+                }
+                else
+                {
+                    entitiesConfig.getLogger().warn("The {} config's entity creatureType is missing", entitiesConfig.getName());
+                }
+            }
+        }
     }
 
     @Override

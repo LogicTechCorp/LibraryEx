@@ -1,8 +1,6 @@
 package lex.config;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
 import org.apache.logging.log4j.Logger;
 
@@ -14,23 +12,25 @@ public interface IConfigEx
 
     boolean isValid();
 
-    void addFallbackElement(String key, JsonElement element);
-
     Logger getLogger();
 
-    String getConfigName();
+    String getName();
 
-    boolean hasElement(String key);
+    void addFallback(String key, JsonElement element);
 
-    boolean hasFallbackElement(String key);
+    boolean has(String key);
 
-    JsonElement getElement(String key);
+    boolean hasFallback(String key);
 
-    JsonElement getFallbackElement(String key);
+    JsonElement get(String key);
 
-    Map<String, JsonElement> getElements();
+    JsonElement getFallback(String key);
 
-    Map<String, JsonElement> getFallbackElements();
+    Map<String, JsonElement> getAll();
+
+    Map<String, JsonElement> getAllFallbacks();
+
+    Map<String, IConfigEx> getSubConfigs();
 
     String getString(String key, String fallbackValue);
 
@@ -40,11 +40,9 @@ public interface IConfigEx
 
     boolean getBoolean(String key, boolean fallbackValue);
 
+    <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue);
+
     IBlockState getBlock(String key, IBlockState fallbackValue);
-
-    JsonObject getJsonObject(String key, JsonObject fallbackValue);
-
-    JsonArray getJsonArray(String key, JsonArray fallbackValue);
 
     String getString(String key);
 
@@ -54,17 +52,9 @@ public interface IConfigEx
 
     boolean getBoolean(String key);
 
+    <E extends Enum> E getEnum(String key, Class<? extends E> enumClass);
+
     IBlockState getBlock(String key);
 
-    JsonObject getJsonObject(String key);
-
-    JsonArray getJsonArray(String key);
-
-    IConfigEx getJsonObjectAsConfig(String key);
-
-    IConfigEx getJsonArrayAsConfig(String key);
-
-    IConfigEx getJsonObjectAsConfig(String configName, String key);
-
-    IConfigEx getJsonArrayAsConfig(String configName, String key);
+    IConfigEx getSubConfig(String key);
 }
