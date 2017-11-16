@@ -1,6 +1,7 @@
 package lex.biome;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lex.config.JsonConfig;
 import lex.util.JsonUtils;
 import net.minecraft.block.state.IBlockState;
@@ -9,15 +10,17 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.util.Strings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class WrappedBiome
 {
     private Biome biome;
-    private BiomeType biomeType;
     private IBlockState topBlock;
     private IBlockState fillerBlock;
     private IBlockState caveCeilingBlock;
@@ -25,11 +28,14 @@ public class WrappedBiome
     private IBlockState caveFloorBlock;
     private IBlockState oceanBlock;
     private int weight;
+    private List<Biome.SpawnListEntry> spawnableMonsters = new ArrayList<>();
+    private List<Biome.SpawnListEntry> spawnableCreatures = new ArrayList<>();
+    private List<Biome.SpawnListEntry> spawnableWaterCreatures = new ArrayList<>();
+    private List<Biome.SpawnListEntry> spawnableCaveCreatures = new ArrayList<>();
 
-    public WrappedBiome(Biome biomeIn, BiomeType biomeTypeIn, JsonConfig config)
+    public WrappedBiome(Biome biomeIn, JsonConfig config)
     {
         biome = biomeIn;
-        biomeType = biomeTypeIn;
         configure(config);
     }
 
@@ -37,13 +43,29 @@ public class WrappedBiome
     {
         topBlock = config.getBlock("topBlock", biome.topBlock);
         fillerBlock = config.getBlock("fillerBlock", biome.fillerBlock);
-        caveCeilingBlock = config.getBlock("caveCeilingBlock", biomeType.getAssociatedLandBlock());
-        caveWallBlock = config.getBlock("caveWallBlock", biomeType.getAssociatedLandBlock());
-        caveFloorBlock = config.getBlock("caveFloorBlock", biomeType.getAssociatedLandBlock());
-        oceanBlock = config.getBlock("oceanBlock", biomeType.getAssociatedLiquidBlock());
+        caveCeilingBlock = config.getBlock("caveCeilingBlock", biome.fillerBlock);
+        caveWallBlock = config.getBlock("caveWallBlock", biome.fillerBlock);
+        caveFloorBlock = config.getBlock("caveFloorBlock", biome.fillerBlock);
+        oceanBlock = config.getBlock("oceanBlock", biome.fillerBlock);
         weight = config.getInt("weight", weight);
 
         JsonConfig entitiesConfig = config.getSubConfig("entities");
+
+        if(entitiesConfig.getAll().size() == 0)
+        {
+            for(EnumCreatureType creatureType : EnumCreatureType.values())
+            {
+                for(Biome.SpawnListEntry entry : biome.getSpawnableList(creatureType))
+                {
+                    JsonObject object = new JsonObject();
+                    object.addProperty("creatureType", creatureType.toString().toLowerCase());
+                    object.addProperty("weight", entry.itemWeight);
+                    object.addProperty("minGroupCount", entry.minGroupCount);
+                    object.addProperty("maxGroupCount", entry.maxGroupCount);
+                    entitiesConfig.add(ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString(), object);
+                }
+            }
+        }
 
         for(Map.Entry<String, JsonElement> entry : entitiesConfig.getAll().entrySet())
         {
@@ -64,11 +86,11 @@ public class WrappedBiome
                         {
                             EnumCreatureType creatureType = entityConfig.getEnum("creatureType", EnumCreatureType.class, EnumCreatureType.CREATURE);
 
-                            int weight = entitiesConfig.getInt("weight", 10);
-                            int minGroupCount = entitiesConfig.getInt("minGroupCount", 1);
-                            int maxGroupCount = entitiesConfig.getInt("maxGroupCount", 4);
+                            int weight = entityConfig.getInt("weight", 10);
+                            int minGroupCount = entityConfig.getInt("minGroupCount", 1);
+                            int maxGroupCount = entityConfig.getInt("maxGroupCount", 4);
 
-                            biome.getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
+                            getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
                         }
                         else
                         {
@@ -93,11 +115,6 @@ public class WrappedBiome
     public Biome getBiome()
     {
         return biome;
-    }
-
-    public BiomeType getBiomeType()
-    {
-        return biomeType;
     }
 
     public IBlockState getTopBlock()
@@ -133,5 +150,22 @@ public class WrappedBiome
     public int getWeight()
     {
         return weight;
+    }
+
+    public List<Biome.SpawnListEntry> getSpawnableList(EnumCreatureType creatureType)
+    {
+        switch(creatureType)
+        {
+            case MONSTER:
+                return spawnableMonsters;
+            case CREATURE:
+                return spawnableCreatures;
+            case WATER_CREATURE:
+                return spawnableWaterCreatures;
+            case AMBIENT:
+                return spawnableCaveCreatures;
+            default:
+                return new ArrayList<>();
+        }
     }
 }

@@ -173,6 +173,11 @@ public class JsonConfig
         return CONFIG_NAME;
     }
 
+    public void add(String key, JsonElement element)
+    {
+        ELEMENTS.put(key, element);
+    }
+
     public void addFallback(String key, JsonElement element)
     {
         FALLBACK_ELEMENTS.put(key, element);
@@ -239,7 +244,7 @@ public class JsonConfig
 
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue)
     {
-        addFallback(key, new JsonPrimitive(fallbackValue.toString()));
+        addFallback(key, new JsonPrimitive(fallbackValue.toString().toLowerCase()));
         return getEnum(key, enumClass);
     }
 
@@ -251,7 +256,7 @@ public class JsonConfig
 
         for(Map.Entry<IProperty<?>, Comparable<?>> entry : fallbackValue.getProperties().entrySet())
         {
-            properties.addProperty(entry.getKey().getName(), entry.getValue().toString());
+            properties.addProperty(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
         }
 
         root.add("properties", properties);
@@ -269,11 +274,11 @@ public class JsonConfig
     {
         if(has(key) && isString(get(key)))
         {
-            return get(key).getAsString();
+            return get(key).getAsJsonPrimitive().getAsString();
         }
         else if(hasFallback(key) && isString(getFallback(key)))
         {
-            return getFallback(key).getAsString();
+            return getFallback(key).getAsJsonPrimitive().getAsString();
         }
         else
         {
@@ -340,11 +345,11 @@ public class JsonConfig
 
         if(has(key) && isString(get(key)))
         {
-            enumIdentifier = get(key).getAsString();
+            enumIdentifier = get(key).getAsJsonPrimitive().getAsString();
         }
         else if(hasFallback(key) && isString(getFallback(key)))
         {
-            enumIdentifier = getFallback(key).getAsString();
+            enumIdentifier = getFallback(key).getAsJsonPrimitive().getAsString();
         }
         else
         {
@@ -387,7 +392,7 @@ public class JsonConfig
 
             if(isString(blockName))
             {
-                Block block = Block.getBlockFromName(blockName.getAsString());
+                Block block = Block.getBlockFromName(blockName.getAsJsonPrimitive().getAsString());
                 IBlockState state = block.getDefaultState();
 
                 if(root.has("properties"))
@@ -400,9 +405,9 @@ public class JsonConfig
                         {
                             IProperty property = BlockStateUtils.getProperty(state, entry.getKey());
 
-                            if(property != null)
+                            if(property != null && isString(entry.getValue()))
                             {
-                                Comparable propertyValue = BlockStateUtils.getPropertyValue(property, entry.getValue().getAsString());
+                                Comparable propertyValue = BlockStateUtils.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
 
                                 if(propertyValue != null)
                                 {

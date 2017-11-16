@@ -14,11 +14,11 @@ public class WrappedBiomeManager
     private static final Map<Biome, WrappedBiome> WRAPPED_BIOMES = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger("LibEx|Main");
 
-    public static void createWrappedBiome(Biome biome, BiomeType biomeType, JsonConfig config)
+    public static void createWrappedBiome(Biome biome, JsonConfig config)
     {
         if(!WRAPPED_BIOMES.containsKey(biome))
         {
-            WRAPPED_BIOMES.put(biome, new WrappedBiome(biome, biomeType, config));
+            WRAPPED_BIOMES.put(biome, new WrappedBiome(biome, config));
         }
         else
         {
