@@ -34,6 +34,11 @@ public class JsonUtils
         return !isNull(element) && element.isJsonObject();
     }
 
+    public static boolean isArray(JsonElement element)
+    {
+        return !isNull(element) && element.isJsonArray();
+    }
+
     public static boolean isNull(JsonElement element)
     {
         return element == null || element.isJsonNull();

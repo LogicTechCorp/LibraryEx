@@ -1,9 +1,8 @@
 package lex.config;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.common.io.Files;
+import com.google.gson.*;
 import lex.util.BlockStateUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -23,18 +22,24 @@ import java.util.Map;
 
 import static lex.util.JsonUtils.*;
 
-public class ConfigEx implements IConfigEx
+public class JsonConfig
 {
+    public static final JsonParser JSON_PARSER = new JsonParser();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
     private final String CONFIG_NAME;
+    private final File CONFIG_FILE;
+    private final boolean IS_SUB_CONFIG;
     private final Map<String, JsonElement> ELEMENTS = new HashMap<>();
     private final Map<String, JsonElement> FALLBACK_ELEMENTS = new HashMap<>();
-    private final Map<String, IConfigEx> SUB_CONFIGS = new HashMap<>();
-    private Logger LOGGER = LogManager.getLogger("LibEx|ConfigEx");
+    private final Map<String, JsonConfig> SUB_CONFIGS = new HashMap<>();
+    private Logger LOGGER = LogManager.getLogger("LibEx|JsonConfig");
 
-    public ConfigEx(String configName, File configFile)
+    public JsonConfig(String configName, File configFile)
     {
-        CONFIG_NAME = configName.replace(" ", "");
-        LOGGER = LogManager.getLogger(CONFIG_NAME);
+        CONFIG_NAME = configName;
+        CONFIG_FILE = !Files.getFileExtension(configFile.getPath()).equals("json") ? new File(configFile.getPath() + ".json") : configFile;
+        IS_SUB_CONFIG = false;
 
         String json = null;
 
@@ -53,25 +58,25 @@ public class ConfigEx implements IConfigEx
         }
         else
         {
-            LOGGER.warn("The {} config is missing", CONFIG_NAME);
+            LOGGER.warn("The {} config is missing, it will be created", CONFIG_NAME);
         }
 
         parse(json);
     }
 
-    public ConfigEx(String configName, String json)
+    private JsonConfig(String configName, String json)
     {
-        CONFIG_NAME = configName.replace(" ", "");
-        LOGGER = LogManager.getLogger(CONFIG_NAME);
+        CONFIG_NAME = configName;
+        CONFIG_FILE = null;
+        IS_SUB_CONFIG = true;
         parse(json);
     }
 
-    @Override
-    public void parse(String json)
+    private void parse(String json)
     {
         if(!Strings.isBlank(json))
         {
-            JsonElement root = ConfigExHelper.JSON_PARSER.parse(json);
+            JsonElement root = JSON_PARSER.parse(json);
 
             if(root != null)
             {
@@ -94,112 +99,150 @@ public class ConfigEx implements IConfigEx
         }
         else
         {
-            LOGGER.warn("The {} config is null or empty", CONFIG_NAME);
+            LOGGER.warn("The {} config is empty, it may be populated with values by a mod", CONFIG_NAME);
         }
     }
 
-    @Override
+    public JsonElement compose()
+    {
+        JsonObject root = new JsonObject();
+
+        for(Map.Entry<String, JsonElement> entry : getAll().entrySet())
+        {
+            root.add(entry.getKey(), entry.getValue());
+        }
+
+        for(Map.Entry<String, JsonElement> entry : getAllFallbacks().entrySet())
+        {
+            if(!root.has(entry.getKey()))
+            {
+                root.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        for(Map.Entry<String, JsonConfig> entry : getSubConfigs().entrySet())
+        {
+            root.add(entry.getKey(), entry.getValue().compose());
+        }
+
+        return root;
+    }
+
+    public void save()
+    {
+        if(!IS_SUB_CONFIG)
+        {
+            if(isValid())
+            {
+                String json = GSON.toJson(compose());
+
+                try
+                {
+                    FileUtils.write(CONFIG_FILE, json, Charset.defaultCharset());
+                }
+                catch(IOException e)
+                {
+                    LOGGER.warn("The {} config was unable to be written to a file\n" + e.getMessage(), CONFIG_NAME);
+                }
+
+                LOGGER.warn("The {} config has been saved", CONFIG_NAME);
+            }
+            else
+            {
+                LOGGER.warn("The {} config is not valid and it will not be written to a file", CONFIG_NAME);
+            }
+        }
+        else
+        {
+            LOGGER.warn("The {} config cannot be saved as it is a sub config", CONFIG_NAME);
+        }
+    }
+
     public boolean isValid()
     {
         return !ELEMENTS.isEmpty() || !FALLBACK_ELEMENTS.isEmpty();
     }
 
-    @Override
     public Logger getLogger()
     {
         return LOGGER;
     }
 
-    @Override
     public String getName()
     {
         return CONFIG_NAME;
     }
 
-    @Override
     public void addFallback(String key, JsonElement element)
     {
         FALLBACK_ELEMENTS.put(key, element);
     }
 
-    @Override
     public boolean has(String key)
     {
         return ELEMENTS.containsKey(key);
     }
 
-    @Override
     public boolean hasFallback(String key)
     {
         return FALLBACK_ELEMENTS.containsKey(key);
     }
 
-    @Override
     public JsonElement get(String key)
     {
         return ELEMENTS.get(key);
     }
 
-    @Override
     public JsonElement getFallback(String key)
     {
         return FALLBACK_ELEMENTS.get(key);
     }
 
-    @Override
     public Map<String, JsonElement> getAll()
     {
         return ImmutableMap.copyOf(ELEMENTS);
     }
 
-    @Override
     public Map<String, JsonElement> getAllFallbacks()
     {
         return ImmutableMap.copyOf(FALLBACK_ELEMENTS);
     }
 
-    @Override
-    public Map<String, IConfigEx> getSubConfigs()
+    public Map<String, JsonConfig> getSubConfigs()
     {
         return ImmutableMap.copyOf(SUB_CONFIGS);
     }
 
-    @Override
     public String getString(String key, String fallbackValue)
     {
         addFallback(key, new JsonPrimitive(fallbackValue));
         return getString(key);
     }
 
-    @Override
     public int getInt(String key, int fallbackValue)
     {
         addFallback(key, new JsonPrimitive(fallbackValue));
         return getInt(key);
     }
 
-    @Override
     public float getFloat(String key, float fallbackValue)
     {
         addFallback(key, new JsonPrimitive(fallbackValue));
         return getFloat(key);
     }
 
-    @Override
     public boolean getBoolean(String key, boolean fallbackValue)
     {
         addFallback(key, new JsonPrimitive(fallbackValue));
         return getBoolean(key);
     }
 
-    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue)
     {
         addFallback(key, new JsonPrimitive(fallbackValue.toString()));
         return getEnum(key, enumClass);
     }
 
-    @Override
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
         JsonObject root = new JsonObject();
@@ -216,7 +259,12 @@ public class ConfigEx implements IConfigEx
         return getBlock(key);
     }
 
-    @Override
+    public JsonArray getArray(String key, JsonArray fallbackValue)
+    {
+        FALLBACK_ELEMENTS.put(key, fallbackValue);
+        return getArray(key);
+    }
+
     public String getString(String key)
     {
         if(has(key) && isString(get(key)))
@@ -234,7 +282,6 @@ public class ConfigEx implements IConfigEx
         }
     }
 
-    @Override
     public int getInt(String key)
     {
         if(has(key) && isInt(get(key)))
@@ -253,7 +300,6 @@ public class ConfigEx implements IConfigEx
 
     }
 
-    @Override
     public float getFloat(String key)
     {
         if(has(key) && isFloat(get(key)))
@@ -271,7 +317,6 @@ public class ConfigEx implements IConfigEx
         }
     }
 
-    @Override
     public boolean getBoolean(String key)
     {
         if(has(key) && isBoolean(get(key)))
@@ -289,7 +334,6 @@ public class ConfigEx implements IConfigEx
         }
     }
 
-    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
         String enumIdentifier;
@@ -319,7 +363,6 @@ public class ConfigEx implements IConfigEx
         return null;
     }
 
-    @Override
     public IBlockState getBlock(String key)
     {
         JsonObject root;
@@ -397,8 +440,28 @@ public class ConfigEx implements IConfigEx
         }
     }
 
-    @Override
-    public IConfigEx getSubConfig(String key)
+    public JsonArray getArray(String key)
+    {
+        JsonElement root;
+
+        if(has(key) && isArray(get(key)))
+        {
+            root = get(key).getAsJsonArray();
+        }
+        else if(hasFallback(key) && isArray(getFallback(key)))
+        {
+            root = getFallback(key).getAsJsonArray();
+        }
+        else
+        {
+            LOGGER.warn("The {} config is missing the {} sub config, it is going to be created", CONFIG_NAME, key);
+            return new JsonArray();
+        }
+
+        return root.getAsJsonArray();
+    }
+
+    public JsonConfig getSubConfig(String key)
     {
         JsonElement root;
 
@@ -412,14 +475,14 @@ public class ConfigEx implements IConfigEx
         }
         else
         {
-            LOGGER.warn("The {} config is missing the {} sub config it is going to be created", CONFIG_NAME, key);
+            LOGGER.warn("The {} config is missing the {} sub config, it is going to be created", CONFIG_NAME, key);
 
-            IConfigEx subConfig = new ConfigEx(WordUtils.capitalize(key), new JsonObject().toString());
+            JsonConfig subConfig = new JsonConfig(WordUtils.capitalize(key), new JsonObject().toString());
             SUB_CONFIGS.put(key, subConfig);
             return subConfig;
         }
 
-        IConfigEx subConfig = new ConfigEx(WordUtils.capitalize(key), root.toString());
+        JsonConfig subConfig = new JsonConfig(WordUtils.capitalize(key), root.toString());
         SUB_CONFIGS.put(key, subConfig);
         return subConfig;
     }
