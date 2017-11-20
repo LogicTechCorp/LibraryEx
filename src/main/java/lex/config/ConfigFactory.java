@@ -1,6 +1,7 @@
 package lex.config;
 
 import com.google.gson.*;
+import lex.LibEx;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -18,6 +19,11 @@ public class ConfigFactory
     public static Config parseFile(File configFile)
     {
         String jsonString = new JsonObject().toString();
+
+        if(configFile.getPath().startsWith("~"))
+        {
+            configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
+        }
 
         if(configFile.exists())
         {
@@ -38,7 +44,7 @@ public class ConfigFactory
         {
             for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
             {
-                config.getElements().put(entry.getKey(), entry.getValue());
+                config.ELEMENT_MAP.put(entry.getKey(), entry.getValue());
             }
         }
 
@@ -54,7 +60,7 @@ public class ConfigFactory
         {
             for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
             {
-                config.getElements().put(entry.getKey(), entry.getValue());
+                config.ELEMENT_MAP.put(entry.getKey(), entry.getValue());
             }
         }
 
@@ -65,7 +71,7 @@ public class ConfigFactory
     {
         JsonObject rootObject = new JsonObject();
 
-        for(Map.Entry<String, Config> entry : config.getInnerConfigs().entrySet())
+        for(Map.Entry<String, Config> entry : config.INNER_CONFIGS.entrySet())
         {
             if(config.has(entry.getKey()))
             {
@@ -77,12 +83,12 @@ public class ConfigFactory
             }
         }
 
-        for(Map.Entry<String, JsonElement> entry : config.getElements().entrySet())
+        for(Map.Entry<String, JsonElement> entry : config.ELEMENT_MAP.entrySet())
         {
             rootObject.add(entry.getKey(), entry.getValue());
         }
 
-        for(Map.Entry<String, JsonElement> entry : config.getDefaultElements().entrySet())
+        for(Map.Entry<String, JsonElement> entry : config.DEFAULT_ELEMENT_MAP.entrySet())
         {
             if(!rootObject.has(entry.getKey()))
             {

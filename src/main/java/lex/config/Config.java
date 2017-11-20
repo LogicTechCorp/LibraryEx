@@ -1,5 +1,7 @@
 package lex.config;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -11,6 +13,7 @@ import net.minecraft.init.Blocks;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static lex.util.JsonUtils.*;
@@ -18,10 +21,10 @@ import static lex.util.JsonUtils.*;
 public class Config
 {
     private final File CONFIG_FILE;
+    protected final Map<String, JsonElement> ELEMENT_MAP = new HashMap<>();
+    protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new HashMap<>();
+    protected final Map<String, Config> INNER_CONFIGS = new HashMap<>();
     private final boolean INNER_CONFIG;
-    private final Map<String, JsonElement> ELEMENTS = new HashMap<>();
-    private final Map<String, JsonElement> DEFAULT_ELEMENTS = new HashMap<>();
-    private final Map<String, Config> INNER_CONFIGS = new HashMap<>();
 
     Config(File configFile, boolean innerConfig)
     {
@@ -31,12 +34,12 @@ public class Config
 
     public void add(String key, JsonElement element)
     {
-        ELEMENTS.put(key, element);
+        ELEMENT_MAP.put(key, element);
     }
 
     public void addDefault(String key, JsonElement element)
     {
-        DEFAULT_ELEMENTS.put(key, element);
+        DEFAULT_ELEMENT_MAP.put(key, element);
     }
 
     public void addInnerConfig(String key, Config config)
@@ -46,12 +49,12 @@ public class Config
 
     public boolean has(String key)
     {
-        return ELEMENTS.containsKey(key);
+        return ELEMENT_MAP.containsKey(key);
     }
 
     public boolean hasDefault(String key)
     {
-        return DEFAULT_ELEMENTS.containsKey(key);
+        return DEFAULT_ELEMENT_MAP.containsKey(key);
     }
 
     public boolean hasInnerConfig(String key)
@@ -61,12 +64,12 @@ public class Config
 
     public JsonElement get(String key)
     {
-        return ELEMENTS.get(key);
+        return ELEMENT_MAP.get(key);
     }
 
     public JsonElement getDefault(String key)
     {
-        return DEFAULT_ELEMENTS.get(key);
+        return DEFAULT_ELEMENT_MAP.get(key);
     }
 
     public String getString(String key, String defaultValue)
@@ -294,28 +297,47 @@ public class Config
             config = ConfigFactory.parseString(getDefault(key).toString());
         }
 
-        INNER_CONFIGS.put(key, config);
+        if(config != null)
+        {
+            INNER_CONFIGS.put(key, config);
+        }
+
         return config;
     }
 
-    protected File getFile()
+    public File getFile()
     {
         return CONFIG_FILE;
     }
 
-    protected Map<String, JsonElement> getElements()
+    public Map<String, JsonElement> getElementMap()
     {
-        return ELEMENTS;
+        return ImmutableMap.copyOf(ELEMENT_MAP);
     }
 
-    protected Map<String, JsonElement> getDefaultElements()
+    public Map<String, JsonElement> getDefaultElementMap()
     {
-        return DEFAULT_ELEMENTS;
+        return ImmutableMap.copyOf(DEFAULT_ELEMENT_MAP);
     }
 
-    protected Map<String, Config> getInnerConfigs()
+    public Map<String, Config> getInnerConfigMap()
     {
-        return INNER_CONFIGS;
+        return ImmutableMap.copyOf(INNER_CONFIGS);
+    }
+
+    public List<JsonElement> getElementList()
+    {
+        return ImmutableList.copyOf(ELEMENT_MAP.values());
+    }
+
+    public List<JsonElement> getDefaultElementList()
+    {
+        return ImmutableList.copyOf(DEFAULT_ELEMENT_MAP.values());
+    }
+
+    protected List<Config> getInnerConfigList()
+    {
+        return ImmutableList.copyOf(INNER_CONFIGS.values());
     }
 
     public boolean isInnerConfig()
