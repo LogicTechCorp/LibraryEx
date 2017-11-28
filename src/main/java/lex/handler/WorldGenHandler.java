@@ -18,7 +18,7 @@
 package lex.handler;
 
 import lex.LibEx;
-import lex.util.NumberUtils;
+import lex.util.NumberHelper;
 import lex.world.biome.BiomeWrapper;
 import lex.world.biome.BiomeWrapperManager;
 import lex.world.gen.GenerationStage;
@@ -109,13 +109,13 @@ public class WorldGenHandler
 
     private static void generateFeature(World world, BlockPos pos, Random rand, GenerationStage generationStage)
     {
-        BiomeWrapper biome = BiomeWrapperManager.getBiomeWrapper(world.getBiome(pos.add(16, 0, 16)));
+        BiomeWrapper wrapper = BiomeWrapperManager.getBiomeWrapper(world.getBiome(pos.add(16, 0, 16)));
 
-        for(IFeature generator : biome.getFeatureList(world.provider.getDimensionType(), generationStage))
+        for(IFeature generator : wrapper.getFeatureList(world.provider.getDimensionType(), generationStage))
         {
             for(int genAttempts = 0; genAttempts < generator.getGenerationAttempts(rand); genAttempts++)
             {
-                generator.generate(world, rand, pos.add(rand.nextInt(16) + 8, NumberUtils.getNumberInRange(generator.getMinHeight(), generator.getMaxHeight(), rand), rand.nextInt(16) + 8));
+                generator.generate(world, rand, pos.add(rand.nextInt(16) + 8, NumberHelper.getNumberInRange(generator.getMinHeight(), generator.getMaxHeight(), rand), rand.nextInt(16) + 8));
             }
         }
     }

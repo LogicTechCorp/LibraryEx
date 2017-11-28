@@ -19,29 +19,23 @@ package lex.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
-import lex.LibEx;
-import lex.util.BlockStateUtils;
+import lex.util.BlockStateHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.util.Strings;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static lex.util.JsonUtils.*;
+import static lex.util.ConfigHelper.*;
 
 public abstract class AbstractConfig implements IConfig
 {
     private final JsonParser JSON_PARSER = new JsonParser();
-    private final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     protected final Map<String, JsonElement> ELEMENT_MAP = new LinkedHashMap<>();
     protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new LinkedHashMap<>();
@@ -95,28 +89,6 @@ public abstract class AbstractConfig implements IConfig
         }
 
         return object;
-    }
-
-    public void save(File configFile)
-    {
-        if(isSavable() && configFile != null)
-        {
-            if(configFile.getPath().startsWith("~"))
-            {
-                configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
-            }
-
-            String jsonString = GSON.toJson(compose());
-
-            try
-            {
-                FileUtils.write(configFile, jsonString, Charset.defaultCharset());
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
     }
 
     public void add(String key, JsonElement element)
@@ -368,11 +340,11 @@ public abstract class AbstractConfig implements IConfig
                     {
                         for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
                         {
-                            IProperty property = BlockStateUtils.getProperty(state, entry.getKey());
+                            IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
 
                             if(property != null && isString(entry.getValue()))
                             {
-                                Comparable propertyValue = BlockStateUtils.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
+                                Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
 
                                 if(propertyValue != null)
                                 {

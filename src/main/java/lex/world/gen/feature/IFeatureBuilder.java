@@ -17,24 +17,11 @@
 
 package lex.world.gen.feature;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import lex.config.IConfig;
 
-import java.util.Random;
-
-public interface IFeature
+public interface IFeatureBuilder<B extends IFeatureBuilder<B, F>, F extends IFeature>
 {
-    boolean generate(World world, Random rand, BlockPos pos);
+    B configure(IConfig config);
 
-    int getGenerationAttempts();
-
-    int getGenerationAttempts(Random rand);
-
-    boolean randomizeGenerationAttempts();
-
-    float getGenerationProbability();
-
-    int getMinHeight();
-
-    int getMaxHeight();
+    F create();
 }

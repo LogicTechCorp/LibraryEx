@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import lex.config.IConfig;
 import lex.world.gen.GenerationStage;
+import lex.world.gen.feature.FeatureManager;
 import lex.world.gen.feature.IFeature;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -39,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static lex.util.JsonUtils.isString;
+import static lex.util.ConfigHelper.isString;
 
 public class BiomeWrapper
 {
@@ -59,7 +60,7 @@ public class BiomeWrapper
         configure(config);
     }
 
-    protected void configure(IConfig config)
+    private void configure(IConfig config)
     {
         surfaceBlock = config.getBlock("surfaceBlock", biome.topBlock);
         subsurfaceBlock = config.getBlock("subsurfaceBlock", biome.fillerBlock);
@@ -130,14 +131,12 @@ public class BiomeWrapper
         {
             if(isString(featureConfig.get("generator")) && isString(featureConfig.get("generationStage")) && isString(featureConfig.get("dimension")))
             {
-                //TODO: Obtain feature from a registry of some sort
-                IFeature feature = null;
+                IFeature feature = FeatureManager.createFeature(featureConfig.getString("generator"), featureConfig);
                 GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class);
                 DimensionType dimensionType = featureConfig.getEnum("dimension", DimensionType.class);
 
                 if(feature != null && generationStage != null && dimensionType != null)
                 {
-                    feature.configure(featureConfig);
                     DIMENSION_FEATURE_MAP.computeIfAbsent(dimensionType, k -> new HashMap<>()).computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
                 }
             }

@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 
-public class BlockStateUtils
+public class BlockStateHelper
 {
     public static IProperty getProperty(IBlockState state, String propertyName)
     {

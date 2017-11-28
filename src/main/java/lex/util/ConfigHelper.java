@@ -17,10 +17,43 @@
 
 package lex.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import lex.LibEx;
+import lex.config.IConfig;
+import org.apache.commons.io.FileUtils;
 
-public class JsonUtils
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+public class ConfigHelper
 {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+    public static void saveConfig(IConfig config, File configFile)
+    {
+        if(config.isSavable() && configFile != null)
+        {
+            if(configFile.getPath().startsWith("~"))
+            {
+                configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
+            }
+
+            String jsonString = GSON.toJson(config.compose());
+
+            try
+            {
+                FileUtils.write(configFile, jsonString, Charset.defaultCharset());
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static boolean isString(JsonElement element)
     {
         return isPrimitive(element) && element.getAsJsonPrimitive().isString();

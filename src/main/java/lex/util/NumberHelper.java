@@ -19,7 +19,7 @@ package lex.util;
 
 import java.util.Random;
 
-public class NumberUtils
+public class NumberHelper
 {
     public static int getNumberInRange(int min, int max, Random rand)
     {

@@ -18,7 +18,7 @@
 package lex.world.gen.feature;
 
 import lex.config.IConfig;
-import lex.util.NumberUtils;
+import lex.util.NumberHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -33,34 +33,13 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
     private int minHeight;
     private int maxHeight;
 
-    public AbstractFeature()
+    AbstractFeature(AbstractBuilder builder)
     {
-
-    }
-
-    @Override
-    public void configure(IConfig config)
-    {
-        generationAttempts = config.getInt("generationAttempts", 8);
-        randomizeGenerationAttempts = config.getBoolean("randomizeGenerationAttempts", false);
-        generationProbability = config.getFloat("generationProbability", 1.0F);
-        minHeight = config.getInt("minHeight", 32);
-        maxHeight = config.getInt("maxHeight", 96);
-
-        if(generationAttempts < 0)
-        {
-            generationAttempts = (generationAttempts * -1);
-        }
-        if(generationProbability < 0)
-        {
-            generationProbability = (generationProbability * -1.0F);
-        }
-        if(minHeight > maxHeight)
-        {
-            int minHeightHolder = minHeight;
-            minHeight = maxHeight;
-            maxHeight = minHeightHolder;
-        }
+        generationAttempts = builder.generationAttempts;
+        randomizeGenerationAttempts = builder.randomizeGenerationAttempts;
+        generationProbability = builder.generationProbability;
+        minHeight = builder.minHeight;
+        maxHeight = builder.maxHeight;
     }
 
     @Override
@@ -83,7 +62,7 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
         }
         if(randomizeGenerationAttempts)
         {
-            attempts = NumberUtils.getNumberInRange(1, attempts, rand);
+            attempts = NumberHelper.getNumberInRange(1, attempts, rand);
         }
 
         return attempts;
@@ -111,5 +90,41 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
     public int getMaxHeight()
     {
         return maxHeight;
+    }
+
+    public abstract static class AbstractBuilder<B extends AbstractBuilder<B, F>, F extends IFeature> implements IFeatureBuilder<B, F>
+    {
+        int generationAttempts;
+        boolean randomizeGenerationAttempts;
+        float generationProbability;
+        int minHeight;
+        int maxHeight;
+
+        @Override
+        public B configure(IConfig config)
+        {
+            generationAttempts = config.getInt("generationAttempts", 8);
+            randomizeGenerationAttempts = config.getBoolean("randomizeGenerationAttempts", false);
+            generationProbability = config.getFloat("generationProbability", 1.0F);
+            minHeight = config.getInt("minHeight", 32);
+            maxHeight = config.getInt("maxHeight", 96);
+
+            if(generationAttempts < 0)
+            {
+                generationAttempts = (generationAttempts * -1);
+            }
+            if(generationProbability < 0)
+            {
+                generationProbability = (generationProbability * -1.0F);
+            }
+            if(minHeight > maxHeight)
+            {
+                int minHeightHolder = minHeight;
+                minHeight = maxHeight;
+                maxHeight = minHeightHolder;
+            }
+
+            return (B) this;
+        }
     }
 }
