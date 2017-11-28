@@ -15,25 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.gen;
 
-public class ServerProxy implements IProxy
+public enum GenerationStage
 {
-    @Override
-    public void preInit()
-    {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
-    }
+    PRE_POPULATE,
+    POPULATE,
+    POST_POPULATE,
+    PRE_DECORATE,
+    DECORATE,
+    POST_DECORATE,
+    PRE_ORE,
+    ORE,
+    POST_ORE,
 }

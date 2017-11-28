@@ -1,35 +1,122 @@
+/*
+ * LibEx
+ * Copyright (c) 2017 by MineEx
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package lex.config;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
+import lex.LibEx;
 import lex.util.BlockStateUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.util.Strings;
 
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import static lex.util.JsonUtils.*;
 
-public class Config
+public abstract class AbstractConfig implements IConfig
 {
-    private final File CONFIG_FILE;
-    protected final Map<String, JsonElement> ELEMENT_MAP = new HashMap<>();
-    protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new HashMap<>();
-    protected final Map<String, Config> INNER_CONFIGS = new HashMap<>();
-    private final boolean INNER_CONFIG;
+    private final JsonParser JSON_PARSER = new JsonParser();
+    private final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    Config(File configFile, boolean innerConfig)
+    protected final Map<String, JsonElement> ELEMENT_MAP = new LinkedHashMap<>();
+    protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new LinkedHashMap<>();
+    protected final Map<String, InnerConfig> INNER_CONFIGS = new LinkedHashMap<>();
+
+    @Override
+    public void parse(String jsonString)
     {
-        CONFIG_FILE = configFile;
-        INNER_CONFIG = innerConfig;
+        if(!Strings.isBlank(jsonString))
+        {
+            JsonElement element = JSON_PARSER.parse(jsonString);
+
+            if(isObject(element))
+            {
+                for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
+                {
+                    ELEMENT_MAP.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    @Override
+    public JsonElement compose()
+    {
+        JsonObject object = new JsonObject();
+
+        for(Map.Entry<String, InnerConfig> entry : INNER_CONFIGS.entrySet())
+        {
+            if(has(entry.getKey()))
+            {
+                add(entry.getKey(), entry.getValue().compose());
+            }
+            else if(hasDefault(entry.getKey()))
+            {
+                addDefault(entry.getKey(), entry.getValue().compose());
+            }
+        }
+
+        for(Map.Entry<String, JsonElement> entry : ELEMENT_MAP.entrySet())
+        {
+            object.add(entry.getKey(), entry.getValue());
+        }
+
+        for(Map.Entry<String, JsonElement> entry : DEFAULT_ELEMENT_MAP.entrySet())
+        {
+            if(!object.has(entry.getKey()))
+            {
+                object.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return object;
+    }
+
+    public void save(File configFile)
+    {
+        if(isSavable() && configFile != null)
+        {
+            if(configFile.getPath().startsWith("~"))
+            {
+                configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
+            }
+
+            String jsonString = GSON.toJson(compose());
+
+            try
+            {
+                FileUtils.write(configFile, jsonString, Charset.defaultCharset());
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void add(String key, JsonElement element)
@@ -42,11 +129,12 @@ public class Config
         DEFAULT_ELEMENT_MAP.put(key, element);
     }
 
-    public void addInnerConfig(String key, Config config)
+    public void addInnerConfig(String key, InnerConfig config)
     {
         INNER_CONFIGS.put(key, config);
     }
 
+    @Override
     public boolean has(String key)
     {
         return ELEMENT_MAP.containsKey(key);
@@ -62,6 +150,7 @@ public class Config
         return INNER_CONFIGS.containsKey(key);
     }
 
+    @Override
     public JsonElement get(String key)
     {
         return ELEMENT_MAP.get(key);
@@ -72,36 +161,48 @@ public class Config
         return DEFAULT_ELEMENT_MAP.get(key);
     }
 
+    @Override
+    public Map<String, JsonElement> getElementMap()
+    {
+        return ImmutableMap.copyOf(ELEMENT_MAP);
+    }
+
+    @Override
     public String getString(String key, String defaultValue)
     {
         addDefault(key, new JsonPrimitive(defaultValue));
         return getString(key);
     }
 
+    @Override
     public int getInt(String key, int defaultValue)
     {
         addDefault(key, new JsonPrimitive(defaultValue));
         return getInt(key);
     }
 
+    @Override
     public float getFloat(String key, float defaultValue)
     {
         addDefault(key, new JsonPrimitive(defaultValue));
         return getFloat(key);
     }
 
+    @Override
     public boolean getBoolean(String key, boolean defaultValue)
     {
         addDefault(key, new JsonPrimitive(defaultValue));
         return getBoolean(key);
     }
 
+    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E defaultValue)
     {
         addDefault(key, new JsonPrimitive(defaultValue.toString().toLowerCase()));
         return getEnum(key, enumClass);
     }
 
+    @Override
     public IBlockState getBlock(String key, IBlockState defaultValue)
     {
         JsonObject object = new JsonObject();
@@ -118,12 +219,23 @@ public class Config
         return getBlock(key);
     }
 
-    public Config getInnerConfig(String key, JsonObject defaultValue)
+    @Override
+    public IConfig getInnerConfig(String key, JsonObject defaultValue)
     {
         addDefault(key, defaultValue);
         return getInnerConfig(key);
     }
 
+    @Override
+    public List<IConfig> getInnerConfigs(String key, List<JsonObject> defaultValue)
+    {
+        JsonArray array = new JsonArray();
+        defaultValue.forEach(array::add);
+        addDefault(key, array);
+        return getInnerConfigs(key);
+    }
+
+    @Override
     public String getString(String key)
     {
         if(has(key) && isString(get(key)))
@@ -140,6 +252,7 @@ public class Config
         }
     }
 
+    @Override
     public int getInt(String key)
     {
         if(has(key) && isInt(get(key)))
@@ -157,6 +270,7 @@ public class Config
 
     }
 
+    @Override
     public float getFloat(String key)
     {
         if(has(key) && isFloat(get(key)))
@@ -173,6 +287,7 @@ public class Config
         }
     }
 
+    @Override
     public boolean getBoolean(String key)
     {
         if(has(key) && isBoolean(get(key)))
@@ -189,6 +304,7 @@ public class Config
         }
     }
 
+    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
         String enumIdentifier;
@@ -217,6 +333,7 @@ public class Config
         return null;
     }
 
+    @Override
     public IBlockState getBlock(String key)
     {
         JsonObject object;
@@ -279,22 +396,23 @@ public class Config
         }
     }
 
-    public Config getInnerConfig(String key)
+    @Override
+    public IConfig getInnerConfig(String key)
     {
         if(hasInnerConfig(key))
         {
             return INNER_CONFIGS.get(key);
         }
 
-        Config config = null;
+        InnerConfig config = null;
 
         if(has(key) && isObject(get(key)))
         {
-            config = ConfigFactory.parseString(get(key).toString());
+            config = new InnerConfig(get(key).getAsJsonObject());
         }
         else if(hasDefault(key) && isObject(getDefault(key)))
         {
-            config = ConfigFactory.parseString(getDefault(key).toString());
+            config = new InnerConfig(getDefault(key).getAsJsonObject());
         }
 
         if(config != null)
@@ -305,43 +423,76 @@ public class Config
         return config;
     }
 
-    public File getFile()
+    @Override
+    public List<IConfig> getInnerConfigs(String key)
     {
-        return CONFIG_FILE;
+        JsonArray array = null;
+        List<IConfig> innerConfigs;
+
+        if(has(key) && isArray(get(key)))
+        {
+            array = get(key).getAsJsonArray();
+        }
+        else if(hasDefault(key) && isArray(getDefault(key)))
+        {
+            array = getDefault(key).getAsJsonArray();
+        }
+
+        if(!isNull(array))
+        {
+            innerConfigs = new ArrayList<>();
+
+            for(JsonElement element : array)
+            {
+                if(isObject(element))
+                {
+                    innerConfigs.add(new InnerConfig(element.toString()));
+                }
+            }
+
+            return innerConfigs;
+        }
+
+        return null;
     }
 
-    public Map<String, JsonElement> getElementMap()
+    @Override
+    public List<String> getStrings(String key, List<String> defaultValue)
     {
-        return ImmutableMap.copyOf(ELEMENT_MAP);
+        JsonArray array = new JsonArray();
+
+        for(String string : defaultValue)
+        {
+            array.add(string);
+        }
+
+        addDefault(key, array);
+        return getStrings(key);
     }
 
-    public Map<String, JsonElement> getDefaultElementMap()
+    @Override
+    public List<String> getStrings(String key)
     {
-        return ImmutableMap.copyOf(DEFAULT_ELEMENT_MAP);
-    }
+        JsonArray array = new JsonArray();
+        List<String> stringList = new ArrayList<>();
 
-    public Map<String, Config> getInnerConfigMap()
-    {
-        return ImmutableMap.copyOf(INNER_CONFIGS);
-    }
+        if(has(key) && isArray(get(key)))
+        {
+            array = get(key).getAsJsonArray();
+        }
+        else if(hasDefault(key) && isArray(getDefault(key)))
+        {
+            array = getDefault(key).getAsJsonArray();
+        }
 
-    public List<JsonElement> getElementList()
-    {
-        return ImmutableList.copyOf(ELEMENT_MAP.values());
-    }
+        for(JsonElement element : array)
+        {
+            if(isPrimitive(element))
+            {
+                stringList.add(element.getAsJsonPrimitive().getAsString());
+            }
+        }
 
-    public List<JsonElement> getDefaultElementList()
-    {
-        return ImmutableList.copyOf(DEFAULT_ELEMENT_MAP.values());
-    }
-
-    protected List<Config> getInnerConfigList()
-    {
-        return ImmutableList.copyOf(INNER_CONFIGS.values());
-    }
-
-    public boolean isInnerConfig()
-    {
-        return INNER_CONFIG;
+        return stringList;
     }
 }

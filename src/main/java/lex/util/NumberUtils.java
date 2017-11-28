@@ -15,25 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.util;
 
-public class ServerProxy implements IProxy
+import java.util.Random;
+
+public class NumberUtils
 {
-    @Override
-    public void preInit()
+    public static int getNumberInRange(int min, int max, Random rand)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        return rand.nextInt(max - min + 1) + min;
     }
 }

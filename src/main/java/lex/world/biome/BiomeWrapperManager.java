@@ -15,25 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.biome;
 
-public class ServerProxy implements IProxy
+import lex.config.IConfig;
+import net.minecraft.world.biome.Biome;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class BiomeWrapperManager
 {
-    @Override
-    public void preInit()
-    {
+    private static final Map<Biome, BiomeWrapper> WRAPPED_BIOME_MAP = new HashMap<>();
 
+    public static void wrapBiome(Biome biome, IConfig config)
+    {
+        if(!WRAPPED_BIOME_MAP.containsKey(biome))
+        {
+            WRAPPED_BIOME_MAP.put(biome, new BiomeWrapper(biome, config));
+        }
     }
 
-    @Override
-    public void init()
+    public static BiomeWrapper getBiomeWrapper(Biome biome)
     {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        return WRAPPED_BIOME_MAP.get(biome);
     }
 }

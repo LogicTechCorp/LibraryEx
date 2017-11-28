@@ -15,25 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.gen;
 
-public class ServerProxy implements IProxy
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+
+public enum Placement
 {
-    @Override
-    public void preInit()
-    {
+    ON_GROUND(null),
+    IN_GROUND(EnumFacing.DOWN);
 
+    EnumFacing offset;
+
+    Placement(EnumFacing offsetIn)
+    {
+        offset = offsetIn;
     }
 
-    @Override
-    public void init()
+    public BlockPos offsetPos(BlockPos pos)
     {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        if(offset != null)
+        {
+            return pos.offset(offset);
+        }
+        else
+        {
+            return pos;
+        }
     }
 }

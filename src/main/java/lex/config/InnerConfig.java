@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.config;
 
-public class ServerProxy implements IProxy
+import com.google.gson.JsonObject;
+
+public class InnerConfig extends AbstractConfig
 {
-    @Override
-    public void preInit()
+    public InnerConfig(String jsonString)
     {
+        parse(jsonString);
+    }
 
+    public InnerConfig(JsonObject object)
+    {
+        this(object.toString());
     }
 
     @Override
-    public void init()
+    public boolean isSavable()
     {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        return false;
     }
 }

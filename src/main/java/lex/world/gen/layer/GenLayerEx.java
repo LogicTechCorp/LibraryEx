@@ -15,25 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.gen.layer;
 
-public class ServerProxy implements IProxy
+import net.minecraft.world.gen.layer.GenLayer;
+
+public abstract class GenLayerEx extends GenLayer
 {
-    @Override
-    public void preInit()
+    public GenLayerEx(long seed)
     {
-
+        super(seed);
     }
 
     @Override
-    public void init()
-    {
-
-    }
+    public abstract int[] getInts(int areaX, int areaZ, int areaWidth, int areaHeight);
 
     @Override
-    public void postInit()
+    public int nextInt(int i)
     {
-
+        return super.nextInt(i);
     }
 }

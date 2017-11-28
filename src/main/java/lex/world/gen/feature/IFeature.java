@@ -15,25 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.gen.feature;
 
-public class ServerProxy implements IProxy
+import lex.config.IConfig;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.Random;
+
+public interface IFeature
 {
-    @Override
-    public void preInit()
-    {
+    void configure(IConfig config);
 
-    }
+    boolean generate(World world, Random rand, BlockPos pos);
 
-    @Override
-    public void init()
-    {
+    int getGenerationAttempts();
 
-    }
+    int getGenerationAttempts(Random rand);
 
-    @Override
-    public void postInit()
-    {
+    boolean randomizeGenerationAttempts();
 
-    }
+    float getGenerationProbability();
+
+    int getMinHeight();
+
+    int getMaxHeight();
 }
