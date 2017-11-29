@@ -46,6 +46,10 @@ public class FeatureManager
 
     static
     {
-        addFeatureBuilder("scattered", new FeatureScattered.Builder());
+        addFeatureBuilder("scatter", new FeatureScatter.Builder());
+        addFeatureBuilder("cluster", new FeatureCluster.Builder());
+        addFeatureBuilder("ore", new FeatureOre.Builder());
+        addFeatureBuilder("pool", new FeaturePool.Builder());
+        addFeatureBuilder("fluid", new FeatureFluid.Builder());
     }
 }

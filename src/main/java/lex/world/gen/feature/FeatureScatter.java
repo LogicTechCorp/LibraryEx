@@ -27,13 +27,13 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScattered extends AbstractFeature
+public class FeatureScatter extends AbstractFeature
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToTarget;
-    private Placement placement;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToTarget;
+    protected Placement placement;
 
-    FeatureScattered(Builder builder)
+    FeatureScatter(Builder builder)
     {
         super(builder);
         blockToSpawn = builder.blockToSpawn;
@@ -67,11 +67,11 @@ public class FeatureScattered extends AbstractFeature
         return true;
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeatureScattered>
+    public static class Builder extends AbstractBuilder<Builder, FeatureScatter>
     {
-        IBlockState blockToSpawn;
-        IBlockState blockToTarget;
-        Placement placement;
+        protected IBlockState blockToSpawn;
+        protected IBlockState blockToTarget;
+        protected Placement placement;
 
         @Override
         public Builder configure(IConfig config)
@@ -84,9 +84,9 @@ public class FeatureScattered extends AbstractFeature
         }
 
         @Override
-        public FeatureScattered create()
+        public FeatureScatter create()
         {
-            return new FeatureScattered(this);
+            return new FeatureScatter(this);
         }
     }
 }

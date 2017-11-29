@@ -35,7 +35,7 @@ import static lex.util.ConfigHelper.*;
 
 public abstract class AbstractConfig implements IConfig
 {
-    private final JsonParser JSON_PARSER = new JsonParser();
+    private static final JsonParser JSON_PARSER = new JsonParser();
 
     protected final Map<String, JsonElement> ELEMENT_MAP = new LinkedHashMap<>();
     protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new LinkedHashMap<>();

@@ -27,11 +27,11 @@ import java.util.Random;
 
 public abstract class AbstractFeature extends WorldGenerator implements IFeature
 {
-    private int generationAttempts;
-    private boolean randomizeGenerationAttempts;
-    private float generationProbability;
-    private int minHeight;
-    private int maxHeight;
+    int generationAttempts;
+    boolean randomizeGenerationAttempts;
+    float generationProbability;
+    int minHeight;
+    int maxHeight;
 
     AbstractFeature(AbstractBuilder builder)
     {

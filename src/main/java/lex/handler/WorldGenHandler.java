@@ -111,11 +111,11 @@ public class WorldGenHandler
     {
         BiomeWrapper wrapper = BiomeWrapperManager.getBiomeWrapper(world.getBiome(pos.add(16, 0, 16)));
 
-        for(IFeature generator : wrapper.getFeatureList(world.provider.getDimensionType(), generationStage))
+        for(IFeature feature : wrapper.getFeatureList(generationStage))
         {
-            for(int genAttempts = 0; genAttempts < generator.getGenerationAttempts(rand); genAttempts++)
+            for(int generationAttempts = 0; generationAttempts < feature.getGenerationAttempts(rand); generationAttempts++)
             {
-                generator.generate(world, rand, pos.add(rand.nextInt(16) + 8, NumberHelper.getNumberInRange(generator.getMinHeight(), generator.getMaxHeight(), rand), rand.nextInt(16) + 8));
+                feature.generate(world, rand, pos.add(rand.nextInt(16) + 8, NumberHelper.getNumberInRange(feature.getMinHeight(), feature.getMaxHeight(), rand), rand.nextInt(16) + 8));
             }
         }
     }

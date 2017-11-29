@@ -29,7 +29,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -52,7 +51,7 @@ public class BiomeWrapper
     private IBlockState superCeilingBlock;
     private IBlockState fluidBlock;
     private int weight;
-    private Map<DimensionType, Map<GenerationStage, List<IFeature>>> DIMENSION_FEATURE_MAP = new HashMap<>();
+    private Map<GenerationStage, List<IFeature>> STAGE_FEATURE_MAP = new HashMap<>();
 
     BiomeWrapper(Biome biomeIn, IConfig config)
     {
@@ -129,15 +128,14 @@ public class BiomeWrapper
 
         for(IConfig featureConfig : featureConfigs)
         {
-            if(isString(featureConfig.get("generator")) && isString(featureConfig.get("generationStage")) && isString(featureConfig.get("dimension")))
+            if(isString(featureConfig.get("generator")) && isString(featureConfig.get("generationStage")))
             {
                 IFeature feature = FeatureManager.createFeature(featureConfig.getString("generator"), featureConfig);
                 GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class);
-                DimensionType dimensionType = featureConfig.getEnum("dimension", DimensionType.class);
 
-                if(feature != null && generationStage != null && dimensionType != null)
+                if(feature != null && generationStage != null)
                 {
-                    DIMENSION_FEATURE_MAP.computeIfAbsent(dimensionType, k -> new HashMap<>()).computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
+                    STAGE_FEATURE_MAP.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
                 }
             }
         }
@@ -183,8 +181,8 @@ public class BiomeWrapper
         return weight;
     }
 
-    public List<IFeature> getFeatureList(DimensionType dimensionType, GenerationStage generationStage)
+    public List<IFeature> getFeatureList(GenerationStage generationStage)
     {
-        return ImmutableList.copyOf(DIMENSION_FEATURE_MAP.computeIfAbsent(dimensionType, k -> new HashMap<>()).computeIfAbsent(generationStage, k -> new ArrayList<>()));
+        return ImmutableList.copyOf(STAGE_FEATURE_MAP.computeIfAbsent(generationStage, k -> new ArrayList<>()));
     }
 }
