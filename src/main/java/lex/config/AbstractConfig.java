@@ -23,7 +23,6 @@ import lex.util.BlockStateHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
@@ -35,10 +34,10 @@ import static lex.util.ConfigHelper.*;
 
 public abstract class AbstractConfig implements IConfig
 {
-    private static final JsonParser JSON_PARSER = new JsonParser();
+    protected static final JsonParser JSON_PARSER = new JsonParser();
 
-    protected final Map<String, JsonElement> ELEMENT_MAP = new LinkedHashMap<>();
-    protected final Map<String, JsonElement> DEFAULT_ELEMENT_MAP = new LinkedHashMap<>();
+    protected final Map<String, JsonElement> ELEMENTS = new LinkedHashMap<>();
+    protected final Map<String, JsonElement> FALLBACK_ELEMENTS = new LinkedHashMap<>();
     protected final Map<String, InnerConfig> INNER_CONFIGS = new LinkedHashMap<>();
 
     @Override
@@ -52,7 +51,7 @@ public abstract class AbstractConfig implements IConfig
             {
                 for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
                 {
-                    ELEMENT_MAP.put(entry.getKey(), entry.getValue());
+                    ELEMENTS.put(entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -69,18 +68,18 @@ public abstract class AbstractConfig implements IConfig
             {
                 add(entry.getKey(), entry.getValue().compose());
             }
-            else if(hasDefault(entry.getKey()))
+            else if(hasFallback(entry.getKey()))
             {
-                addDefault(entry.getKey(), entry.getValue().compose());
+                addFallback(entry.getKey(), entry.getValue().compose());
             }
         }
 
-        for(Map.Entry<String, JsonElement> entry : ELEMENT_MAP.entrySet())
+        for(Map.Entry<String, JsonElement> entry : ELEMENTS.entrySet())
         {
             object.add(entry.getKey(), entry.getValue());
         }
 
-        for(Map.Entry<String, JsonElement> entry : DEFAULT_ELEMENT_MAP.entrySet())
+        for(Map.Entry<String, JsonElement> entry : FALLBACK_ELEMENTS.entrySet())
         {
             if(!object.has(entry.getKey()))
             {
@@ -93,12 +92,12 @@ public abstract class AbstractConfig implements IConfig
 
     public void add(String key, JsonElement element)
     {
-        ELEMENT_MAP.put(key, element);
+        ELEMENTS.put(key, element);
     }
 
-    public void addDefault(String key, JsonElement element)
+    public void addFallback(String key, JsonElement element)
     {
-        DEFAULT_ELEMENT_MAP.put(key, element);
+        FALLBACK_ELEMENTS.put(key, element);
     }
 
     public void addInnerConfig(String key, InnerConfig config)
@@ -109,12 +108,12 @@ public abstract class AbstractConfig implements IConfig
     @Override
     public boolean has(String key)
     {
-        return ELEMENT_MAP.containsKey(key);
+        return ELEMENTS.containsKey(key);
     }
 
-    public boolean hasDefault(String key)
+    public boolean hasFallback(String key)
     {
-        return DEFAULT_ELEMENT_MAP.containsKey(key);
+        return FALLBACK_ELEMENTS.containsKey(key);
     }
 
     public boolean hasInnerConfig(String key)
@@ -125,86 +124,145 @@ public abstract class AbstractConfig implements IConfig
     @Override
     public JsonElement get(String key)
     {
-        return ELEMENT_MAP.get(key);
+        return ELEMENTS.get(key);
     }
 
-    public JsonElement getDefault(String key)
+    public JsonElement getFallback(String key)
     {
-        return DEFAULT_ELEMENT_MAP.get(key);
-    }
-
-    @Override
-    public Map<String, JsonElement> getElementMap()
-    {
-        return ImmutableMap.copyOf(ELEMENT_MAP);
+        return FALLBACK_ELEMENTS.get(key);
     }
 
     @Override
-    public String getString(String key, String defaultValue)
+    public Map<String, JsonElement> getElements()
     {
-        addDefault(key, new JsonPrimitive(defaultValue));
-        return getString(key);
+        return ImmutableMap.copyOf(ELEMENTS);
     }
 
     @Override
-    public int getInt(String key, int defaultValue)
+    public String getString(String key, String fallbackValue)
     {
-        addDefault(key, new JsonPrimitive(defaultValue));
-        return getInt(key);
-    }
+        String value = getString(key);
 
-    @Override
-    public float getFloat(String key, float defaultValue)
-    {
-        addDefault(key, new JsonPrimitive(defaultValue));
-        return getFloat(key);
-    }
-
-    @Override
-    public boolean getBoolean(String key, boolean defaultValue)
-    {
-        addDefault(key, new JsonPrimitive(defaultValue));
-        return getBoolean(key);
-    }
-
-    @Override
-    public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E defaultValue)
-    {
-        addDefault(key, new JsonPrimitive(defaultValue.toString().toLowerCase()));
-        return getEnum(key, enumClass);
-    }
-
-    @Override
-    public IBlockState getBlock(String key, IBlockState defaultValue)
-    {
-        JsonObject object = new JsonObject();
-        JsonObject properties = new JsonObject();
-        object.addProperty("block", defaultValue.getBlock().getRegistryName().toString());
-
-        for(Map.Entry<IProperty<?>, Comparable<?>> entry : defaultValue.getProperties().entrySet())
+        if(value.equals("MissingNo"))
         {
-            properties.addProperty(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+            addFallback(key, new JsonPrimitive(fallbackValue));
+            return fallbackValue;
         }
 
-        object.add("properties", properties);
-        addDefault(key, object);
-        return getBlock(key);
+        return value;
     }
 
     @Override
-    public IConfig getInnerConfig(String key, JsonObject defaultValue)
+    public int getInt(String key, int fallbackValue)
     {
-        addDefault(key, defaultValue);
-        return getInnerConfig(key);
+        int value = getInt(key);
+
+        if(value == -999)
+        {
+            addFallback(key, new JsonPrimitive(fallbackValue));
+            return fallbackValue;
+        }
+
+        return value;
     }
 
     @Override
-    public List<IConfig> getInnerConfigs(String key, List<JsonObject> defaultValue)
+    public float getFloat(String key, float fallbackValue)
     {
-        JsonArray array = new JsonArray();
-        defaultValue.forEach(array::add);
-        addDefault(key, array);
-        return getInnerConfigs(key);
+        float value = getFloat(key);
+
+        if(value == -999.0F)
+        {
+            addFallback(key, new JsonPrimitive(fallbackValue));
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
+    public boolean getBoolean(String key, boolean fallbackValue)
+    {
+        boolean value = getBoolean(key);
+
+        if(!has(key) || (has(key) && !isObject(get(key))))
+        {
+            addFallback(key, new JsonPrimitive(fallbackValue));
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
+    public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue)
+    {
+        E value = getEnum(key, enumClass);
+
+        if(value == null)
+        {
+            addFallback(key, new JsonPrimitive(fallbackValue.name().toLowerCase()));
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
+    public IBlockState getBlock(String key, IBlockState fallbackValue)
+    {
+        IBlockState value = getBlock(key);
+
+        if(value == null)
+        {
+            JsonObject object = new JsonObject();
+            JsonObject properties = new JsonObject();
+            object.addProperty("block", fallbackValue.getBlock().getRegistryName().toString());
+
+            for(Map.Entry<IProperty<?>, Comparable<?>> entry : fallbackValue.getProperties().entrySet())
+            {
+                properties.addProperty(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+            }
+
+            object.add("properties", properties);
+            addFallback(key, object);
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
+    public IConfig getInnerConfig(String key, JsonObject fallbackValue)
+    {
+        IConfig value = getInnerConfig(key);
+
+        if(value == null)
+        {
+            addFallback(key, fallbackValue);
+            return new InnerConfig(fallbackValue);
+        }
+
+        return value;
+    }
+
+    @Override
+    public List<IConfig> getInnerConfigs(String key, List<JsonObject> fallbackValue)
+    {
+        List<IConfig> value = getInnerConfigs(key);
+
+        if(value == null)
+        {
+            JsonArray array = new JsonArray();
+            fallbackValue.forEach(array::add);
+            addFallback(key, array);
+
+            List<IConfig> ret = new ArrayList<>();
+            fallbackValue.forEach(k -> ret.add(new InnerConfig(k)));
+            return ret;
+        }
+
+        return value;
     }
 
     @Override
@@ -213,10 +271,6 @@ public abstract class AbstractConfig implements IConfig
         if(has(key) && isString(get(key)))
         {
             return get(key).getAsJsonPrimitive().getAsString();
-        }
-        else if(hasDefault(key) && isString(getDefault(key)))
-        {
-            return getDefault(key).getAsJsonPrimitive().getAsString();
         }
         else
         {
@@ -229,17 +283,12 @@ public abstract class AbstractConfig implements IConfig
     {
         if(has(key) && isInt(get(key)))
         {
-            return get(key).getAsInt();
-        }
-        else if(hasDefault(key) && isInt(getDefault(key)))
-        {
-            return getDefault(key).getAsInt();
+            return get(key).getAsJsonPrimitive().getAsInt();
         }
         else
         {
-            return 0;
+            return -999;
         }
-
     }
 
     @Override
@@ -247,15 +296,11 @@ public abstract class AbstractConfig implements IConfig
     {
         if(has(key) && isFloat(get(key)))
         {
-            return get(key).getAsFloat();
-        }
-        else if(hasDefault(key) && isFloat(getDefault(key)))
-        {
-            return getDefault(key).getAsFloat();
+            return get(key).getAsJsonPrimitive().getAsFloat();
         }
         else
         {
-            return 0.0F;
+            return -999.0F;
         }
     }
 
@@ -264,11 +309,7 @@ public abstract class AbstractConfig implements IConfig
     {
         if(has(key) && isBoolean(get(key)))
         {
-            return get(key).getAsBoolean();
-        }
-        else if(hasDefault(key) && isBoolean(getDefault(key)))
-        {
-            return getDefault(key).getAsBoolean();
+            return get(key).getAsJsonPrimitive().getAsBoolean();
         }
         else
         {
@@ -279,26 +320,16 @@ public abstract class AbstractConfig implements IConfig
     @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
-        String enumIdentifier;
-
         if(has(key) && isString(get(key)))
         {
-            enumIdentifier = get(key).getAsJsonPrimitive().getAsString();
-        }
-        else if(hasDefault(key) && isString(getDefault(key)))
-        {
-            enumIdentifier = getDefault(key).getAsJsonPrimitive().getAsString();
-        }
-        else
-        {
-            return null;
-        }
+            String enumIdentifier = get(key).getAsJsonPrimitive().getAsString();
 
-        for(E value : enumClass.getEnumConstants())
-        {
-            if(value.name().equalsIgnoreCase(enumIdentifier))
+            for(E value : enumClass.getEnumConstants())
             {
-                return value;
+                if(value.name().equalsIgnoreCase(enumIdentifier))
+                {
+                    return value;
+                }
             }
         }
 
@@ -314,13 +345,9 @@ public abstract class AbstractConfig implements IConfig
         {
             object = get(key).getAsJsonObject();
         }
-        else if(hasDefault(key) && isObject(getDefault(key)))
-        {
-            object = getDefault(key).getAsJsonObject();
-        }
         else
         {
-            return Blocks.AIR.getDefaultState();
+            return null;
         }
 
         if(object.has("block"))
@@ -357,15 +384,9 @@ public abstract class AbstractConfig implements IConfig
 
                 return state;
             }
-            else
-            {
-                return Blocks.AIR.getDefaultState();
-            }
         }
-        else
-        {
-            return Blocks.AIR.getDefaultState();
-        }
+
+        return null;
     }
 
     @Override
@@ -375,44 +396,23 @@ public abstract class AbstractConfig implements IConfig
         {
             return INNER_CONFIGS.get(key);
         }
-
-        InnerConfig config = null;
-
-        if(has(key) && isObject(get(key)))
+        else if(has(key) && isObject(get(key)))
         {
-            config = new InnerConfig(get(key).getAsJsonObject());
-        }
-        else if(hasDefault(key) && isObject(getDefault(key)))
-        {
-            config = new InnerConfig(getDefault(key).getAsJsonObject());
-        }
-
-        if(config != null)
-        {
+            InnerConfig config = new InnerConfig(get(key).getAsJsonObject());
             INNER_CONFIGS.put(key, config);
+            return config;
         }
 
-        return config;
+        return null;
     }
 
     @Override
     public List<IConfig> getInnerConfigs(String key)
     {
-        JsonArray array = null;
-        List<IConfig> innerConfigs;
-
         if(has(key) && isArray(get(key)))
         {
-            array = get(key).getAsJsonArray();
-        }
-        else if(hasDefault(key) && isArray(getDefault(key)))
-        {
-            array = getDefault(key).getAsJsonArray();
-        }
-
-        if(!isNull(array))
-        {
-            innerConfigs = new ArrayList<>();
+            JsonArray array = get(key).getAsJsonArray();
+            List<IConfig> innerConfigs = new ArrayList<>();
 
             for(JsonElement element : array)
             {
@@ -424,47 +424,49 @@ public abstract class AbstractConfig implements IConfig
 
             return innerConfigs;
         }
-
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     @Override
-    public List<String> getStrings(String key, List<String> defaultValue)
+    public List<String> getStrings(String key, List<String> fallbackValue)
     {
-        JsonArray array = new JsonArray();
+        List<String> value = getStrings(key);
 
-        for(String string : defaultValue)
+        if(value == null)
         {
-            array.add(string);
+            JsonArray array = new JsonArray();
+            fallbackValue.forEach(array::add);
+            addFallback(key, array);
+            return fallbackValue;
         }
 
-        addDefault(key, array);
-        return getStrings(key);
+        return value;
     }
 
     @Override
     public List<String> getStrings(String key)
     {
-        JsonArray array = new JsonArray();
-        List<String> stringList = new ArrayList<>();
-
         if(has(key) && isArray(get(key)))
         {
-            array = get(key).getAsJsonArray();
-        }
-        else if(hasDefault(key) && isArray(getDefault(key)))
-        {
-            array = getDefault(key).getAsJsonArray();
-        }
+            JsonArray array = get(key).getAsJsonArray();
+            List<String> strings = new ArrayList<>();
 
-        for(JsonElement element : array)
-        {
-            if(isPrimitive(element))
+            for(JsonElement element : array)
             {
-                stringList.add(element.getAsJsonPrimitive().getAsString());
+                if(isPrimitive(element))
+                {
+                    strings.add(element.getAsJsonPrimitive().getAsString());
+                }
             }
-        }
 
-        return stringList;
+            return strings;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

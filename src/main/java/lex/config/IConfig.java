@@ -34,7 +34,7 @@ public interface IConfig
 
     JsonElement get(String key);
 
-    Map<String, JsonElement> getElementMap();
+    Map<String, JsonElement> getElements();
 
     boolean isSavable();
 

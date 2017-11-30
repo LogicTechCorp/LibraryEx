@@ -27,11 +27,11 @@ import java.util.Random;
 
 public abstract class AbstractFeature extends WorldGenerator implements IFeature
 {
-    int generationAttempts;
-    boolean randomizeGenerationAttempts;
-    float generationProbability;
-    int minHeight;
-    int maxHeight;
+    protected int generationAttempts;
+    protected boolean randomizeGenerationAttempts;
+    protected float generationProbability;
+    protected int minHeight;
+    protected int maxHeight;
 
     AbstractFeature(AbstractBuilder builder)
     {
@@ -94,11 +94,11 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
 
     public abstract static class AbstractBuilder<B extends AbstractBuilder<B, F>, F extends IFeature> implements IFeatureBuilder<B, F>
     {
-        int generationAttempts;
-        boolean randomizeGenerationAttempts;
-        float generationProbability;
-        int minHeight;
-        int maxHeight;
+        protected int generationAttempts;
+        protected boolean randomizeGenerationAttempts;
+        protected float generationProbability;
+        protected int minHeight;
+        protected int maxHeight;
 
         @Override
         public B configure(IConfig config)

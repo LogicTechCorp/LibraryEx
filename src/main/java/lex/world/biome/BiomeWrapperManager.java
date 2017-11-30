@@ -18,25 +18,36 @@
 package lex.world.biome;
 
 import lex.config.IConfig;
-import net.minecraft.world.biome.Biome;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class BiomeWrapperManager
 {
-    private static final Map<Biome, BiomeWrapper> WRAPPED_BIOME_MAP = new HashMap<>();
+    private static final Map<String, IBiomeWrapperBuilder> BIOME_WRAPPER_BUILDERS = new HashMap<>();
 
-    public static void wrapBiome(Biome biome, IConfig config)
+    public static void addBiomeWrapperBuilder(String key, IBiomeWrapperBuilder builder)
     {
-        if(!WRAPPED_BIOME_MAP.containsKey(biome))
+        if(!BIOME_WRAPPER_BUILDERS.containsKey(key) && builder != null)
         {
-            WRAPPED_BIOME_MAP.put(biome, new BiomeWrapper(biome, config));
+            BIOME_WRAPPER_BUILDERS.put(key, builder);
         }
     }
 
-    public static BiomeWrapper getBiomeWrapper(Biome biome)
+    public static IBiomeWrapper createBiomeWrapper(String key, IConfig config)
     {
-        return WRAPPED_BIOME_MAP.get(biome);
+        if(BIOME_WRAPPER_BUILDERS.containsKey(key) && config != null)
+        {
+            return BIOME_WRAPPER_BUILDERS.get(key).configure(config).create();
+        }
+
+        return null;
+    }
+
+    static
+    {
+        addBiomeWrapperBuilder("overworld", new OverworldBiomeWrapper.Builder());
+        addBiomeWrapperBuilder("nether", new NetherBiomeWrapper.Builder());
+        addBiomeWrapperBuilder("end", new EndBiomeWrapper.Builder());
     }
 }

@@ -24,21 +24,21 @@ import java.util.Map;
 
 public class FeatureManager
 {
-    private static final Map<String, IFeatureBuilder> FEATURE_BUILDER_MAP = new HashMap<>();
+    private static final Map<String, IFeatureBuilder> FEATURE_BUILDERS = new HashMap<>();
 
     public static void addFeatureBuilder(String key, IFeatureBuilder builder)
     {
-        if(!FEATURE_BUILDER_MAP.containsKey(key) && builder != null)
+        if(!FEATURE_BUILDERS.containsKey(key) && builder != null)
         {
-            FEATURE_BUILDER_MAP.put(key, builder);
+            FEATURE_BUILDERS.put(key, builder);
         }
     }
 
     public static IFeature createFeature(String key, IConfig config)
     {
-        if(FEATURE_BUILDER_MAP.containsKey(key) && config != null)
+        if(FEATURE_BUILDERS.containsKey(key) && config != null)
         {
-            return FEATURE_BUILDER_MAP.get(key).configure(config).create();
+            return FEATURE_BUILDERS.get(key).configure(config).create();
         }
 
         return null;
