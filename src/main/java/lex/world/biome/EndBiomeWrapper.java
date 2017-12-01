@@ -18,31 +18,19 @@
 package lex.world.biome;
 
 import lex.config.IConfig;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class EndBiomeWrapper extends AbstractBiomeWrapper
 {
-    protected IBlockState wallBlock;
-    protected IBlockState islandBottomBlock;
-    protected IBlockState islandFillerBlock;
-
     EndBiomeWrapper(Builder builder)
     {
         super(builder);
-        wallBlock = builder.wallBlock;
-        islandBottomBlock = builder.islandBottomBlock;
-        islandFillerBlock = builder.islandFillerBlock;
     }
 
     public static class Builder extends AbstractBuilder<Builder, EndBiomeWrapper>
     {
-        protected IBlockState wallBlock;
-        protected IBlockState islandBottomBlock;
-        protected IBlockState islandFillerBlock;
-
         @Override
         public Builder configure(IConfig config)
         {
@@ -53,10 +41,10 @@ public class EndBiomeWrapper extends AbstractBiomeWrapper
                 biome = Biomes.SKY;
             }
 
+            blocks.put("wallBlock", config.getBlock("wallBlock", biome.fillerBlock));
+            blocks.put("islandBottomBlock", config.getBlock("islandBottomBlock", biome.fillerBlock));
+            blocks.put("islandFillerBlock", config.getBlock("islandFillerBlock", biome.fillerBlock));
             super.configure(config);
-            wallBlock = config.getBlock("wallBlock", biome.fillerBlock);
-            islandBottomBlock = config.getBlock("islandBottomBlock", biome.fillerBlock);
-            islandFillerBlock = config.getBlock("islandFillerBlock", biome.fillerBlock);
             return this;
         }
 
@@ -64,21 +52,6 @@ public class EndBiomeWrapper extends AbstractBiomeWrapper
         public EndBiomeWrapper create()
         {
             return new EndBiomeWrapper(this);
-        }
-
-        public IBlockState getWallBlock()
-        {
-            return wallBlock;
-        }
-
-        public IBlockState getIslandBottomBlock()
-        {
-            return islandBottomBlock;
-        }
-
-        public IBlockState getIslandFillerBlock()
-        {
-            return islandFillerBlock;
         }
     }
 }

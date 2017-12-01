@@ -43,17 +43,15 @@ import static lex.util.ConfigHelper.isString;
 public abstract class AbstractBiomeWrapper implements IBiomeWrapper
 {
     Biome biome;
-    IBlockState topBlock;
-    IBlockState fillerBlock;
     int weight;
+    Map<String, IBlockState> blocks = new HashMap<>();
     Map<GenerationStage, List<IFeature>> generationStageFeatureMap = new HashMap<>();
 
     AbstractBiomeWrapper(AbstractBuilder builder)
     {
         biome = builder.biome;
-        topBlock = builder.topBlock;
-        fillerBlock = builder.fillerBlock;
         weight = builder.weight;
+        blocks = builder.blocks;
         generationStageFeatureMap = builder.generationStageFeatureMap;
     }
 
@@ -64,15 +62,29 @@ public abstract class AbstractBiomeWrapper implements IBiomeWrapper
     }
 
     @Override
-    public IBlockState getTopBlock()
+    public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
-        return topBlock;
+        IBlockState value = getBlock(key);
+
+        if(value == null)
+        {
+            blocks.put(key, fallbackValue);
+            return fallbackValue;
+        }
+
+        return value;
     }
 
     @Override
-    public IBlockState getFillerBlock()
+    public IBlockState getBlock(String key)
     {
-        return fillerBlock;
+        return blocks.get(key);
+    }
+
+    @Override
+    public List<IBlockState> getBlocks()
+    {
+        return ImmutableList.copyOf(blocks.values());
     }
 
     @Override
@@ -90,16 +102,13 @@ public abstract class AbstractBiomeWrapper implements IBiomeWrapper
     public abstract static class AbstractBuilder<B extends AbstractBuilder<B, F>, F extends IBiomeWrapper> implements IBiomeWrapperBuilder<B, F>
     {
         Biome biome;
-        IBlockState topBlock;
-        IBlockState fillerBlock;
         int weight;
+        Map<String, IBlockState> blocks = new HashMap<>();
         Map<GenerationStage, List<IFeature>> generationStageFeatureMap = new HashMap<>();
 
         @Override
         public B configure(IConfig config)
         {
-            topBlock = config.getBlock("topBlock", biome.topBlock);
-            fillerBlock = config.getBlock("fillerBlock", biome.fillerBlock);
             weight = config.getInt("weight", 10);
 
             List<IConfig> entityConfigs = config.getInnerConfigs("entities");

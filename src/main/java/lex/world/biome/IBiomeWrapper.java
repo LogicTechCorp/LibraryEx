@@ -28,9 +28,11 @@ public interface IBiomeWrapper
 {
     Biome getBiome();
 
-    IBlockState getTopBlock();
+    IBlockState getBlock(String key, IBlockState fallbackValue);
 
-    IBlockState getFillerBlock();
+    IBlockState getBlock(String key);
+
+    List<IBlockState> getBlocks();
 
     int getWeight();
 

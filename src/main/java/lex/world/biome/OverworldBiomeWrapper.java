@@ -18,7 +18,6 @@
 package lex.world.biome;
 
 import lex.config.IConfig;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -26,18 +25,13 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class OverworldBiomeWrapper extends AbstractBiomeWrapper
 {
-    protected IBlockState oceanBlock;
-
     OverworldBiomeWrapper(Builder builder)
     {
         super(builder);
-        oceanBlock = builder.oceanBlock;
     }
 
     public static class Builder extends AbstractBuilder<Builder, OverworldBiomeWrapper>
     {
-        protected IBlockState oceanBlock;
-
         @Override
         public Builder configure(IConfig config)
         {
@@ -48,8 +42,8 @@ public class OverworldBiomeWrapper extends AbstractBiomeWrapper
                 biome = Biomes.PLAINS;
             }
 
+            blocks.put("oceanBlock", config.getBlock("oceanBlock", Blocks.WATER.getDefaultState()));
             super.configure(config);
-            oceanBlock = config.getBlock("oceanBlock", Blocks.WATER.getDefaultState());
             return this;
         }
 
@@ -57,11 +51,6 @@ public class OverworldBiomeWrapper extends AbstractBiomeWrapper
         public OverworldBiomeWrapper create()
         {
             return new OverworldBiomeWrapper(this);
-        }
-
-        public IBlockState getOceanBlock()
-        {
-            return oceanBlock;
         }
     }
 }

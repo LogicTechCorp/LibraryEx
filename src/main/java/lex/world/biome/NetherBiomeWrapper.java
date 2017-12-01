@@ -18,7 +18,6 @@
 package lex.world.biome;
 
 import lex.config.IConfig;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -26,27 +25,13 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class NetherBiomeWrapper extends AbstractBiomeWrapper
 {
-    protected IBlockState oceanBlock;
-    protected IBlockState wallBlock;
-    protected IBlockState ceilingBottomBlock;
-    protected IBlockState ceilingFillerBlock;
-
     NetherBiomeWrapper(Builder builder)
     {
         super(builder);
-        oceanBlock = builder.oceanBlock;
-        wallBlock = builder.wallBlock;
-        ceilingBottomBlock = builder.ceilingBottomBlock;
-        ceilingFillerBlock = builder.ceilingFillerBlock;
     }
 
     public static class Builder extends AbstractBuilder<Builder, NetherBiomeWrapper>
     {
-        protected IBlockState oceanBlock;
-        protected IBlockState wallBlock;
-        protected IBlockState ceilingBottomBlock;
-        protected IBlockState ceilingFillerBlock;
-
         @Override
         public Builder configure(IConfig config)
         {
@@ -57,11 +42,11 @@ public class NetherBiomeWrapper extends AbstractBiomeWrapper
                 biome = Biomes.HELL;
             }
 
+            blocks.put("oceanBlock", config.getBlock("oceanBlock", Blocks.LAVA.getDefaultState()));
+            blocks.put("wallBlock", config.getBlock("wallBlock", biome.fillerBlock));
+            blocks.put("ceilingBottomBlock", config.getBlock("ceilingBottomBlock", biome.fillerBlock));
+            blocks.put("ceilingFillerBlock", config.getBlock("ceilingFillerBlock", biome.fillerBlock));
             super.configure(config);
-            oceanBlock = config.getBlock("oceanBlock", Blocks.LAVA.getDefaultState());
-            wallBlock = config.getBlock("wallBlock", biome.fillerBlock);
-            ceilingBottomBlock = config.getBlock("ceilingBottomBlock", biome.fillerBlock);
-            ceilingFillerBlock = config.getBlock("ceilingFillerBlock", biome.fillerBlock);
             return this;
         }
 
@@ -69,26 +54,6 @@ public class NetherBiomeWrapper extends AbstractBiomeWrapper
         public NetherBiomeWrapper create()
         {
             return new NetherBiomeWrapper(this);
-        }
-
-        public IBlockState getOceanBlock()
-        {
-            return oceanBlock;
-        }
-
-        public IBlockState getWallBlock()
-        {
-            return wallBlock;
-        }
-
-        public IBlockState getCeilingBottomBlock()
-        {
-            return ceilingBottomBlock;
-        }
-
-        public IBlockState getCeilingFillerBlock()
-        {
-            return ceilingFillerBlock;
         }
     }
 }
