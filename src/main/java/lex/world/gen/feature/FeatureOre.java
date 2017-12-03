@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureOre extends AbstractFeature
+public class FeatureOre extends FeatureLibEx
 {
     protected IBlockState blockToSpawn;
     protected IBlockState blockToReplace;
@@ -104,11 +104,16 @@ public class FeatureOre extends AbstractFeature
         return true;
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeatureOre>
+    public static class Builder extends LibExFeatureBuilder
     {
         protected IBlockState blockToSpawn;
         protected IBlockState blockToReplace;
         protected int veinSize;
+
+        public Builder()
+        {
+            super("ore");
+        }
 
         @Override
         public Builder configure(IConfig config)

@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureCluster extends AbstractFeature
+public class FeatureCluster extends FeatureLibEx
 {
     protected IBlockState blockToSpawn;
     protected IBlockState blockToAttachTo;
@@ -110,11 +110,16 @@ public class FeatureCluster extends AbstractFeature
         }
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeatureCluster>
+    public static class Builder extends LibExFeatureBuilder
     {
         protected IBlockState blockToSpawn;
         protected IBlockState blockToAttachTo;
         protected EnumFacing direction;
+
+        public Builder()
+        {
+            super("cluster");
+        }
 
         @Override
         public Builder configure(IConfig config)

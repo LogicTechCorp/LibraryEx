@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScatter extends AbstractFeature
+public class FeatureScatter extends FeatureLibEx
 {
     protected IBlockState blockToSpawn;
     protected IBlockState blockToTarget;
@@ -67,11 +67,16 @@ public class FeatureScatter extends AbstractFeature
         return true;
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeatureScatter>
+    public static class Builder extends LibExFeatureBuilder
     {
         protected IBlockState blockToSpawn;
         protected IBlockState blockToTarget;
         protected Placement placement;
+
+        public Builder()
+        {
+            super("scatter");
+        }
 
         @Override
         public Builder configure(IConfig config)

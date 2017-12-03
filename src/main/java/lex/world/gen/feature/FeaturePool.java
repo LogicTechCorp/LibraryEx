@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeaturePool extends AbstractFeature
+public class FeaturePool extends FeatureLibEx
 {
     protected IBlockState blockToSpawn;
     protected IBlockState blockToSurround;
@@ -145,10 +145,15 @@ public class FeaturePool extends AbstractFeature
         }
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeaturePool>
+    public static class Builder extends LibExFeatureBuilder
     {
         protected IBlockState blockToSpawn;
         protected IBlockState blockToSurround;
+
+        public Builder()
+        {
+            super("pool");
+        }
 
         @Override
         public Builder configure(IConfig config)

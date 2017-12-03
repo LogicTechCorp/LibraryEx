@@ -17,15 +17,16 @@
 
 package lex.world.gen.feature;
 
-import lex.config.IConfig;
+import lex.LibEx;
 import lex.util.NumberHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
 import java.util.Random;
 
-public abstract class AbstractFeature extends WorldGenerator implements IFeature
+public abstract class FeatureLibEx extends WorldGenerator implements IFeature
 {
     protected int generationAttempts;
     protected boolean randomizeGenerationAttempts;
@@ -33,7 +34,7 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
     protected int minHeight;
     protected int maxHeight;
 
-    AbstractFeature(AbstractBuilder builder)
+    protected FeatureLibEx(FeatureBuilder builder)
     {
         generationAttempts = builder.generationAttempts;
         randomizeGenerationAttempts = builder.randomizeGenerationAttempts;
@@ -92,39 +93,11 @@ public abstract class AbstractFeature extends WorldGenerator implements IFeature
         return maxHeight;
     }
 
-    public abstract static class AbstractBuilder<B extends AbstractBuilder<B, F>, F extends IFeature> implements IFeatureBuilder<B, F>
+    public static abstract class LibExFeatureBuilder extends FeatureBuilder
     {
-        protected int generationAttempts;
-        protected boolean randomizeGenerationAttempts;
-        protected float generationProbability;
-        protected int minHeight;
-        protected int maxHeight;
-
-        @Override
-        public B configure(IConfig config)
+        public LibExFeatureBuilder(String name)
         {
-            generationAttempts = config.getInt("generationAttempts", 8);
-            randomizeGenerationAttempts = config.getBoolean("randomizeGenerationAttempts", false);
-            generationProbability = config.getFloat("generationProbability", 1.0F);
-            minHeight = config.getInt("minHeight", 32);
-            maxHeight = config.getInt("maxHeight", 96);
-
-            if(generationAttempts < 0)
-            {
-                generationAttempts = (generationAttempts * -1);
-            }
-            if(generationProbability < 0)
-            {
-                generationProbability = (generationProbability * -1.0F);
-            }
-            if(minHeight > maxHeight)
-            {
-                int minHeightHolder = minHeight;
-                minHeight = maxHeight;
-                maxHeight = minHeightHolder;
-            }
-
-            return (B) this;
+            setRegistryName(new ResourceLocation(LibEx.MOD_ID + ":" + name));
         }
     }
 }

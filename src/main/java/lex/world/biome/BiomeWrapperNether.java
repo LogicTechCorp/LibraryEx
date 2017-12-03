@@ -19,18 +19,24 @@ package lex.world.biome;
 
 import lex.config.IConfig;
 import net.minecraft.init.Biomes;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-public class EndBiomeWrapper extends AbstractBiomeWrapper
+public class BiomeWrapperNether extends BiomeWrapperLibEx
 {
-    EndBiomeWrapper(Builder builder)
+    BiomeWrapperNether(Builder builder)
     {
         super(builder);
     }
 
-    public static class Builder extends AbstractBuilder<Builder, EndBiomeWrapper>
+    public static class Builder extends LibExBiomeWrapperBuilder
     {
+        public Builder()
+        {
+            super("nether");
+        }
+
         @Override
         public Builder configure(IConfig config)
         {
@@ -38,20 +44,21 @@ public class EndBiomeWrapper extends AbstractBiomeWrapper
 
             if(biome == null)
             {
-                biome = Biomes.SKY;
+                biome = Biomes.HELL;
             }
 
+            blocks.put("oceanBlock", config.getBlock("oceanBlock", Blocks.LAVA.getDefaultState()));
             blocks.put("wallBlock", config.getBlock("wallBlock", biome.fillerBlock));
-            blocks.put("islandBottomBlock", config.getBlock("islandBottomBlock", biome.fillerBlock));
-            blocks.put("islandFillerBlock", config.getBlock("islandFillerBlock", biome.fillerBlock));
+            blocks.put("ceilingBottomBlock", config.getBlock("ceilingBottomBlock", biome.fillerBlock));
+            blocks.put("ceilingFillerBlock", config.getBlock("ceilingFillerBlock", biome.fillerBlock));
             super.configure(config);
             return this;
         }
 
         @Override
-        public EndBiomeWrapper create()
+        public BiomeWrapperNether create()
         {
-            return new EndBiomeWrapper(this);
+            return new BiomeWrapperNether(this);
         }
     }
 }

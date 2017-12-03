@@ -23,15 +23,20 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-public class OverworldBiomeWrapper extends AbstractBiomeWrapper
+public class BiomeWrapperOverworld extends BiomeWrapperLibEx
 {
-    OverworldBiomeWrapper(Builder builder)
+    BiomeWrapperOverworld(Builder builder)
     {
         super(builder);
     }
 
-    public static class Builder extends AbstractBuilder<Builder, OverworldBiomeWrapper>
+    public static class Builder extends LibExBiomeWrapperBuilder
     {
+        public Builder()
+        {
+            super("overworld");
+        }
+
         @Override
         public Builder configure(IConfig config)
         {
@@ -48,9 +53,9 @@ public class OverworldBiomeWrapper extends AbstractBiomeWrapper
         }
 
         @Override
-        public OverworldBiomeWrapper create()
+        public BiomeWrapperOverworld create()
         {
-            return new OverworldBiomeWrapper(this);
+            return new BiomeWrapperOverworld(this);
         }
     }
 }

@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureFluid extends AbstractFeature
+public class FeatureFluid extends FeatureLibEx
 {
     protected IBlockState blockToSpawn;
     protected IBlockState blockToTarget;
@@ -116,11 +116,16 @@ public class FeatureFluid extends AbstractFeature
         }
     }
 
-    public static class Builder extends AbstractBuilder<Builder, FeatureFluid>
+    public static class Builder extends LibExFeatureBuilder
     {
         protected IBlockState blockToSpawn;
         protected IBlockState blockToTarget;
         protected boolean hidden;
+
+        public Builder()
+        {
+            super("fluid");
+        }
 
         @Override
         public Builder configure(IConfig config)

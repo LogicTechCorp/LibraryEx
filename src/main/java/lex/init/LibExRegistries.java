@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.biome;
+package lex.init;
 
-import lex.config.IConfig;
+import lex.world.biome.BiomeWrapperBuilder;
+import lex.world.gen.feature.FeatureBuilder;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
-public interface IBiomeWrapperBuilder<B extends IBiomeWrapperBuilder<B, F>, F extends IBiomeWrapper>
+public class LibExRegistries
 {
-    B configure(IConfig config);
-
-    F create();
+    public static final IForgeRegistry<FeatureBuilder> FEATURE_BUILDERS = GameRegistry.findRegistry(FeatureBuilder.class);
+    public static final IForgeRegistry<BiomeWrapperBuilder> BIOME_WRAPPER_BUILDERS = GameRegistry.findRegistry(BiomeWrapperBuilder.class);
 }
