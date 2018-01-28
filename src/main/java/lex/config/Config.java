@@ -23,6 +23,9 @@ import lex.util.BlockStateHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ import java.util.Map;
 
 import static lex.util.ConfigHelper.*;
 
-public abstract class AbstractConfig implements IConfig
+public abstract class Config implements IConfig
 {
     protected static final JsonParser JSON_PARSER = new JsonParser();
 
@@ -139,6 +142,12 @@ public abstract class AbstractConfig implements IConfig
     }
 
     @Override
+    public void remove(String key)
+    {
+        ELEMENTS.remove(key);
+    }
+
+    @Override
     public String getString(String key, String fallbackValue)
     {
         String value = getString(key);
@@ -185,7 +194,7 @@ public abstract class AbstractConfig implements IConfig
     {
         boolean value = getBoolean(key);
 
-        if(!has(key) || (has(key) && !isObject(get(key))))
+        if(!has(key) || (has(key) && !isBoolean(get(key))))
         {
             addFallback(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
@@ -209,23 +218,54 @@ public abstract class AbstractConfig implements IConfig
     }
 
     @Override
+    public ResourceLocation getResource(String key, ResourceLocation fallbackValue)
+    {
+        ResourceLocation value = getResource(key);
+
+        if(value == null)
+        {
+            addFallback(key, new JsonPrimitive(fallbackValue.toString()));
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
         IBlockState value = getBlock(key);
 
         if(value == null)
         {
-            JsonObject object = new JsonObject();
+            JsonObject block = new JsonObject();
             JsonObject properties = new JsonObject();
-            object.addProperty("block", fallbackValue.getBlock().getRegistryName().toString());
+            block.addProperty("block", fallbackValue.getBlock().getRegistryName().toString());
 
             for(Map.Entry<IProperty<?>, Comparable<?>> entry : fallbackValue.getProperties().entrySet())
             {
                 properties.addProperty(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
             }
 
-            object.add("properties", properties);
-            addFallback(key, object);
+            block.add("properties", properties);
+            addFallback(key, block);
+            return fallbackValue;
+        }
+
+        return value;
+    }
+
+    @Override
+    public ItemStack getItem(String key, ItemStack fallbackValue)
+    {
+        ItemStack value = getItem(key);
+
+        if(value.isEmpty())
+        {
+            JsonObject item = new JsonObject();
+            item.addProperty("item", fallbackValue.getItem().getRegistryName().toString());
+            item.addProperty("meta", fallbackValue.getItemDamage());
+            addFallback(key, item);
             return fallbackValue;
         }
 
@@ -337,6 +377,17 @@ public abstract class AbstractConfig implements IConfig
     }
 
     @Override
+    public ResourceLocation getResource(String key)
+    {
+        if(has(key) && isString(get(key)))
+        {
+            return new ResourceLocation(getString(key));
+        }
+
+        return null;
+    }
+
+    @Override
     public IBlockState getBlock(String key)
     {
         JsonObject object;
@@ -387,6 +438,34 @@ public abstract class AbstractConfig implements IConfig
         }
 
         return null;
+    }
+
+    @Override
+    public ItemStack getItem(String key)
+    {
+        IConfig config = getInnerConfig(key);
+
+        if(config != null && config.has("item") && isString(config.get("item")))
+        {
+            Item item = Item.getByNameOrId(config.getString("item"));
+            int meta = config.getInt("meta", 0);
+
+            if(item != null)
+            {
+                if(meta < 0)
+                {
+                    meta = 0;
+                }
+                else if(meta > 15)
+                {
+                    meta = 15;
+                }
+
+                return new ItemStack(item, 1, meta);
+            }
+        }
+
+        return ItemStack.EMPTY;
     }
 
     @Override

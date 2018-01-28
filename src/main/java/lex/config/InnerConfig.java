@@ -19,7 +19,7 @@ package lex.config;
 
 import com.google.gson.JsonObject;
 
-public class InnerConfig extends AbstractConfig
+public class InnerConfig extends Config
 {
     public InnerConfig(String jsonString)
     {

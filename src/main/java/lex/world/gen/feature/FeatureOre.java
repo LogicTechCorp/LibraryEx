@@ -27,23 +27,28 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureOre extends FeatureLibEx
+public class FeatureOre extends Feature
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToReplace;
-    protected int veinSize;
+    private IBlockState blockToSpawn;
+    private IBlockState blockToReplace;
+    private int veinSize;
 
-    FeatureOre(Builder builder)
+    public FeatureOre(IConfig config)
     {
-        super(builder);
-        blockToSpawn = builder.blockToSpawn;
-        blockToReplace = builder.blockToReplace;
-        veinSize = builder.veinSize;
+        super(config);
+        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        blockToReplace = config.getBlock("blockToReplace", Blocks.BARRIER.getDefaultState());
+        veinSize = config.getInt("veinSize", 8);
     }
 
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
+        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToReplace.getBlock() == Blocks.BARRIER)
+        {
+            return false;
+        }
+
         float f = rand.nextFloat() * (float) Math.PI;
         double d0 = (double) ((float) pos.getX() + MathHelper.sin(f) * (float) veinSize / 8.0F);
         double d1 = (double) ((float) pos.getX() - MathHelper.sin(f) * (float) veinSize / 8.0F);
@@ -102,33 +107,5 @@ public class FeatureOre extends FeatureLibEx
         }
 
         return true;
-    }
-
-    public static class Builder extends LibExFeatureBuilder
-    {
-        protected IBlockState blockToSpawn;
-        protected IBlockState blockToReplace;
-        protected int veinSize;
-
-        public Builder()
-        {
-            super("ore");
-        }
-
-        @Override
-        public Builder configure(IConfig config)
-        {
-            super.configure(config);
-            blockToSpawn = config.getBlock("blockToSpawn", Blocks.STONE.getDefaultState());
-            blockToReplace = config.getBlock("blockToReplace", Blocks.AIR.getDefaultState());
-            veinSize = config.getInt("veinSize", 8);
-            return this;
-        }
-
-        @Override
-        public FeatureOre create()
-        {
-            return new FeatureOre(this);
-        }
     }
 }

@@ -26,21 +26,26 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeaturePool extends FeatureLibEx
+public class FeaturePool extends Feature
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToSurround;
+    private IBlockState blockToSpawn;
+    private IBlockState blockToSurround;
 
-    FeaturePool(Builder builder)
+    public FeaturePool(IConfig config)
     {
-        super(builder);
-        blockToSpawn = builder.blockToSpawn;
-        blockToSurround = builder.blockToSurround;
+        super(config);
+        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
     }
 
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
+        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToSurround.getBlock() == Blocks.BARRIER)
+        {
+            return false;
+        }
+
         for(pos = pos.add(-8, 0, -8); pos.getY() > minHeight && world.isAirBlock(pos); pos = pos.down())
         {
 
@@ -142,32 +147,6 @@ public class FeaturePool extends FeatureLibEx
             }
 
             return true;
-        }
-    }
-
-    public static class Builder extends LibExFeatureBuilder
-    {
-        protected IBlockState blockToSpawn;
-        protected IBlockState blockToSurround;
-
-        public Builder()
-        {
-            super("pool");
-        }
-
-        @Override
-        public Builder configure(IConfig config)
-        {
-            super.configure(config);
-            blockToSpawn = config.getBlock("blockToSpawn", Blocks.STONE.getDefaultState());
-            blockToSurround = config.getBlock("blockToSurround", Blocks.AIR.getDefaultState());
-            return this;
-        }
-
-        @Override
-        public FeaturePool create()
-        {
-            return new FeaturePool(this);
         }
     }
 }

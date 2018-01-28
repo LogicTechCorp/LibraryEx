@@ -25,23 +25,28 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureFluid extends FeatureLibEx
+public class FeatureFluid extends Feature
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
-    protected boolean hidden;
+    private IBlockState blockToSpawn;
+    private IBlockState blockToTarget;
+    private boolean hidden;
 
-    FeatureFluid(Builder builder)
+    public FeatureFluid(IConfig config)
     {
-        super(builder);
-        blockToSpawn = builder.blockToSpawn;
-        blockToTarget = builder.blockToTarget;
-        hidden = builder.hidden;
+        super(config);
+        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
+        hidden = config.getBoolean("hidden", true);
     }
 
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
+        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToTarget.getBlock() == Blocks.BARRIER)
+        {
+            return false;
+        }
+
         if(world.getBlockState(pos.up()) != blockToTarget)
         {
             return false;
@@ -113,34 +118,6 @@ public class FeatureFluid extends FeatureLibEx
             }
 
             return true;
-        }
-    }
-
-    public static class Builder extends LibExFeatureBuilder
-    {
-        protected IBlockState blockToSpawn;
-        protected IBlockState blockToTarget;
-        protected boolean hidden;
-
-        public Builder()
-        {
-            super("fluid");
-        }
-
-        @Override
-        public Builder configure(IConfig config)
-        {
-            super.configure(config);
-            blockToSpawn = config.getBlock("blockToSpawn", Blocks.STONE.getDefaultState());
-            blockToTarget = config.getBlock("blockToTarget", Blocks.AIR.getDefaultState());
-            hidden = config.getBoolean("hidden", false);
-            return this;
-        }
-
-        @Override
-        public FeatureFluid create()
-        {
-            return new FeatureFluid(this);
         }
     }
 }

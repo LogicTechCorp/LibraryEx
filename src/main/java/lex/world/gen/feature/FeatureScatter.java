@@ -27,23 +27,28 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScatter extends FeatureLibEx
+public class FeatureScatter extends Feature
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
-    protected Placement placement;
+    private IBlockState blockToSpawn;
+    private IBlockState blockToTarget;
+    private Placement placement;
 
-    FeatureScatter(Builder builder)
+    public FeatureScatter(IConfig config)
     {
-        super(builder);
-        blockToSpawn = builder.blockToSpawn;
-        blockToTarget = builder.blockToTarget;
-        placement = builder.placement;
+        super(config);
+        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
+        placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
     }
 
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
+        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToTarget.getBlock() == Blocks.BARRIER)
+        {
+            return false;
+        }
+
         for(int i = 0; i < 64; ++i)
         {
             BlockPos newPos = pos.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
@@ -65,33 +70,5 @@ public class FeatureScatter extends FeatureLibEx
         }
 
         return true;
-    }
-
-    public static class Builder extends LibExFeatureBuilder
-    {
-        protected IBlockState blockToSpawn;
-        protected IBlockState blockToTarget;
-        protected Placement placement;
-
-        public Builder()
-        {
-            super("scatter");
-        }
-
-        @Override
-        public Builder configure(IConfig config)
-        {
-            super.configure(config);
-            blockToSpawn = config.getBlock("blockToSpawn", Blocks.STONE.getDefaultState());
-            blockToTarget = config.getBlock("blockToTarget", Blocks.AIR.getDefaultState());
-            placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
-            return this;
-        }
-
-        @Override
-        public FeatureScatter create()
-        {
-            return new FeatureScatter(this);
-        }
     }
 }

@@ -17,16 +17,22 @@
 
 package lex.world.biome;
 
+import lex.config.IConfig;
 import lex.world.gen.GenerationStage;
 import lex.world.gen.feature.IFeature;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
 
 public interface IBiomeWrapper
 {
+    void parse(IConfig config);
+
     Biome getBiome();
+
+    int getWeight();
 
     IBlockState getBlock(String key, IBlockState fallbackValue);
 
@@ -34,7 +40,9 @@ public interface IBiomeWrapper
 
     List<IBlockState> getBlocks();
 
-    int getWeight();
+    List<Biome.SpawnListEntry> getSpawnListEntries(EnumCreatureType creatureType);
 
     List<IFeature> getFeatureList(GenerationStage generationStage);
+
+    IConfig getConfig();
 }

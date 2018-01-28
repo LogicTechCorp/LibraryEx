@@ -17,16 +17,15 @@
 
 package lex.world.gen.feature;
 
-import lex.LibEx;
+import lex.config.IConfig;
 import lex.util.NumberHelper;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
 import java.util.Random;
 
-public abstract class FeatureLibEx extends WorldGenerator implements IFeature
+public abstract class Feature extends WorldGenerator implements IFeature
 {
     protected int generationAttempts;
     protected boolean randomizeGenerationAttempts;
@@ -34,13 +33,19 @@ public abstract class FeatureLibEx extends WorldGenerator implements IFeature
     protected int minHeight;
     protected int maxHeight;
 
-    protected FeatureLibEx(FeatureBuilder builder)
+    public Feature(IConfig config)
     {
-        generationAttempts = builder.generationAttempts;
-        randomizeGenerationAttempts = builder.randomizeGenerationAttempts;
-        generationProbability = builder.generationProbability;
-        minHeight = builder.minHeight;
-        maxHeight = builder.maxHeight;
+        parse(config);
+    }
+
+    @Override
+    public void parse(IConfig config)
+    {
+        generationAttempts = config.getInt("generationAttempts", 4);
+        randomizeGenerationAttempts = config.getBoolean("randomizeGenerationAttempts", false);
+        generationProbability = config.getFloat("generationProbability", 1.0F);
+        minHeight = config.getInt("minHeight", 16);
+        maxHeight = config.getInt("maxHeight", 112);
     }
 
     @Override
@@ -91,13 +96,5 @@ public abstract class FeatureLibEx extends WorldGenerator implements IFeature
     public int getMaxHeight()
     {
         return maxHeight;
-    }
-
-    public static abstract class LibExFeatureBuilder extends FeatureBuilder
-    {
-        public LibExFeatureBuilder(String name)
-        {
-            setRegistryName(new ResourceLocation(LibEx.MOD_ID + ":" + name));
-        }
     }
 }

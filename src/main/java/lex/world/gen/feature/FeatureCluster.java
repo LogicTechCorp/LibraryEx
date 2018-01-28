@@ -26,23 +26,28 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureCluster extends FeatureLibEx
+public class FeatureCluster extends Feature
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToAttachTo;
-    protected EnumFacing direction;
+    private IBlockState blockToSpawn;
+    private IBlockState blockToAttachTo;
+    private EnumFacing direction;
 
-    FeatureCluster(Builder builder)
+    public FeatureCluster(IConfig config)
     {
-        super(builder);
-        blockToSpawn = builder.blockToSpawn;
-        blockToAttachTo = builder.blockToAttachTo;
-        direction = builder.direction;
+        super(config);
+        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        blockToAttachTo = config.getBlock("blockToAttachTo", Blocks.BARRIER.getDefaultState());
+        direction = config.getEnum("direction", EnumFacing.class, EnumFacing.DOWN);
     }
 
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
+        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToAttachTo.getBlock() == Blocks.BARRIER)
+        {
+            return false;
+        }
+
         if(!world.isAirBlock(pos))
         {
             return false;
@@ -107,34 +112,6 @@ public class FeatureCluster extends FeatureLibEx
             }
 
             return true;
-        }
-    }
-
-    public static class Builder extends LibExFeatureBuilder
-    {
-        protected IBlockState blockToSpawn;
-        protected IBlockState blockToAttachTo;
-        protected EnumFacing direction;
-
-        public Builder()
-        {
-            super("cluster");
-        }
-
-        @Override
-        public Builder configure(IConfig config)
-        {
-            super.configure(config);
-            blockToSpawn = config.getBlock("blockToSpawn", Blocks.STONE.getDefaultState());
-            blockToAttachTo = config.getBlock("blockToAttachTo", Blocks.AIR.getDefaultState());
-            direction = config.getEnum("direction", EnumFacing.class, EnumFacing.DOWN);
-            return this;
-        }
-
-        @Override
-        public FeatureCluster create()
-        {
-            return new FeatureCluster(this);
         }
     }
 }

@@ -17,7 +17,12 @@
 
 package lex;
 
+import lex.config.FileConfig;
+import lex.config.IConfig;
 import lex.proxy.IProxy;
+import lex.util.ConfigHelper;
+import lex.world.biome.BiomeWrapper;
+import lex.world.biome.IBiomeWrapper;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -49,10 +54,14 @@ public class LibEx
     @SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
     public static IProxy proxy;
 
-    private static final Logger LOGGER = LogManager.getLogger("LibEx|Main");
+    public static final Logger LOGGER = LogManager.getLogger("LibEx");
 
     static
     {
+        IConfig test = new FileConfig(new File(CONFIG_DIRECTORY, "Lex/test.json"));
+        IBiomeWrapper wrapper = new BiomeWrapper(test);
+        ConfigHelper.saveConfig(test, new File(CONFIG_DIRECTORY, "Lex/test.json"));
+
         FluidRegistry.enableUniversalBucket();
     }
 

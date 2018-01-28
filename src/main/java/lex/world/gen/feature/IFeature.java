@@ -17,6 +17,7 @@
 
 package lex.world.gen.feature;
 
+import lex.config.IConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,6 +25,8 @@ import java.util.Random;
 
 public interface IFeature
 {
+    void parse(IConfig config);
+
     boolean generate(World world, Random rand, BlockPos pos);
 
     int getGenerationAttempts();

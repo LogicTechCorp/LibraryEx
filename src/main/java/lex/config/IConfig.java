@@ -20,6 +20,8 @@ package lex.config;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public interface IConfig
 
     Map<String, JsonElement> getElements();
 
+    void remove(String key);
+
     boolean isSavable();
 
     String getString(String key, String fallbackValue);
@@ -48,7 +52,11 @@ public interface IConfig
 
     <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue);
 
+    ResourceLocation getResource(String key, ResourceLocation fallbackValue);
+
     IBlockState getBlock(String key, IBlockState fallbackValue);
+
+    ItemStack getItem(String key, ItemStack fallbackValue);
 
     IConfig getInnerConfig(String key, JsonObject defaultValue);
 
@@ -64,7 +72,11 @@ public interface IConfig
 
     <E extends Enum> E getEnum(String key, Class<? extends E> enumClass);
 
+    ResourceLocation getResource(String key);
+
     IBlockState getBlock(String key);
+
+    ItemStack getItem(String key);
 
     IConfig getInnerConfig(String key);
 
