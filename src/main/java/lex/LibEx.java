@@ -58,10 +58,6 @@ public class LibEx
 
     static
     {
-        IConfig test = new FileConfig(new File(CONFIG_DIRECTORY, "Lex/test.json"));
-        IBiomeWrapper wrapper = new BiomeWrapper(test);
-        ConfigHelper.saveConfig(test, new File(CONFIG_DIRECTORY, "Lex/test.json"));
-
         FluidRegistry.enableUniversalBucket();
     }
 

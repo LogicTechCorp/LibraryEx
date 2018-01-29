@@ -52,14 +52,19 @@ public class BiomeWrapper implements IBiomeWrapper
 
     public BiomeWrapper(IConfig configIn)
     {
-        parse(configIn);
+        biome = ForgeRegistries.BIOMES.getValue(configIn.getResource("biome"));
+
+        if(biome != null)
+        {
+            parse(configIn);
+        }
+
         config = configIn;
     }
 
     @Override
     public void parse(IConfig config)
     {
-        biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
         weight = config.getInt("weight", 10);
         IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
         List<IConfig> entityConfigs = config.getInnerConfigs("entities", new ArrayList<>());
@@ -107,6 +112,7 @@ public class BiomeWrapper implements IBiomeWrapper
                     }
                     else if(entityName == null)
                     {
+                        entityObjects.add(entityConfig.compose().getAsJsonObject());
                         continue entryLoop;
                     }
                 }
@@ -155,16 +161,17 @@ public class BiomeWrapper implements IBiomeWrapper
 
         for(IConfig featureConfig : featureConfigs)
         {
-            if(isString(featureConfig.get("feature")) && isString(featureConfig.get("generationStage")) && featureConfig.getBoolean("generate", true))
+            if(isString(featureConfig.get("feature")) && isString(featureConfig.get("generationStage")))
             {
                 IFeature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
                 GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class, GenerationStage.POST_DECORATE);
 
-                if(feature != null)
+                if(feature != null && featureConfig.getBoolean("generate", true))
                 {
                     generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
-                    featureObjects.add(featureConfig.compose().getAsJsonObject());
                 }
+
+                featureObjects.add(featureConfig.compose().getAsJsonObject());
             }
         }
 
