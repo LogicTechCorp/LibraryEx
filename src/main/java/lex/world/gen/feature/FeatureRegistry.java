@@ -51,7 +51,6 @@ public class FeatureRegistry
             }
             catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
             {
-                LibEx.LOGGER.warn("The, {}, feature class does not have a public constructor with a parameter of IConfig!", name.toString());
                 e.printStackTrace();
             }
         }

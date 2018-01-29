@@ -408,32 +408,36 @@ public abstract class Config implements IConfig
             if(isString(blockName))
             {
                 Block block = Block.getBlockFromName(blockName.getAsJsonPrimitive().getAsString());
-                IBlockState state = block.getDefaultState();
 
-                if(object.has("properties"))
+                if(block != null)
                 {
-                    JsonElement properties = object.get("properties");
+                    IBlockState state = block.getDefaultState();
 
-                    if(isObject(properties))
+                    if(object.has("properties"))
                     {
-                        for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
+                        JsonElement properties = object.get("properties");
+
+                        if(isObject(properties))
                         {
-                            IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
-
-                            if(property != null && isString(entry.getValue()))
+                            for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
                             {
-                                Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
+                                IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
 
-                                if(propertyValue != null)
+                                if(property != null && isString(entry.getValue()))
                                 {
-                                    state = state.withProperty(property, propertyValue);
+                                    Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
+
+                                    if(propertyValue != null)
+                                    {
+                                        state = state.withProperty(property, propertyValue);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                return state;
+                    return state;
+                }
             }
         }
 

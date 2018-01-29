@@ -69,15 +69,8 @@ public class BiomeWrapper implements IBiomeWrapper
         IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
         List<IConfig> entityConfigs = config.getInnerConfigs("entities", new ArrayList<>());
         List<IConfig> featureConfigs = config.getInnerConfigs("features", new ArrayList<>());
-
-        if(!blockConfig.has("topBlock"))
-        {
-            blockConfig.getBlock("topBlock", biome.topBlock);
-        }
-        if(!blockConfig.has("fillerBlock"))
-        {
-            blockConfig.getBlock("fillerBlock", biome.fillerBlock);
-        }
+        blockConfig.getBlock("topBlock", biome.topBlock);
+        blockConfig.getBlock("fillerBlock", biome.fillerBlock);
 
         for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
         {
@@ -110,11 +103,9 @@ public class BiomeWrapper implements IBiomeWrapper
                         entityObjects.add(entityObject);
                         continue entryLoop;
                     }
-                    else if(entityName == null)
-                    {
-                        entityObjects.add(entityConfig.compose().getAsJsonObject());
-                        continue entryLoop;
-                    }
+
+                    entityObjects.add(entityConfig.compose().getAsJsonObject());
+                    continue entryLoop;
                 }
 
                 JsonObject entityObject = new JsonObject();

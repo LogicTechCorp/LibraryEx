@@ -17,12 +17,7 @@
 
 package lex;
 
-import lex.config.FileConfig;
-import lex.config.IConfig;
 import lex.proxy.IProxy;
-import lex.util.ConfigHelper;
-import lex.world.biome.BiomeWrapper;
-import lex.world.biome.IBiomeWrapper;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
