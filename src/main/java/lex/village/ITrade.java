@@ -15,21 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.util;
+package lex.village;
 
-import java.util.Random;
+import lex.config.IConfig;
 
-public class NumberHelper
+public interface ITrade
 {
-    private static final Random RAND = new Random();
+    void parse(IConfig config);
 
-    public static int getNumberInRange(int min, int max, Random rand)
-    {
-        return rand.nextInt(max - min + 1) + min;
-    }
+    int getTradeLevel();
 
-    public static Random getRand()
-    {
-        return RAND;
-    }
+    IConfig getConfig();
 }
