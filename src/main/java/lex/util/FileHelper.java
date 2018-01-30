@@ -17,68 +17,115 @@
 
 package lex.util;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+
 import java.io.*;
-import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.Iterator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class FileHelper
 {
-    public static void extractFromJar(URL resource, String destinationPath)
+    public static void copyDirectoryToDirectory(File sourceDirectory, File destinationDirectory)
     {
-        String fromPath = resource.getPath().substring(1);
-
-        if(resource != null && resource.getProtocol().equals("jar"))
+        if(sourceDirectory != null && destinationDirectory != null)
         {
+            String sourcePath = sourceDirectory.getPath();
+            String destinationPath = destinationDirectory.getPath();
+            URL resource = null;
+
             try
             {
-                JarURLConnection jarURLConnection = (JarURLConnection) resource.openConnection();
-                ZipFile zipFile = jarURLConnection.getJarFile();
-                Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+                resource = sourceDirectory.toURI().toURL();
+            }
+            catch(MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
 
-                while(zipEntries.hasMoreElements())
+            if(resource != null)
+            {
+                if(resource.getProtocol().equals("jar"))
                 {
-                    ZipEntry zipEntry = zipEntries.nextElement();
-                    String zipName = zipEntry.getName();
-
-                    if(!zipName.startsWith(fromPath))
+                    try
                     {
-                        continue;
-                    }
+                        JarFile jar = new JarFile(sourceDirectory);
+                        Enumeration<? extends JarEntry> jarEntries = jar.entries();
 
-                    String pathTail = zipName.substring(fromPath.length());
-                    File file = new File(destinationPath + File.separator + pathTail);
-
-                    if(!file.exists())
-                    {
-                        if(zipEntry.isDirectory())
+                        while(jarEntries.hasMoreElements())
                         {
-                            file.mkdir();
-                        }
-                        else
-                        {
-                            InputStream inputStream = zipFile.getInputStream(zipEntry);
-                            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
-                            byte buffer[] = new byte[4096];
-                            int count;
+                            File jarFile = new File(jarEntries.nextElement().toString());
+                            File destinationFile = new File(destinationPath, jarFile.getName());
 
-                            while((count = inputStream.read(buffer)) > 0)
+                            if(!destinationFile.exists())
                             {
-                                outputStream.write(buffer, 0, count);
+                                if(getFileExtension(destinationFile).equals(""))
+                                {
+                                    destinationFile.mkdirs();
+                                }
+                                else
+                                {
+                                    copyFile(jarFile, destinationFile);
+                                }
                             }
+                        }
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(resource.getProtocol().equals("file"))
+                {
+                    Iterator<File> fileIter = FileUtils.listFilesAndDirs(sourceDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).iterator();
 
-                            inputStream.close();
-                            outputStream.close();
+                    while(fileIter.hasNext())
+                    {
+                        File file = fileIter.next();
+                        File destinationFile = new File(destinationPath, file.getPath().substring(sourcePath.length()));
+
+                        if(!destinationFile.exists())
+                        {
+                            if(getFileExtension(destinationFile).equals(""))
+                            {
+                                destinationFile.mkdirs();
+                            }
+                            else
+                            {
+                                copyFile(file, destinationFile);
+                            }
                         }
                     }
                 }
             }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
+        }
+    }
+
+    public static String getFileExtension(File file)
+    {
+        int dotIndex = file.getName().lastIndexOf('.');
+        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
+    }
+
+    private static void copyFile(File sourceFile, File destinationFile)
+    {
+        try
+        {
+            InputStream inputStream = new FileInputStream(sourceFile);
+            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destinationFile));
+            IOUtils.copy(inputStream, outputStream);
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }

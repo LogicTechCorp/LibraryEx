@@ -34,10 +34,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.util.Strings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static lex.util.ConfigHelper.isString;
 
@@ -87,25 +84,27 @@ public class BiomeWrapper implements IBiomeWrapper
             entryLoop:
             for(Biome.SpawnListEntry entry : biome.getSpawnableList(creatureType))
             {
-                for(IConfig entityConfig : entityConfigs)
+                ResourceLocation entityName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
+                boolean containsEntry = false;
+
+                ListIterator<IConfig> configIter = entityConfigs.listIterator();
+
+                while(configIter.hasNext())
                 {
-                    ResourceLocation entityName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
+                    IConfig entityConfig = configIter.next();
 
                     if(entityName != null && entityConfig.getString("entity").equals(entityName.toString()))
                     {
-                        JsonObject entityObject = new JsonObject();
-                        entityObject.addProperty("entity", entityConfig.getString("entity"));
-                        entityObject.addProperty("creatureType", entityConfig.getEnum("creatureType", EnumCreatureType.class, EnumCreatureType.CREATURE).toString().toLowerCase());
-                        entityObject.addProperty("weight", entityConfig.getInt("weight"));
-                        entityObject.addProperty("minGroupCount", entityConfig.getInt("minGroupCount"));
-                        entityObject.addProperty("maxGroupCount", entityConfig.getInt("maxGroupCount"));
-                        entityObject.addProperty("spawn", entityConfig.getBoolean("spawn", false));
-                        entityObjects.add(entityObject);
-                        continue entryLoop;
+                        containsEntry = true;
                     }
 
                     entityObjects.add(entityConfig.compose().getAsJsonObject());
-                    continue entryLoop;
+                    configIter.remove();
+
+                    if(containsEntry)
+                    {
+                        continue entryLoop;
+                    }
                 }
 
                 JsonObject entityObject = new JsonObject();
@@ -161,9 +160,9 @@ public class BiomeWrapper implements IBiomeWrapper
                 {
                     generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
                 }
-
-                featureObjects.add(featureConfig.compose().getAsJsonObject());
             }
+
+            featureObjects.add(featureConfig.compose().getAsJsonObject());
         }
 
         config.remove("features");
