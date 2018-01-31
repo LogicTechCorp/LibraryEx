@@ -15,16 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.village;
+package lex.util;
 
-import lex.config.IConfig;
-import net.minecraft.village.MerchantRecipe;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-public interface ITrade
+public class NBTHelper
 {
-    MerchantRecipe randomize();
+    public static ItemStack setTag(ItemStack stack)
+    {
+        if(stack.getTagCompound() == null)
+        {
+            stack.setTagCompound(new NBTTagCompound());
+        }
 
-    int getTradeLevel();
+        return stack;
+    }
 
-    IConfig getConfig();
+    public static ItemStack setTag(ItemStack stack, NBTTagCompound compound)
+    {
+        if(stack.getTagCompound() == null)
+        {
+            stack.setTagCompound(compound);
+        }
+        else
+        {
+            stack.getTagCompound().merge(compound);
+        }
+
+        return stack;
+    }
 }

@@ -20,12 +20,21 @@ package lex.config;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import lex.util.BlockStateHelper;
+import lex.util.NBTHelper;
+import lex.util.NumberHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
@@ -194,7 +203,7 @@ public abstract class Config implements IConfig
     {
         boolean value = getBoolean(key);
 
-        if(!has(key) || (has(key) && !isBoolean(get(key))))
+        if(!isBoolean(get(key)))
         {
             addFallback(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
@@ -308,7 +317,7 @@ public abstract class Config implements IConfig
     @Override
     public String getString(String key)
     {
-        if(has(key) && isString(get(key)))
+        if(isString(get(key)))
         {
             return get(key).getAsJsonPrimitive().getAsString();
         }
@@ -321,7 +330,7 @@ public abstract class Config implements IConfig
     @Override
     public int getInt(String key)
     {
-        if(has(key) && isInt(get(key)))
+        if(isInt(get(key)))
         {
             return get(key).getAsJsonPrimitive().getAsInt();
         }
@@ -334,7 +343,7 @@ public abstract class Config implements IConfig
     @Override
     public float getFloat(String key)
     {
-        if(has(key) && isFloat(get(key)))
+        if(isFloat(get(key)))
         {
             return get(key).getAsJsonPrimitive().getAsFloat();
         }
@@ -347,7 +356,7 @@ public abstract class Config implements IConfig
     @Override
     public boolean getBoolean(String key)
     {
-        if(has(key) && isBoolean(get(key)))
+        if(isBoolean(get(key)))
         {
             return get(key).getAsJsonPrimitive().getAsBoolean();
         }
@@ -360,7 +369,7 @@ public abstract class Config implements IConfig
     @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
-        if(has(key) && isString(get(key)))
+        if(isString(get(key)))
         {
             String enumIdentifier = get(key).getAsJsonPrimitive().getAsString();
 
@@ -379,7 +388,7 @@ public abstract class Config implements IConfig
     @Override
     public ResourceLocation getResource(String key)
     {
-        if(has(key) && isString(get(key)))
+        if(isString(get(key)))
         {
             return new ResourceLocation(getString(key));
         }
@@ -392,7 +401,7 @@ public abstract class Config implements IConfig
     {
         JsonObject object;
 
-        if(has(key) && isObject(get(key)))
+        if(isObject(get(key)))
         {
             object = get(key).getAsJsonObject();
         }
@@ -401,43 +410,50 @@ public abstract class Config implements IConfig
             return null;
         }
 
-        if(object.has("block"))
+        JsonElement blockName = null;
+
+        if(isString(object.get("block")))
         {
-            JsonElement blockName = object.get("block");
+            blockName = object.get("block");
 
-            if(isString(blockName))
+        }
+        else if(isString(object.get("itemBlock")))
+        {
+            blockName = object.get("itemBlock");
+        }
+
+        if(blockName != null)
+        {
+            Block block = Block.getBlockFromName(blockName.getAsJsonPrimitive().getAsString());
+
+            if(block != null)
             {
-                Block block = Block.getBlockFromName(blockName.getAsJsonPrimitive().getAsString());
+                IBlockState state = block.getDefaultState();
 
-                if(block != null)
+                if(object.has("properties"))
                 {
-                    IBlockState state = block.getDefaultState();
+                    JsonElement properties = object.get("properties");
 
-                    if(object.has("properties"))
+                    if(isObject(properties))
                     {
-                        JsonElement properties = object.get("properties");
-
-                        if(isObject(properties))
+                        for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
                         {
-                            for(Map.Entry<String, JsonElement> entry : properties.getAsJsonObject().entrySet())
+                            IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
+
+                            if(property != null && isString(entry.getValue()))
                             {
-                                IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
+                                Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
 
-                                if(property != null && isString(entry.getValue()))
+                                if(propertyValue != null)
                                 {
-                                    Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue().getAsJsonPrimitive().getAsString());
-
-                                    if(propertyValue != null)
-                                    {
-                                        state = state.withProperty(property, propertyValue);
-                                    }
+                                    state = state.withProperty(property, propertyValue);
                                 }
                             }
                         }
                     }
-
-                    return state;
                 }
+
+                return state;
             }
         }
 
@@ -447,29 +463,97 @@ public abstract class Config implements IConfig
     @Override
     public ItemStack getItem(String key)
     {
-        IConfig config = getInnerConfig(key);
+        IConfig itemConfig = getInnerConfig(key);
+        ItemStack stack = ItemStack.EMPTY;
 
-        if(config != null && config.has("item") && isString(config.get("item")))
+        if(itemConfig != null)
         {
-            Item item = Item.getByNameOrId(config.getString("item"));
-            int meta = config.getInt("meta", 0);
+            ResourceLocation item = null;
+
+            if(isString(itemConfig.get("item")))
+            {
+                item = itemConfig.getResource("item");
+            }
+            else if(isString(itemConfig.get("itemBlock")))
+            {
+                item = itemConfig.getResource("itemBlock");
+            }
 
             if(item != null)
             {
-                if(meta < 0)
+                int meta = itemConfig.getInt("meta", 0);
+
+                if(ForgeRegistries.ITEMS.containsKey(item))
                 {
-                    meta = 0;
+                    stack = new ItemStack(Item.getByNameOrId(item.toString()), 1, meta);
                 }
-                else if(meta > 15)
+                else if(ForgeRegistries.BLOCKS.containsKey(item))
                 {
-                    meta = 15;
+                    IBlockState state = getBlock(key);
+                    Block block = state.getBlock();
+                    stack = new ItemStack(block, 1, block.getMetaFromState(state));
                 }
 
-                return new ItemStack(item, 1, meta);
+                if(!stack.isEmpty())
+                {
+                    if(isString(itemConfig.get("displayName")))
+                    {
+                        stack.setStackDisplayName(itemConfig.getString("displayName"));
+                    }
+
+                    IConfig loreConfig = getInnerConfig("lore");
+
+                    if(loreConfig != null && loreConfig.getElements().size() > 0)
+                    {
+                        NBTHelper.setTag(stack);
+                        NBTTagList loreList = new NBTTagList();
+
+                        for(Map.Entry<String, JsonElement> entry : loreConfig.getElements().entrySet())
+                        {
+                            if(isString(entry.getValue()))
+                            {
+                                loreList.appendTag(new NBTTagString(entry.getValue().getAsJsonPrimitive().getAsString()));
+                            }
+                        }
+
+                        NBTTagCompound displayCompound = new NBTTagCompound();
+                        displayCompound.setTag("Lore", loreList);
+                        NBTTagCompound compound = new NBTTagCompound();
+                        compound.setTag("display", displayCompound);
+                        NBTHelper.setTag(stack, compound);
+                    }
+
+                    List<IConfig> enchantmentConfigs = itemConfig.getInnerConfigs("enchantments");
+
+                    if(enchantmentConfigs != null)
+                    {
+                        for(IConfig enchantmentConfig : enchantmentConfigs)
+                        {
+                            if(isString(enchantmentConfig.get("enchantment")))
+                            {
+                                Enchantment enchantment = Enchantment.getEnchantmentByLocation(enchantmentConfig.getString("enchantment"));
+
+                                if(enchantment != null)
+                                {
+                                    int enchantmentLevel = NumberHelper.getNumberInRange(enchantmentConfig.getInt("minEnchantmentLevel", 1), enchantmentConfig.getInt("minEnchantmentLevel", 3), NumberHelper.getRand());
+
+                                    if(stack.getItem() instanceof ItemEnchantedBook)
+                                    {
+                                        ItemEnchantedBook.addEnchantment(stack, new EnchantmentData(enchantment, enchantmentLevel));
+                                    }
+                                    else
+                                    {
+                                        stack.addEnchantment(enchantment, enchantmentLevel);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        return ItemStack.EMPTY;
+        return stack;
     }
 
     @Override
@@ -479,7 +563,7 @@ public abstract class Config implements IConfig
         {
             return INNER_CONFIGS.get(key);
         }
-        else if(has(key) && isObject(get(key)))
+        else if(isObject(get(key)))
         {
             InnerConfig config = new InnerConfig(get(key).getAsJsonObject());
             INNER_CONFIGS.put(key, config);
@@ -492,7 +576,7 @@ public abstract class Config implements IConfig
     @Override
     public List<IConfig> getInnerConfigs(String key)
     {
-        if(has(key) && isArray(get(key)))
+        if(isArray(get(key)))
         {
             JsonArray array = get(key).getAsJsonArray();
             List<IConfig> innerConfigs = new ArrayList<>();
@@ -532,7 +616,7 @@ public abstract class Config implements IConfig
     @Override
     public List<String> getStrings(String key)
     {
-        if(has(key) && isArray(get(key)))
+        if(isArray(get(key)))
         {
             JsonArray array = get(key).getAsJsonArray();
             List<String> strings = new ArrayList<>();

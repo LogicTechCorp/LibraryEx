@@ -28,8 +28,6 @@ import java.util.List;
 
 public interface IBiomeWrapper
 {
-    void parse(IConfig config);
-
     Biome getBiome();
 
     int getWeight();
@@ -42,7 +40,7 @@ public interface IBiomeWrapper
 
     List<Biome.SpawnListEntry> getSpawnListEntries(EnumCreatureType creatureType);
 
-    List<IFeature> getFeatureList(GenerationStage generationStage);
+    List<IFeature> getFeatures(GenerationStage generationStage);
 
     IConfig getConfig();
 }

@@ -50,17 +50,11 @@ public class BiomeWrapper implements IBiomeWrapper
     public BiomeWrapper(IConfig configIn)
     {
         biome = ForgeRegistries.BIOMES.getValue(configIn.getResource("biome"));
-
-        if(biome != null)
-        {
-            parse(configIn);
-        }
-
         config = configIn;
+        parse();
     }
 
-    @Override
-    public void parse(IConfig config)
+    protected void parse()
     {
         weight = config.getInt("weight", 10);
         IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
@@ -215,7 +209,7 @@ public class BiomeWrapper implements IBiomeWrapper
     }
 
     @Override
-    public List<IFeature> getFeatureList(GenerationStage generationStage)
+    public List<IFeature> getFeatures(GenerationStage generationStage)
     {
         return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
     }

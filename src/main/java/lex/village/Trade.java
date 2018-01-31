@@ -29,20 +29,37 @@ public class Trade extends MerchantRecipe implements ITrade
 
     public Trade(IConfig configIn)
     {
-        super(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, 0, 0);
-        parse(configIn);
+        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7));
         config = configIn;
+        parse();
+    }
+
+    protected void parse()
+    {
+        tradeLevel = config.getInt("tradeLevel", 1);
     }
 
     @Override
-    public void parse(IConfig config)
+    public MerchantRecipe randomize()
     {
-        itemToBuy = config.getItem("inputOne");
-        secondItemToBuy = config.getItem("inputTwo");
-        itemToSell = config.getItem("output");
-        maxTradeUses = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
-        rewardsExp = config.getBoolean("rewardExp", true);
-        tradeLevel = config.getInt("tradeLevel", 1);
+        ItemStack outputStack = getItemToSell().copy();
+        ItemStack inputOneStack = getItemToBuy().copy();
+        ItemStack inputTwoStack = getSecondItemToBuy().copy();
+        int tradesAvailable = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
+
+        IConfig outputConfig = config.getInnerConfig("output");
+        IConfig inputOneConfig = config.getInnerConfig("inputOne");
+        IConfig inputTwoConfig = config.getInnerConfig("inputTwo");
+
+        outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
+        inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
+
+        if(inputTwoConfig != null)
+        {
+            inputTwoStack.setCount(NumberHelper.getNumberInRange(inputTwoConfig.getInt("minStackSize", 1), inputTwoConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
+        }
+
+        return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);
     }
 
     @Override
