@@ -27,7 +27,6 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.template.Template;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,7 +153,24 @@ public class Structure extends Pattern implements IStructure
                 {
                     char character = sections.get(characterIndex);
                     BlockPos sectionPos = new BlockPos(layer.getRows().indexOf(row), layers.indexOf(layer), characterIndex);
-                    BlockPos placementPos = Template.getZeroPositionWithTransform(pos.add(sectionPos), mirror, rotation, size.getX(), size.getZ());
+                    BlockPos placementPos;
+
+                    if(rotation == Rotation.NONE)
+                    {
+                        placementPos = new BlockPos(pos.getX() + sectionPos.getZ(), pos.getY() + sectionPos.getY(), pos.getZ() + sectionPos.getX());
+                    }
+                    else if(rotation == Rotation.CLOCKWISE_90)
+                    {
+                        placementPos = new BlockPos(pos.getX() - sectionPos.getX(), pos.getY() + sectionPos.getY(), pos.getZ() + sectionPos.getZ());
+                    }
+                    else if(rotation == Rotation.CLOCKWISE_180)
+                    {
+                        placementPos = new BlockPos(pos.getX() - sectionPos.getZ(), pos.getY() + sectionPos.getY(), pos.getZ() - sectionPos.getX());
+                    }
+                    else
+                    {
+                        placementPos = new BlockPos(pos.getX() + sectionPos.getX(), pos.getY() + sectionPos.getY(), pos.getZ() - sectionPos.getZ());
+                    }
 
                     if(blocks.containsKey(character))
                     {
