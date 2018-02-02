@@ -15,25 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.structure;
+package lex.pattern;
 
-import lex.config.IConfig;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import java.util.List;
 
-public interface IStructure
+public interface IRow
 {
-    void addBlock(Character character, IBlockState state);
+    void addSection(char character);
 
-    void addEntity(Character character, Class<? extends Entity> cls);
-
-    void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation);
-
-    BlockPos getSize();
-
-    IConfig getConfig();
+    List<Character> getSections();
 }

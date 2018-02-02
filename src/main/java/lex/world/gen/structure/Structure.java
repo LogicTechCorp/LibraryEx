@@ -19,6 +19,7 @@ package lex.world.gen.structure;
 
 import com.google.gson.JsonElement;
 import lex.config.IConfig;
+import lex.pattern.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -33,11 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Structure implements IStructure
+public class Structure extends Pattern implements IStructure
 {
-    private Map<String, IBlockState> blocks = new HashMap<>();
-    private Map<String, Class<? extends Entity>> entities = new HashMap<>();
-    private Map<BlockPos, String> layers = new HashMap<>();
+    private Map<Character, IBlockState> blocks = new HashMap<>();
+    private Map<Character, Class<? extends Entity>> entities = new HashMap<>();
     private BlockPos size = BlockPos.ORIGIN;
     private IConfig config;
 
@@ -55,48 +55,75 @@ public class Structure implements IStructure
 
         for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
         {
+            String character = entry.getKey();
             IBlockState state = blockConfig.getBlock(entry.getKey());
 
-            if(state != null)
+            if(state != null && character.length() == 1)
             {
-                addBlock(entry.getKey(), state);
+                addBlock(character.charAt(0), state);
             }
         }
 
         for(Map.Entry<String, JsonElement> entry : entityConfig.getElements().entrySet())
         {
+            String character = entry.getKey();
             Class<? extends Entity> entity = EntityList.getClassFromName(entityConfig.getInnerConfig(entry.getKey()).getString("entity"));
 
-            if(entity != null)
+            if(entity != null && character.length() == 1)
             {
-                addEntity(entry.getKey(), entity);
+                addEntity(character.charAt(0), entity);
             }
         }
 
         for(IConfig layerConfig : layerConfigs)
         {
-            int level = layerConfig.getInt("level");
-            List<String> segments = layerConfig.getStrings("segments");
+            List<IRow> rows = new ArrayList<>();
 
-            if(segments != null)
+            for(String section : layerConfig.getStrings("sections", new ArrayList<>()))
             {
-                addLayer(segments.toArray(new String[segments.size()]), level);
+                IRow row = new Row();
+
+                for(Character character : section.toCharArray())
+                {
+                    row.addSection(character);
+                }
+
+                rows.add(row);
             }
+
+            addLayer(new Layer(rows));
         }
 
-        for(BlockPos pos : layers.keySet())
+
+        int x = 0;
+        int y = layers.size();
+        int z = 0;
+
+        for(ILayer layer : layers)
         {
-            if(pos.getX() > size.getX() || pos.getY() > size.getY() || pos.getZ() > size.getZ())
+            int rowAmount = layer.getRows().size();
+
+            if(rowAmount > x)
             {
-                size = pos;
+                x = rowAmount;
+            }
+
+            for(IRow row : layer.getRows())
+            {
+                int rowSize = row.getSections().size();
+
+                if(rowSize > z)
+                {
+                    z = rowSize;
+                }
             }
         }
 
-        size = size.add(1, 1, 1);
+        size = new BlockPos(x, y, z);
     }
 
     @Override
-    public void addBlock(String character, IBlockState state)
+    public void addBlock(Character character, IBlockState state)
     {
         if(!blocks.containsKey(character))
         {
@@ -105,7 +132,7 @@ public class Structure implements IStructure
     }
 
     @Override
-    public void addEntity(String character, Class<? extends Entity> cls)
+    public void addEntity(Character character, Class<? extends Entity> cls)
     {
         if(!entities.containsKey(character))
         {
@@ -113,38 +140,36 @@ public class Structure implements IStructure
         }
     }
 
-    @Override
-    public void addLayer(String[] layer, int level)
-    {
-        for(int x = 0; x < layer.length; x++)
-        {
-            for(int z = 0; z < layer[x].length(); z++)
-            {
-                layers.put(new BlockPos(x, level, z), layer[x].substring(z, z + 1));
-            }
-        }
-    }
 
     @Override
     public void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation)
     {
-        for(Map.Entry<BlockPos, String> entry : layers.entrySet())
+        for(ILayer layer : layers)
         {
-            String character = entry.getValue();
-            BlockPos placementPos = Template.getZeroPositionWithTransform(pos.add(entry.getKey()), mirror, rotation, size.getX(), size.getZ());
-
-            if(blocks.containsKey(character))
+            for(IRow row : layer.getRows())
             {
-                world.setBlockState(placementPos, blocks.get(character).withMirror(mirror).withRotation(rotation));
-            }
-            else if(entities.containsKey(character))
-            {
-                Entity entity = EntityList.newEntity(entities.get(character), world);
+                List<Character> sections = row.getSections();
 
-                if(entity != null)
+                for(int characterIndex = 0; characterIndex < sections.size(); characterIndex++)
                 {
-                    entity.setPosition(placementPos.getX() + 0.5F, placementPos.getY(), placementPos.getZ() + 0.5F);
-                    world.spawnEntity(entity);
+                    char character = sections.get(characterIndex);
+                    BlockPos sectionPos = new BlockPos(layer.getRows().indexOf(row), layers.indexOf(layer), characterIndex);
+                    BlockPos placementPos = Template.getZeroPositionWithTransform(pos.add(sectionPos), mirror, rotation, size.getX(), size.getZ());
+
+                    if(blocks.containsKey(character))
+                    {
+                        world.setBlockState(placementPos, blocks.get(character).withMirror(mirror).withRotation(rotation));
+                    }
+                    else if(entities.containsKey(character))
+                    {
+                        Entity entity = EntityList.newEntity(entities.get(character), world);
+
+                        if(entity != null)
+                        {
+                            entity.setPosition(placementPos.getX() + 0.5F, placementPos.getY(), placementPos.getZ() + 0.5F);
+                            world.spawnEntity(entity);
+                        }
+                    }
                 }
             }
         }

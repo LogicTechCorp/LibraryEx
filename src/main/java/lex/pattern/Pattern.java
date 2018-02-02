@@ -15,25 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.structure;
+package lex.pattern;
 
-import lex.config.IConfig;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import com.google.common.collect.ImmutableList;
 
-public interface IStructure
+import java.util.ArrayList;
+import java.util.List;
+
+public class Pattern implements IPattern
 {
-    void addBlock(Character character, IBlockState state);
+    protected List<ILayer> layers;
 
-    void addEntity(Character character, Class<? extends Entity> cls);
+    public Pattern()
+    {
+        this(new ArrayList<>());
+    }
 
-    void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation);
+    public Pattern(List<ILayer> layersIn)
+    {
+        layers = layersIn;
+    }
 
-    BlockPos getSize();
+    @Override
+    public void addLayer(ILayer layer)
+    {
+        layers.add(layer);
+    }
 
-    IConfig getConfig();
+    @Override
+    public List<ILayer> getLayers()
+    {
+        return ImmutableList.copyOf(layers);
+    }
 }
