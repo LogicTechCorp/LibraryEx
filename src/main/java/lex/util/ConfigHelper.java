@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lex.LibEx;
-import lex.config.IConfig;
+import lex.api.config.IConfig;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

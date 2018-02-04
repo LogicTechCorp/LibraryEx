@@ -15,29 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.feature;
+package lex.api.pattern;
 
-import lex.config.IConfig;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import com.google.common.collect.ImmutableList;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface IFeature
+public class Pattern implements IPattern
 {
-    void parse(IConfig config);
+    protected List<ILayer> layers;
 
-    boolean generate(World world, Random rand, BlockPos pos);
+    public Pattern()
+    {
+        this(new ArrayList<>());
+    }
 
-    int getGenerationAttempts();
+    public Pattern(List<ILayer> layersIn)
+    {
+        layers = layersIn;
+    }
 
-    int getGenerationAttempts(Random rand);
+    @Override
+    public void addLayer(ILayer layer)
+    {
+        layers.add(layer);
+    }
 
-    boolean randomizeGenerationAttempts();
-
-    float getGenerationProbability();
-
-    int getMinHeight();
-
-    int getMaxHeight();
+    @Override
+    public List<ILayer> getLayers()
+    {
+        return ImmutableList.copyOf(layers);
+    }
 }

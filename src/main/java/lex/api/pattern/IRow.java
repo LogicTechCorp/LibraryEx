@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.config;
+package lex.api.pattern;
 
-import com.google.gson.JsonObject;
-import lex.api.config.Config;
+import java.util.List;
 
-public class InnerConfig extends Config
+public interface IRow
 {
-    public InnerConfig(String jsonString)
-    {
-        parse(jsonString);
-    }
+    void addSection(char character);
 
-    public InnerConfig(JsonObject object)
-    {
-        this(object.toString());
-    }
-
-    @Override
-    public boolean isSavable()
-    {
-        return false;
-    }
+    List<Character> getSections();
 }

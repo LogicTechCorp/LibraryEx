@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.config;
+package lex.api.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
+import lex.config.InnerConfig;
 import lex.util.BlockStateHelper;
 import lex.util.NBTHelper;
 import lex.util.NumberHelper;

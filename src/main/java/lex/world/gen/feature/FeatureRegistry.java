@@ -18,7 +18,9 @@
 package lex.world.gen.feature;
 
 import lex.LibEx;
-import lex.config.IConfig;
+import lex.api.config.IConfig;
+import lex.api.world.gen.feature.Feature;
+import lex.api.world.gen.feature.IFeature;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.reflect.InvocationTargetException;

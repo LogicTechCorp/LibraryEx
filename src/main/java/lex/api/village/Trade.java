@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.pattern;
+package lex.api.village;
 
-import java.util.List;
+import net.minecraft.item.ItemStack;
+import net.minecraft.village.MerchantRecipe;
 
-public interface ILayer
+public abstract class Trade extends MerchantRecipe implements ITrade
 {
-    void addRow(IRow row);
+    protected int tradeLevel;
 
-    List<IRow> getRows();
+    public Trade(ItemStack inputOne, ItemStack inputTwo, ItemStack output, int toolUses, int maxTradesAvailable, int tradeLevelIn)
+    {
+        super(inputOne, inputTwo, output, toolUses, maxTradesAvailable);
+        tradeLevel = tradeLevelIn;
+    }
+
+    @Override
+    public int getTradeLevel()
+    {
+        return tradeLevel;
+    }
 }

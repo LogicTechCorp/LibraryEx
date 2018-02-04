@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.config;
+package lex.api.config;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

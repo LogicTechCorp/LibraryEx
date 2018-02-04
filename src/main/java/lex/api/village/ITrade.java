@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.pattern;
+package lex.api.village;
 
-import java.util.List;
+import net.minecraft.village.MerchantRecipe;
 
-public interface IPattern
+public interface ITrade
 {
-    void addLayer(ILayer layer);
+    MerchantRecipe randomize();
 
-    List<ILayer> getLayers();
+    int getTradeLevel();
 }

@@ -15,36 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.pattern;
+package lex.api.world.biome;
 
-import com.google.common.collect.ImmutableList;
+import lex.api.world.gen.feature.IFeature;
+import lex.world.gen.GenerationStage;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.biome.Biome;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Row implements IRow
+public interface IBiomeWrapper
 {
-    protected List<Character> sections;
+    Biome getBiome();
 
-    public Row()
-    {
-        this(new ArrayList<>());
-    }
+    int getWeight();
 
-    public Row(List<Character> sectionsIn)
-    {
-        sections = sectionsIn;
-    }
+    IBlockState getBlock(String key, IBlockState fallbackValue);
 
-    @Override
-    public void addSection(char character)
-    {
-        sections.add(character);
-    }
+    IBlockState getBlock(String key);
 
-    @Override
-    public List<Character> getSections()
-    {
-        return ImmutableList.copyOf(sections);
-    }
+    List<IBlockState> getBlocks();
+
+    List<IFeature> getFeatures(GenerationStage generationStage);
 }

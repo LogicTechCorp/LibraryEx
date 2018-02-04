@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.config;
+package lex.api.world.gen.feature;
 
-import com.google.gson.JsonObject;
-import lex.api.config.Config;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class InnerConfig extends Config
+import java.util.Random;
+
+public interface IFeature
 {
-    public InnerConfig(String jsonString)
-    {
-        parse(jsonString);
-    }
 
-    public InnerConfig(JsonObject object)
-    {
-        this(object.toString());
-    }
+    boolean generate(World world, Random rand, BlockPos pos);
 
-    @Override
-    public boolean isSavable()
-    {
-        return false;
-    }
+    int getGenAttempts();
+
+    int getGenAttempts(Random rand);
+
+    float getGenProbability();
+
+    boolean randomizeGenAttempts();
+
+    int getMinHeight();
+
+    int getMaxHeight();
 }

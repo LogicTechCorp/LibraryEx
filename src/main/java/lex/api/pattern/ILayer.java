@@ -15,36 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.pattern;
+package lex.api.pattern;
 
-import com.google.common.collect.ImmutableList;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class Pattern implements IPattern
+public interface ILayer
 {
-    protected List<ILayer> layers;
+    void addRow(IRow row);
 
-    public Pattern()
-    {
-        this(new ArrayList<>());
-    }
-
-    public Pattern(List<ILayer> layersIn)
-    {
-        layers = layersIn;
-    }
-
-    @Override
-    public void addLayer(ILayer layer)
-    {
-        layers.add(layer);
-    }
-
-    @Override
-    public List<ILayer> getLayers()
-    {
-        return ImmutableList.copyOf(layers);
-    }
+    List<IRow> getRows();
 }

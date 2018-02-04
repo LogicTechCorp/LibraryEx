@@ -19,6 +19,7 @@ package lex.config;
 
 import com.google.gson.JsonObject;
 import lex.LibEx;
+import lex.api.config.Config;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

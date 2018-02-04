@@ -15,36 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.pattern;
+package lex.world.gen.feature;
 
-import com.google.common.collect.ImmutableList;
+import lex.api.config.IConfig;
+import lex.api.world.gen.feature.Feature;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Layer implements ILayer
+public abstract class FeatureLibEx extends Feature
 {
-    protected List<IRow> rows;
-
-    public Layer()
+    public FeatureLibEx(IConfig config)
     {
-        this(new ArrayList<>());
-    }
+        super(config.getInt("genAttempts", 4), config.getFloat("genProbability", 1.0F), config.getBoolean("randomizeGenAttempts", false), config.getInt("minHeight", 16), config.getInt("maxHeight", 112));
 
-    public Layer(List<IRow> rowsIn)
-    {
-        rows = rowsIn;
-    }
-
-    @Override
-    public void addRow(IRow row)
-    {
-        rows.add(row);
-    }
-
-    @Override
-    public List<IRow> getRows()
-    {
-        return ImmutableList.copyOf(rows);
     }
 }

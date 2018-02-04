@@ -17,7 +17,8 @@
 
 package lex.world.gen.feature;
 
-import lex.config.IConfig;
+import lex.api.config.IConfig;
+import lex.api.world.gen.feature.Feature;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;

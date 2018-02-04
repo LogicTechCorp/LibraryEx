@@ -15,16 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.village;
+package lex.api.pattern;
 
-import lex.config.IConfig;
-import net.minecraft.village.MerchantRecipe;
+import com.google.common.collect.ImmutableList;
 
-public interface ITrade
+import java.util.ArrayList;
+import java.util.List;
+
+public class Row implements IRow
 {
-    MerchantRecipe randomize();
+    protected List<Character> sections;
 
-    int getTradeLevel();
+    public Row()
+    {
+        this(new ArrayList<>());
+    }
 
-    IConfig getConfig();
+    public Row(List<Character> sectionsIn)
+    {
+        sections = sectionsIn;
+    }
+
+    @Override
+    public void addSection(char character)
+    {
+        sections.add(character);
+    }
+
+    @Override
+    public List<Character> getSections()
+    {
+        return ImmutableList.copyOf(sections);
+    }
 }

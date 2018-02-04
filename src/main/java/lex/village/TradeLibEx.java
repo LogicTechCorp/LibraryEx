@@ -17,26 +17,21 @@
 
 package lex.village;
 
-import lex.config.IConfig;
+import lex.api.config.IConfig;
+import lex.api.village.ITrade;
+import lex.api.village.Trade;
 import lex.util.NumberHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
-public class Trade extends MerchantRecipe implements ITrade
+public class TradeLibEx extends Trade implements ITrade
 {
-    private int tradeLevel;
     private IConfig config;
 
-    public Trade(IConfig configIn)
+    public TradeLibEx(IConfig configIn)
     {
-        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7));
+        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7), configIn.getInt("tradeLevel", 1));
         config = configIn;
-        parse();
-    }
-
-    protected void parse()
-    {
-        tradeLevel = config.getInt("tradeLevel", 1);
     }
 
     @Override
@@ -66,11 +61,5 @@ public class Trade extends MerchantRecipe implements ITrade
     public int getTradeLevel()
     {
         return tradeLevel;
-    }
-
-    @Override
-    public IConfig getConfig()
-    {
-        return config;
     }
 }

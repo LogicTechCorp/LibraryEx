@@ -15,32 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.biome;
-
-import lex.config.IConfig;
-import lex.world.gen.GenerationStage;
-import lex.world.gen.feature.IFeature;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.biome.Biome;
+package lex.api.pattern;
 
 import java.util.List;
 
-public interface IBiomeWrapper
+public interface IPattern
 {
-    Biome getBiome();
+    void addLayer(ILayer layer);
 
-    int getWeight();
-
-    IBlockState getBlock(String key, IBlockState fallbackValue);
-
-    IBlockState getBlock(String key);
-
-    List<IBlockState> getBlocks();
-
-    List<Biome.SpawnListEntry> getSpawnListEntries(EnumCreatureType creatureType);
-
-    List<IFeature> getFeatures(GenerationStage generationStage);
-
-    IConfig getConfig();
+    List<ILayer> getLayers();
 }

@@ -15,111 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.structure;
+package lex.api.world.gen.structure;
 
-import com.google.gson.JsonElement;
-import lex.config.IConfig;
-import lex.pattern.*;
+import lex.api.pattern.ILayer;
+import lex.api.pattern.IRow;
+import lex.api.pattern.Pattern;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Structure extends Pattern implements IStructure
+public abstract class Structure extends Pattern implements IStructure
 {
-    private Map<Character, IBlockState> blocks = new HashMap<>();
-    private Map<Character, Class<? extends Entity>> entities = new HashMap<>();
-    private BlockPos size = BlockPos.ORIGIN;
-    private IConfig config;
-
-    public Structure(IConfig configIn)
-    {
-        config = configIn;
-        parse();
-    }
-
-    private void parse()
-    {
-        IConfig blockConfig = config.getInnerConfig("blocks");
-        IConfig entityConfig = config.getInnerConfig("entities");
-        List<IConfig> layerConfigs = config.getInnerConfigs("layers", new ArrayList<>());
-
-        for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
-        {
-            String character = entry.getKey();
-            IBlockState state = blockConfig.getBlock(entry.getKey());
-
-            if(state != null && character.length() == 1)
-            {
-                addBlock(character.charAt(0), state);
-            }
-        }
-
-        for(Map.Entry<String, JsonElement> entry : entityConfig.getElements().entrySet())
-        {
-            String character = entry.getKey();
-            Class<? extends Entity> entity = EntityList.getClassFromName(entityConfig.getInnerConfig(entry.getKey()).getString("entity"));
-
-            if(entity != null && character.length() == 1)
-            {
-                addEntity(character.charAt(0), entity);
-            }
-        }
-
-        for(IConfig layerConfig : layerConfigs)
-        {
-            List<IRow> rows = new ArrayList<>();
-
-            for(String section : layerConfig.getStrings("sections", new ArrayList<>()))
-            {
-                IRow row = new Row();
-
-                for(Character character : section.toCharArray())
-                {
-                    row.addSection(character);
-                }
-
-                rows.add(row);
-            }
-
-            addLayer(new Layer(rows));
-        }
-
-
-        int x = 0;
-        int y = layers.size();
-        int z = 0;
-
-        for(ILayer layer : layers)
-        {
-            int rowAmount = layer.getRows().size();
-
-            if(rowAmount > x)
-            {
-                x = rowAmount;
-            }
-
-            for(IRow row : layer.getRows())
-            {
-                int rowSize = row.getSections().size();
-
-                if(rowSize > z)
-                {
-                    z = rowSize;
-                }
-            }
-        }
-
-        size = new BlockPos(x, y, z);
-    }
+    protected Map<Character, IBlockState> blocks = new HashMap<>();
+    protected Map<Character, Class<? extends Entity>> entities = new HashMap<>();
+    protected ResourceLocation name;
+    protected BlockPos size = BlockPos.ORIGIN;
 
     @Override
     public void addBlock(Character character, IBlockState state)
@@ -192,14 +111,14 @@ public class Structure extends Pattern implements IStructure
     }
 
     @Override
-    public BlockPos getSize()
+    public ResourceLocation getName()
     {
-        return size;
+        return name;
     }
 
     @Override
-    public IConfig getConfig()
+    public BlockPos getSize()
     {
-        return config;
+        return size;
     }
 }

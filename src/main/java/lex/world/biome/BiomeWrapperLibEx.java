@@ -17,13 +17,13 @@
 
 package lex.world.biome;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lex.config.IConfig;
+import lex.api.config.IConfig;
+import lex.api.world.biome.BiomeWrapper;
+import lex.api.world.gen.feature.IFeature;
 import lex.world.gen.GenerationStage;
 import lex.world.gen.feature.FeatureRegistry;
-import lex.world.gen.feature.IFeature;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -34,27 +34,25 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.logging.log4j.util.Strings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static lex.util.ConfigHelper.isString;
 
-public class BiomeWrapper implements IBiomeWrapper
+public class BiomeWrapperLibEx extends BiomeWrapper
 {
-    private Biome biome;
-    private int weight;
-    private Map<String, IBlockState> blocks = new HashMap<>();
-    private Map<EnumCreatureType, List<Biome.SpawnListEntry>> spawnListEntries = new HashMap<>();
-    private Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
     private IConfig config;
 
-    public BiomeWrapper(IConfig configIn)
+    public BiomeWrapperLibEx(IConfig configIn)
     {
-        biome = ForgeRegistries.BIOMES.getValue(configIn.getResource("biome"));
+        super(ForgeRegistries.BIOMES.getValue(configIn.getResource("biome")), configIn.getInt("weight"));
         config = configIn;
         parse();
     }
 
-    protected void parse()
+    private void parse()
     {
         weight = config.getInt("weight", 10);
         IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
@@ -81,7 +79,7 @@ public class BiomeWrapper implements IBiomeWrapper
                 ResourceLocation entityName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
                 boolean containsEntry = false;
 
-                ListIterator<IConfig> configIter = entityConfigs.listIterator();
+                Iterator<IConfig> configIter = entityConfigs.iterator();
 
                 while(configIter.hasNext())
                 {
@@ -112,6 +110,11 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
+        for(EnumCreatureType creatureType : EnumCreatureType.values())
+        {
+            biome.getSpawnableList(creatureType).clear();
+        }
+
         config.remove("entities");
         entityConfigs = config.getInnerConfigs("entities", entityObjects);
 
@@ -134,7 +137,7 @@ public class BiomeWrapper implements IBiomeWrapper
                             int weight = entityConfig.getInt("weight", 10);
                             int minGroupCount = entityConfig.getInt("minGroupCount", 1);
                             int maxGroupCount = entityConfig.getInt("maxGroupCount", 4);
-                            spawnListEntries.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
+                            biome.getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
                         }
                     }
                 }
@@ -164,18 +167,6 @@ public class BiomeWrapper implements IBiomeWrapper
     }
 
     @Override
-    public Biome getBiome()
-    {
-        return biome;
-    }
-
-    @Override
-    public int getWeight()
-    {
-        return weight;
-    }
-
-    @Override
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
         IBlockState value = getBlock(key);
@@ -188,35 +179,5 @@ public class BiomeWrapper implements IBiomeWrapper
         }
 
         return value;
-    }
-
-    @Override
-    public IBlockState getBlock(String key)
-    {
-        return blocks.get(key);
-    }
-
-    @Override
-    public List<IBlockState> getBlocks()
-    {
-        return ImmutableList.copyOf(blocks.values());
-    }
-
-    @Override
-    public List<Biome.SpawnListEntry> getSpawnListEntries(EnumCreatureType creatureType)
-    {
-        return ImmutableList.copyOf(spawnListEntries.computeIfAbsent(creatureType, k -> new ArrayList<>()));
-    }
-
-    @Override
-    public List<IFeature> getFeatures(GenerationStage generationStage)
-    {
-        return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
-    }
-
-    @Override
-    public IConfig getConfig()
-    {
-        return config;
     }
 }

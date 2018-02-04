@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.structure;
+package lex.api.world.gen.structure;
 
-import lex.config.IConfig;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,7 +33,7 @@ public interface IStructure
 
     void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation);
 
-    BlockPos getSize();
+    ResourceLocation getName();
 
-    IConfig getConfig();
+    BlockPos getSize();
 }
