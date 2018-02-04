@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScatter extends Feature
+public class FeatureScatter extends FeatureLibEx
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;

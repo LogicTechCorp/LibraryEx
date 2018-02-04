@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeaturePool extends Feature
+public class FeaturePool extends FeatureLibEx
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToSurround;

@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureFluid extends Feature
+public class FeatureFluid extends FeatureLibEx
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
