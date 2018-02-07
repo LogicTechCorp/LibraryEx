@@ -56,8 +56,6 @@ public class BiomeWrapperLibEx extends BiomeWrapper
     {
         weight = config.getInt("weight", 10);
         IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
-        List<IConfig> entityConfigs = config.getInnerConfigs("entities", new ArrayList<>());
-        List<IConfig> featureConfigs = config.getInnerConfigs("features", new ArrayList<>());
         blockConfig.getBlock("topBlock", biome.topBlock);
         blockConfig.getBlock("fillerBlock", biome.fillerBlock);
 
@@ -69,6 +67,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
             }
         }
 
+        List<IConfig> entityConfigs = config.getInnerConfigs("entities", new ArrayList<>());
         List<JsonObject> entityObjects = new ArrayList<>();
 
         for(EnumCreatureType creatureType : EnumCreatureType.values())
@@ -144,6 +143,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
             }
         }
 
+        List<IConfig> featureConfigs = config.getInnerConfigs("features", new ArrayList<>());
         List<JsonObject> featureObjects = new ArrayList<>();
 
         for(IConfig featureConfig : featureConfigs)
