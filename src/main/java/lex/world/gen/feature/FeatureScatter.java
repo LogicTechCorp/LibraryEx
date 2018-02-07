@@ -18,7 +18,6 @@
 package lex.world.gen.feature;
 
 import lex.api.config.IConfig;
-import lex.api.world.gen.feature.Feature;
 import lex.world.gen.Placement;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;

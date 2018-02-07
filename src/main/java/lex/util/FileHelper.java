@@ -25,7 +25,6 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -82,11 +81,8 @@ public class FileHelper
                 }
                 else if(resource.getProtocol().equals("file"))
                 {
-                    Iterator<File> fileIter = FileUtils.listFilesAndDirs(sourceDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).iterator();
-
-                    while(fileIter.hasNext())
+                    for(File file : FileUtils.listFilesAndDirs(sourceDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
                     {
-                        File file = fileIter.next();
                         File destinationFile = new File(destinationPath, file.getPath().substring(sourcePath.length()));
 
                         if(!destinationFile.exists())

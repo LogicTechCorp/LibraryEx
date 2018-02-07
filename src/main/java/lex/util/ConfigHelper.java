@@ -22,11 +22,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lex.LibEx;
 import lex.api.config.IConfig;
+import lex.config.FileConfig;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigHelper
 {
@@ -52,6 +56,24 @@ public class ConfigHelper
                 e.printStackTrace();
             }
         }
+    }
+
+    public static List<IConfig> getFileConfigs(File directory)
+    {
+        List<IConfig> configs = new ArrayList<>();
+
+        if(directory.exists())
+        {
+            for(File file : FileUtils.listFilesAndDirs(directory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
+            {
+                if(FileHelper.getFileExtension(file).equals("json"))
+                {
+                    configs.add(new FileConfig(file));
+                }
+            }
+        }
+
+        return configs;
     }
 
     public static boolean isString(JsonElement element)

@@ -41,7 +41,7 @@ public abstract class Structure extends Pattern implements IStructure
     protected BlockPos size = BlockPos.ORIGIN;
 
     @Override
-    public void addBlock(Character character, IBlockState state)
+    public void addBlock(char character, IBlockState state)
     {
         if(!blocks.containsKey(character))
         {
@@ -50,14 +50,13 @@ public abstract class Structure extends Pattern implements IStructure
     }
 
     @Override
-    public void addEntity(Character character, Class<? extends Entity> cls)
+    public void addEntity(char character, Class<? extends Entity> cls)
     {
         if(!entities.containsKey(character))
         {
             entities.put(character, cls);
         }
     }
-
 
     @Override
     public void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation)

@@ -27,9 +27,9 @@ import net.minecraft.world.World;
 
 public interface IStructure
 {
-    void addBlock(Character character, IBlockState state);
+    void addBlock(char character, IBlockState state);
 
-    void addEntity(Character character, Class<? extends Entity> cls);
+    void addEntity(char character, Class<? extends Entity> cls);
 
     void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation);
 

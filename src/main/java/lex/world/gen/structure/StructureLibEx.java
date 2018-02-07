@@ -24,54 +24,67 @@ import lex.api.pattern.IRow;
 import lex.api.pattern.Layer;
 import lex.api.pattern.Row;
 import lex.api.world.gen.structure.Structure;
+import lex.util.NumberHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class StructureLibEx extends Structure
 {
-    private IConfig config;
+    private IConfig structureConfig;
+    private List<IConfig> paletteConfigs;
+    private Map<Integer, Tuple<Map<Character, IBlockState>, Map<Character, Class<? extends Entity>>>> palettes = new HashMap<>();
 
-    public StructureLibEx(IConfig configIn)
+    public StructureLibEx(IConfig structureConfigIn, List<IConfig> paletteConfigsIn)
     {
-        config = configIn;
+        structureConfig = structureConfigIn;
+        paletteConfigs = paletteConfigsIn;
         parse();
     }
 
     private void parse()
     {
-        IConfig blockConfig = config.getInnerConfig("blocks");
-        IConfig entityConfig = config.getInnerConfig("entities");
-        List<IConfig> layerConfigs = config.getInnerConfigs("layers", new ArrayList<>());
-
-        for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
+        for(IConfig paletteConfig : paletteConfigs)
         {
-            String character = entry.getKey();
-            IBlockState state = blockConfig.getBlock(entry.getKey());
+            IConfig blockConfig = paletteConfig.getInnerConfig("blocks");
+            IConfig entityConfig = paletteConfig.getInnerConfig("entities");
 
-            if(state != null && character.length() == 1)
+            for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
             {
-                addBlock(character.charAt(0), state);
+                String character = entry.getKey();
+                IBlockState state = blockConfig.getBlock(entry.getKey());
+
+                if(state != null && character.length() == 1)
+                {
+                    palettes.computeIfAbsent(paletteConfigs.indexOf(paletteConfig), k -> new Tuple<>(new HashMap<>(), new HashMap<>())).getFirst().put(character.charAt(0), state);
+                }
+            }
+
+            for(Map.Entry<String, JsonElement> entry : entityConfig.getElements().entrySet())
+            {
+                String character = entry.getKey();
+                Class<? extends Entity> entity = EntityList.getClassFromName(entityConfig.getInnerConfig(entry.getKey()).getString("entity"));
+
+                if(entity != null && character.length() == 1)
+                {
+                    palettes.computeIfAbsent(paletteConfigs.indexOf(paletteConfig), k -> new Tuple<>(new HashMap<>(), new HashMap<>())).getSecond().put(character.charAt(0), entity);
+                }
             }
         }
 
-        for(Map.Entry<String, JsonElement> entry : entityConfig.getElements().entrySet())
-        {
-            String character = entry.getKey();
-            Class<? extends Entity> entity = EntityList.getClassFromName(entityConfig.getInnerConfig(entry.getKey()).getString("entity"));
-
-            if(entity != null && character.length() == 1)
-            {
-                addEntity(character.charAt(0), entity);
-            }
-        }
+        List<IConfig> layerConfigs = structureConfig.getInnerConfigs("layers", new ArrayList<>());
 
         for(IConfig layerConfig : layerConfigs)
         {
@@ -92,7 +105,7 @@ public class StructureLibEx extends Structure
             addLayer(new Layer(rows));
         }
 
-        name = config.getResource("structure", new ResourceLocation("MissingNo_" + new Timestamp(System.currentTimeMillis()).getTime()));
+        name = structureConfig.getResource("structure", new ResourceLocation("MissingNo_" + new Timestamp(System.currentTimeMillis()).getTime()));
 
         int x = 0;
         int y = layers.size();
@@ -119,5 +132,15 @@ public class StructureLibEx extends Structure
         }
 
         size = new BlockPos(x, y, z);
+    }
+
+    @Override
+    public void generate(World world, BlockPos pos, Mirror mirror, Rotation rotation)
+    {
+        int randIndex = NumberHelper.getRand().nextInt(palettes.size());
+        Tuple<Map<Character, IBlockState>, Map<Character, Class<? extends Entity>>> tuple = new ArrayList<>(palettes.values()).get(randIndex);
+        blocks = tuple.getFirst();
+        entities = tuple.getSecond();
+        super.generate(world, pos, mirror, rotation);
     }
 }
