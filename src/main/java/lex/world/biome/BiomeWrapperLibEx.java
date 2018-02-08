@@ -30,16 +30,14 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static lex.util.ConfigHelper.isString;
 
 public class BiomeWrapperLibEx extends BiomeWrapper
 {
@@ -47,7 +45,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
 
     public BiomeWrapperLibEx(IConfig configIn)
     {
-        super(ForgeRegistries.BIOMES.getValue(configIn.getResource("biome")), configIn.getInt("weight"));
+        super(ForgeRegistries.BIOMES.getValue(configIn.getResource("biome")));
         config = configIn;
         parse();
     }
@@ -119,26 +117,16 @@ public class BiomeWrapperLibEx extends BiomeWrapper
 
         for(IConfig entityConfig : entityConfigs)
         {
-            if(isString(entityConfig.get("entity")) && isString(entityConfig.get("creatureType")) && entityConfig.getBoolean("spawn", true))
+            EntityEntry entry = ForgeRegistries.ENTITIES.getValue(entityConfig.getResource("entity"));
+
+            if(entry != null && entityConfig.getBoolean("spawn", true))
             {
-                String entity = entityConfig.getString("entity");
+                Class<? extends Entity> entityCls = entry.getEntityClass();
+                EnumCreatureType creatureType = entityConfig.getEnum("creatureType", EnumCreatureType.class);
 
-                if(!Strings.isBlank(entity) && !Strings.isBlank(entityConfig.get("creatureType").getAsJsonPrimitive().getAsString()))
+                if(EntityLiving.class.isAssignableFrom(entityCls))
                 {
-                    Class<? extends Entity> entityCls = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entity)).getEntityClass();
-
-                    if(entityCls != null && EntityLiving.class.isAssignableFrom(entityCls))
-                    {
-                        EnumCreatureType creatureType = entityConfig.getEnum("creatureType", EnumCreatureType.class);
-
-                        if(creatureType != null)
-                        {
-                            int weight = entityConfig.getInt("weight", 10);
-                            int minGroupCount = entityConfig.getInt("minGroupCount", 1);
-                            int maxGroupCount = entityConfig.getInt("maxGroupCount", 4);
-                            biome.getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, weight, minGroupCount, maxGroupCount));
-                        }
-                    }
+                    biome.getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, entityConfig.getInt("weight", 10), entityConfig.getInt("minGroupCount", 1), entityConfig.getInt("maxGroupCount", 4)));
                 }
             }
         }
@@ -148,15 +136,12 @@ public class BiomeWrapperLibEx extends BiomeWrapper
 
         for(IConfig featureConfig : featureConfigs)
         {
-            if(isString(featureConfig.get("feature")) && isString(featureConfig.get("generationStage")))
-            {
-                IFeature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
-                GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class, GenerationStage.POST_DECORATE);
+            IFeature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
+            GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class, GenerationStage.POST_DECORATE);
 
-                if(feature != null && featureConfig.getBoolean("generate", true))
-                {
-                    generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
-                }
+            if(feature != null && featureConfig.getBoolean("generate", true))
+            {
+                generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
             }
 
             featureObjects.add(featureConfig.compose().getAsJsonObject());

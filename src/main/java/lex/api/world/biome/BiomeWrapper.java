@@ -35,22 +35,15 @@ public abstract class BiomeWrapper implements IBiomeWrapper
     protected Map<String, IBlockState> blocks = new HashMap<>();
     protected Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
 
-    public BiomeWrapper(Biome biomeIn, int weightIn)
+    public BiomeWrapper(Biome biomeIn)
     {
         biome = biomeIn;
-        weight = weightIn;
     }
 
     @Override
     public Biome getBiome()
     {
         return biome;
-    }
-
-    @Override
-    public int getWeight()
-    {
-        return weight;
     }
 
     @Override

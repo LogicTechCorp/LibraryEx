@@ -15,15 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.world.gen.feature;
+package lex.api.world.gen.structure;
 
-import lex.api.config.IConfig;
-import lex.api.world.gen.feature.Feature;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Rotation;
 
-public abstract class FeatureLibEx extends Feature
+import java.util.List;
+
+public interface IStructureWrapper
 {
-    public FeatureLibEx(IConfig config)
-    {
-        super(config.getInt("genAttempts", 4), config.getFloat("genProbability", 1.0F), config.getBoolean("randomizeGenAttempts", false), config.getInt("minHeight", 16), config.getInt("maxHeight", 112));
-    }
+    ResourceLocation getStructure();
+
+    Mirror getMirror();
+
+    Rotation getRotation();
+
+    IBlockState getIgnoredBlock();
+
+    List<ResourceLocation> getLootTables();
+
+    List<ResourceLocation> getSpawnerMobs();
 }

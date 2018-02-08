@@ -24,7 +24,6 @@ import java.util.Random;
 
 public interface IFeature
 {
-
     boolean generate(World world, Random rand, BlockPos pos);
 
     int getGenAttempts();
