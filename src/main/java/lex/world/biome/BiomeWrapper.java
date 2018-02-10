@@ -37,12 +37,14 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.*;
 
-public abstract class BiomeWrapper implements IBiomeWrapper
+public class BiomeWrapper implements IBiomeWrapper
 {
     protected Biome biome;
     protected int weight;
     protected Map<String, IBlockState> blocks = new HashMap<>();
     protected Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
+    protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> spawnableMobs = new HashMap<>();
+    protected boolean enabled;
     protected IConfig config;
 
     public BiomeWrapper(IConfig configIn)
@@ -109,11 +111,6 @@ public abstract class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        for(EnumCreatureType creatureType : EnumCreatureType.values())
-        {
-            biome.getSpawnableList(creatureType).clear();
-        }
-
         config.remove("entities");
         entityConfigs = config.getSubConfigs("entities", entityObjects);
 
@@ -128,7 +125,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper
 
                 if(EntityLiving.class.isAssignableFrom(entityCls))
                 {
-                    biome.getSpawnableList(creatureType).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, entityConfig.getInt("weight", 10), entityConfig.getInt("minGroupCount", 1), entityConfig.getInt("maxGroupCount", 4)));
+                    spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, entityConfig.getInt("weight", 10), entityConfig.getInt("minGroupCount", 1), entityConfig.getInt("maxGroupCount", 4)));
                 }
             }
         }
@@ -151,6 +148,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper
 
         config.remove("features");
         config.getSubConfigs("features", featureObjects);
+        enabled = config.getBoolean("enabled", true);
     }
 
     @Override
@@ -190,5 +188,17 @@ public abstract class BiomeWrapper implements IBiomeWrapper
     public List<IFeature> getFeatures(GenerationStage generationStage)
     {
         return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
+    }
+
+    @Override
+    public List<Biome.SpawnListEntry> getSpawnableMobs(EnumCreatureType creatureType)
+    {
+        return ImmutableList.copyOf(spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()));
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+        return enabled;
     }
 }

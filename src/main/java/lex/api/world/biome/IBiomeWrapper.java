@@ -20,6 +20,7 @@ package lex.api.world.biome;
 import lex.api.world.gen.feature.IFeature;
 import lex.world.gen.GenerationStage;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
@@ -35,4 +36,8 @@ public interface IBiomeWrapper
     List<IBlockState> getBlocks();
 
     List<IFeature> getFeatures(GenerationStage generationStage);
+
+    List<Biome.SpawnListEntry> getSpawnableMobs(EnumCreatureType creatureType);
+
+    boolean isEnabled();
 }

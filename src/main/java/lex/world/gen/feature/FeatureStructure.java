@@ -18,7 +18,6 @@
 package lex.world.gen.feature;
 
 import lex.api.config.IConfig;
-import lex.config.Config;
 import lex.util.StructureHelper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -38,20 +37,20 @@ import java.util.Random;
 public class FeatureStructure extends Feature
 {
     private ResourceLocation structure;
+    private Type type;
     private Mirror mirror;
     private Rotation rotation;
     private Block ignoredBlock;
-    private Type type;
     private float clearancePercentage;
 
     public FeatureStructure(IConfig config)
     {
         super(config);
         structure = config.getResource("structure");
+        type = config.getEnum("type", Type.class, Type.GROUNDED);
         mirror = config.getEnum("mirror", Mirror.class, Mirror.NONE);
         rotation = config.getEnum("rotation", Rotation.class, Rotation.NONE);
         ignoredBlock = config.getBlock("ignoredBlock", Blocks.STRUCTURE_VOID.getDefaultState()).getBlock();
-        type = config.getEnum("type", Type.class);
         clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
     }
 
@@ -99,7 +98,7 @@ public class FeatureStructure extends Feature
         for(Map.Entry<BlockPos, String> entry : map.entrySet())
         {
             BlockPos dataPos = entry.getKey();
-            IConfig config = new Config(entry.getValue());
+
         }
     }
 
