@@ -32,15 +32,25 @@ public interface IConfig
 
     JsonElement compose();
 
+    void add(String key, JsonElement element);
+
+    void addFallback(String key, JsonElement element);
+
+    void addSubConfig(String key, IConfig config);
+
     boolean has(String key);
 
+    boolean hasFallback(String key);
+
+    boolean hasSubConfig(String key);
+
     JsonElement get(String key);
+
+    JsonElement getFallback(String key);
 
     Map<String, JsonElement> getElements();
 
     void remove(String key);
-
-    boolean isSavable();
 
     String getString(String key, String fallbackValue);
 
@@ -58,9 +68,7 @@ public interface IConfig
 
     ItemStack getItem(String key, ItemStack fallbackValue);
 
-    IConfig getInnerConfig(String key, JsonObject defaultValue);
-
-    List<IConfig> getInnerConfigs(String key, List<JsonObject> defaultValue);
+    IConfig getSubConfig(String key, JsonObject defaultValue);
 
     String getString(String key);
 
@@ -78,9 +86,11 @@ public interface IConfig
 
     ItemStack getItem(String key);
 
-    IConfig getInnerConfig(String key);
+    IConfig getSubConfig(String key);
 
-    List<IConfig> getInnerConfigs(String key);
+    List<IConfig> getSubConfigs(String key, List<JsonObject> defaultValue);
+
+    List<IConfig> getSubConfigs(String key);
 
     List<String> getStrings(String key, List<String> defaultValue);
 

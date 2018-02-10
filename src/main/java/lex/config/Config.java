@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.api.config;
+package lex.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
-import lex.config.InnerConfig;
+import lex.api.config.IConfig;
 import lex.util.BlockStateHelper;
 import lex.util.NBTHelper;
 import lex.util.NumberHelper;
@@ -36,8 +36,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.util.Strings;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,13 +49,37 @@ import java.util.Map;
 
 import static lex.util.ConfigHelper.*;
 
-public abstract class Config implements IConfig
+public class Config implements IConfig
 {
     protected static final JsonParser JSON_PARSER = new JsonParser();
 
     protected final Map<String, JsonElement> ELEMENTS = new LinkedHashMap<>();
     protected final Map<String, JsonElement> FALLBACK_ELEMENTS = new LinkedHashMap<>();
-    protected final Map<String, InnerConfig> INNER_CONFIGS = new LinkedHashMap<>();
+    protected final Map<String, IConfig> SUB_CONFIGS = new LinkedHashMap<>();
+
+    public Config(File configFile)
+    {
+        String jsonString = new JsonObject().toString();
+
+        if(configFile.exists())
+        {
+            try
+            {
+                jsonString = FileUtils.readFileToString(configFile, Charset.defaultCharset());
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        parse(jsonString);
+    }
+
+    public Config(String jsonString)
+    {
+        parse(jsonString);
+    }
 
     @Override
     public void parse(String jsonString)
@@ -75,7 +103,7 @@ public abstract class Config implements IConfig
     {
         JsonObject object = new JsonObject();
 
-        for(Map.Entry<String, InnerConfig> entry : INNER_CONFIGS.entrySet())
+        for(Map.Entry<String, IConfig> entry : SUB_CONFIGS.entrySet())
         {
             if(has(entry.getKey()))
             {
@@ -103,19 +131,22 @@ public abstract class Config implements IConfig
         return object;
     }
 
+    @Override
     public void add(String key, JsonElement element)
     {
         ELEMENTS.put(key, element);
     }
 
+    @Override
     public void addFallback(String key, JsonElement element)
     {
         FALLBACK_ELEMENTS.put(key, element);
     }
 
-    public void addInnerConfig(String key, InnerConfig config)
+    @Override
+    public void addSubConfig(String key, IConfig config)
     {
-        INNER_CONFIGS.put(key, config);
+        SUB_CONFIGS.put(key, config);
     }
 
     @Override
@@ -124,14 +155,16 @@ public abstract class Config implements IConfig
         return ELEMENTS.containsKey(key);
     }
 
+    @Override
     public boolean hasFallback(String key)
     {
         return FALLBACK_ELEMENTS.containsKey(key);
     }
 
-    public boolean hasInnerConfig(String key)
+    @Override
+    public boolean hasSubConfig(String key)
     {
-        return INNER_CONFIGS.containsKey(key);
+        return SUB_CONFIGS.containsKey(key);
     }
 
     @Override
@@ -140,6 +173,7 @@ public abstract class Config implements IConfig
         return ELEMENTS.get(key);
     }
 
+    @Override
     public JsonElement getFallback(String key)
     {
         return FALLBACK_ELEMENTS.get(key);
@@ -283,33 +317,14 @@ public abstract class Config implements IConfig
     }
 
     @Override
-    public IConfig getInnerConfig(String key, JsonObject fallbackValue)
+    public IConfig getSubConfig(String key, JsonObject fallbackValue)
     {
-        IConfig value = getInnerConfig(key);
+        IConfig value = getSubConfig(key);
 
         if(value == null)
         {
             addFallback(key, fallbackValue);
-            return new InnerConfig(fallbackValue);
-        }
-
-        return value;
-    }
-
-    @Override
-    public List<IConfig> getInnerConfigs(String key, List<JsonObject> fallbackValue)
-    {
-        List<IConfig> value = getInnerConfigs(key);
-
-        if(value == null)
-        {
-            JsonArray array = new JsonArray();
-            fallbackValue.forEach(array::add);
-            addFallback(key, array);
-
-            List<IConfig> ret = new ArrayList<>();
-            fallbackValue.forEach(k -> ret.add(new InnerConfig(k)));
-            return ret;
+            return new Config(fallbackValue.toString());
         }
 
         return value;
@@ -464,7 +479,7 @@ public abstract class Config implements IConfig
     @Override
     public ItemStack getItem(String key)
     {
-        IConfig itemConfig = getInnerConfig(key);
+        IConfig itemConfig = getSubConfig(key);
         ItemStack stack = ItemStack.EMPTY;
 
         if(itemConfig != null)
@@ -502,7 +517,7 @@ public abstract class Config implements IConfig
                         stack.setStackDisplayName(itemConfig.getString("displayName"));
                     }
 
-                    IConfig loreConfig = getInnerConfig("lore");
+                    IConfig loreConfig = getSubConfig("lore");
 
                     if(loreConfig != null && loreConfig.getElements().size() > 0)
                     {
@@ -524,7 +539,7 @@ public abstract class Config implements IConfig
                         NBTHelper.setTag(stack, compound);
                     }
 
-                    List<IConfig> enchantmentConfigs = itemConfig.getInnerConfigs("enchantments");
+                    List<IConfig> enchantmentConfigs = itemConfig.getSubConfigs("enchantments");
 
                     if(enchantmentConfigs != null)
                     {
@@ -558,16 +573,16 @@ public abstract class Config implements IConfig
     }
 
     @Override
-    public IConfig getInnerConfig(String key)
+    public IConfig getSubConfig(String key)
     {
-        if(hasInnerConfig(key))
+        if(hasSubConfig(key))
         {
-            return INNER_CONFIGS.get(key);
+            return SUB_CONFIGS.get(key);
         }
         else if(isObject(get(key)))
         {
-            InnerConfig config = new InnerConfig(get(key).getAsJsonObject());
-            INNER_CONFIGS.put(key, config);
+            IConfig config = new Config(get(key).toString());
+            SUB_CONFIGS.put(key, config);
             return config;
         }
 
@@ -575,22 +590,41 @@ public abstract class Config implements IConfig
     }
 
     @Override
-    public List<IConfig> getInnerConfigs(String key)
+    public List<IConfig> getSubConfigs(String key, List<JsonObject> fallbackValue)
+    {
+        List<IConfig> value = getSubConfigs(key);
+
+        if(value == null)
+        {
+            JsonArray array = new JsonArray();
+            fallbackValue.forEach(array::add);
+            addFallback(key, array);
+
+            List<IConfig> ret = new ArrayList<>();
+            fallbackValue.forEach(k -> ret.add(new Config(k.toString())));
+            return ret;
+        }
+
+        return value;
+    }
+
+    @Override
+    public List<IConfig> getSubConfigs(String key)
     {
         if(isArray(get(key)))
         {
             JsonArray array = get(key).getAsJsonArray();
-            List<IConfig> innerConfigs = new ArrayList<>();
+            List<IConfig> subConfigs = new ArrayList<>();
 
             for(JsonElement element : array)
             {
                 if(isObject(element))
                 {
-                    innerConfigs.add(new InnerConfig(element.toString()));
+                    subConfigs.add(new Config(element.toString()));
                 }
             }
 
-            return innerConfigs;
+            return subConfigs;
         }
         else
         {

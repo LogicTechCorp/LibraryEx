@@ -19,7 +19,6 @@ package lex.world.gen.feature;
 
 import lex.LibEx;
 import lex.api.config.IConfig;
-import lex.api.world.gen.feature.Feature;
 import lex.api.world.gen.feature.IFeature;
 import net.minecraft.util.ResourceLocation;
 
@@ -67,5 +66,6 @@ public class FeatureRegistry
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":fluid"), FeatureFluid.class);
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":ore"), FeatureOre.class);
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":pool"), FeaturePool.class);
+        registerFeature(new ResourceLocation(LibEx.MOD_ID + ":structure"), FeatureStructure.class);
     }
 }

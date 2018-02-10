@@ -17,10 +17,11 @@
 
 package lex.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lex.api.config.IConfig;
-import lex.api.world.biome.BiomeWrapper;
+import lex.api.world.biome.IBiomeWrapper;
 import lex.api.world.gen.feature.IFeature;
 import lex.world.gen.GenerationStage;
 import lex.world.gen.feature.FeatureRegistry;
@@ -34,26 +35,27 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class BiomeWrapperLibEx extends BiomeWrapper
+public abstract class BiomeWrapper implements IBiomeWrapper
 {
-    private IConfig config;
+    protected Biome biome;
+    protected int weight;
+    protected Map<String, IBlockState> blocks = new HashMap<>();
+    protected Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
+    protected IConfig config;
 
-    public BiomeWrapperLibEx(IConfig configIn)
+    public BiomeWrapper(IConfig configIn)
     {
-        super(ForgeRegistries.BIOMES.getValue(configIn.getResource("biome")));
         config = configIn;
         parse();
     }
 
     private void parse()
     {
+        biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
         weight = config.getInt("weight", 10);
-        IConfig blockConfig = config.getInnerConfig("blocks", new JsonObject());
+        IConfig blockConfig = config.getSubConfig("blocks", new JsonObject());
         blockConfig.getBlock("topBlock", biome.topBlock);
         blockConfig.getBlock("fillerBlock", biome.fillerBlock);
 
@@ -65,7 +67,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
             }
         }
 
-        List<IConfig> entityConfigs = config.getInnerConfigs("entities", new ArrayList<>());
+        List<IConfig> entityConfigs = config.getSubConfigs("entities", new ArrayList<>());
         List<JsonObject> entityObjects = new ArrayList<>();
 
         for(EnumCreatureType creatureType : EnumCreatureType.values())
@@ -113,7 +115,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
         }
 
         config.remove("entities");
-        entityConfigs = config.getInnerConfigs("entities", entityObjects);
+        entityConfigs = config.getSubConfigs("entities", entityObjects);
 
         for(IConfig entityConfig : entityConfigs)
         {
@@ -131,7 +133,7 @@ public class BiomeWrapperLibEx extends BiomeWrapper
             }
         }
 
-        List<IConfig> featureConfigs = config.getInnerConfigs("features", new ArrayList<>());
+        List<IConfig> featureConfigs = config.getSubConfigs("features", new ArrayList<>());
         List<JsonObject> featureObjects = new ArrayList<>();
 
         for(IConfig featureConfig : featureConfigs)
@@ -148,7 +150,13 @@ public class BiomeWrapperLibEx extends BiomeWrapper
         }
 
         config.remove("features");
-        config.getInnerConfigs("features", featureObjects);
+        config.getSubConfigs("features", featureObjects);
+    }
+
+    @Override
+    public Biome getBiome()
+    {
+        return biome;
     }
 
     @Override
@@ -158,11 +166,29 @@ public class BiomeWrapperLibEx extends BiomeWrapper
 
         if(value == null)
         {
-            config.getInnerConfig("blocks").getBlock(key, fallbackValue);
+            config.getSubConfig("blocks").getBlock(key, fallbackValue);
             blocks.put(key, fallbackValue);
             return fallbackValue;
         }
 
         return value;
+    }
+
+    @Override
+    public IBlockState getBlock(String key)
+    {
+        return blocks.get(key);
+    }
+
+    @Override
+    public List<IBlockState> getBlocks()
+    {
+        return ImmutableList.copyOf(blocks.values());
+    }
+
+    @Override
+    public List<IFeature> getFeatures(GenerationStage generationStage)
+    {
+        return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
     }
 }

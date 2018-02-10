@@ -22,7 +22,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lex.LibEx;
 import lex.api.config.IConfig;
-import lex.config.FileConfig;
+import lex.config.Config;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
@@ -38,7 +38,7 @@ public class ConfigHelper
 
     public static void saveConfig(IConfig config, File configFile)
     {
-        if(config.isSavable() && configFile != null)
+        if(configFile != null)
         {
             if(configFile.getPath().startsWith("~"))
             {
@@ -68,7 +68,7 @@ public class ConfigHelper
             {
                 if(FileHelper.getFileExtension(file).equals("json"))
                 {
-                    configs.add(new FileConfig(file));
+                    configs.add(new Config(file));
                 }
             }
         }

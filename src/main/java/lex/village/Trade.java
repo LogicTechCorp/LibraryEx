@@ -19,18 +19,19 @@ package lex.village;
 
 import lex.api.config.IConfig;
 import lex.api.village.ITrade;
-import lex.api.village.Trade;
 import lex.util.NumberHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
-public class TradeLibEx extends Trade implements ITrade
+public class Trade extends MerchantRecipe implements ITrade
 {
+    protected int tradeLevel;
     private IConfig config;
 
-    public TradeLibEx(IConfig configIn)
+    public Trade(IConfig configIn)
     {
-        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7), configIn.getInt("tradeLevel", 1));
+        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7));
+        tradeLevel = configIn.getInt("tradeLevel", 1);
         config = configIn;
     }
 
@@ -42,9 +43,9 @@ public class TradeLibEx extends Trade implements ITrade
         ItemStack inputTwoStack = getSecondItemToBuy().copy();
         int tradesAvailable = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
 
-        IConfig outputConfig = config.getInnerConfig("output");
-        IConfig inputOneConfig = config.getInnerConfig("inputOne");
-        IConfig inputTwoConfig = config.getInnerConfig("inputTwo");
+        IConfig outputConfig = config.getSubConfig("output");
+        IConfig inputOneConfig = config.getSubConfig("inputOne");
+        IConfig inputTwoConfig = config.getSubConfig("inputTwo");
 
         outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
         inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));

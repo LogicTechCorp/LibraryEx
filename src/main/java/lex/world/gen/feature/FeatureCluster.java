@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureCluster extends FeatureLibEx
+public class FeatureCluster extends Feature
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToAttachTo;

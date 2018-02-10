@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.api.world.gen.feature;
+package lex.world.gen.feature;
 
+import lex.api.config.IConfig;
+import lex.api.world.gen.feature.IFeature;
 import lex.util.NumberHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -32,13 +34,13 @@ public abstract class Feature extends WorldGenerator implements IFeature
     protected int minHeight;
     protected int maxHeight;
 
-    public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minHeightIn, int maxHeightIn)
+    public Feature(IConfig config)
     {
-        genAttempts = genAttemptsIn;
-        genProbability = genProbabilityIn;
-        randomizeGenAttempts = randomizeGenAttemptsIn;
-        minHeight = minHeightIn;
-        maxHeight = maxHeightIn;
+        genAttempts = config.getInt("genAttempts", 4);
+        genProbability = config.getFloat("genProbability", 1.0F);
+        randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
+        minHeight = config.getInt("minHeight", 16);
+        maxHeight = config.getInt("maxHeight", 112);
     }
 
     @Override

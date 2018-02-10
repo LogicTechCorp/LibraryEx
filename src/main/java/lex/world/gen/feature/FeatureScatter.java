@@ -18,16 +18,16 @@
 package lex.world.gen.feature;
 
 import lex.api.config.IConfig;
-import lex.world.gen.Placement;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScatter extends FeatureLibEx
+public class FeatureScatter extends Feature
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
@@ -70,5 +70,30 @@ public class FeatureScatter extends FeatureLibEx
         }
 
         return true;
+    }
+
+    public enum Placement
+    {
+        ON_GROUND(null),
+        IN_GROUND(EnumFacing.DOWN);
+
+        EnumFacing offset;
+
+        Placement(EnumFacing offsetIn)
+        {
+            offset = offsetIn;
+        }
+
+        public BlockPos offsetPos(BlockPos pos)
+        {
+            if(offset != null)
+            {
+                return pos.offset(offset);
+            }
+            else
+            {
+                return pos;
+            }
+        }
     }
 }
