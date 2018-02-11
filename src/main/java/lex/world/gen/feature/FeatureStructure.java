@@ -20,8 +20,15 @@ package lex.world.gen.feature;
 import lex.api.config.IConfig;
 import lex.util.StructureHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
@@ -84,21 +91,64 @@ public class FeatureStructure extends Feature
         if(spawnPos != null && spawnPos.getY() >= minHeight && spawnPos.getY() <= maxHeight)
         {
             template.addBlocksToWorld(world, spawnPos, placementSettings);
-            handleDataBlocks(world, pos, template, placementSettings);
+            handleDataBlocks(world, pos, template, placementSettings, rand);
             return true;
         }
 
         return false;
     }
 
-    private void handleDataBlocks(World world, BlockPos pos, Template template, PlacementSettings placementSettings)
+    private void handleDataBlocks(World world, BlockPos pos, Template template, PlacementSettings placementSettings, Random rand)
     {
         Map<BlockPos, String> map = template.getDataBlocks(pos, placementSettings);
 
         for(Map.Entry<BlockPos, String> entry : map.entrySet())
         {
             BlockPos dataPos = entry.getKey();
+            String[] data = entry.getValue().split("\\s+");
 
+            if(data[0].equals("chest") && data.length == 2)
+            {
+                world.setBlockState(dataPos, Blocks.CHEST.correctFacing(world, dataPos, Blocks.CHEST.getDefaultState()));
+                TileEntityChest chest = (TileEntityChest) world.getTileEntity(dataPos);
+
+                if(chest != null)
+                {
+                    chest.setLootTable(new ResourceLocation(data[1]), rand.nextLong());
+                }
+            }
+            else if(data[0].equals("spawner") && data.length == 2)
+            {
+                world.setBlockState(dataPos, Blocks.MOB_SPAWNER.getDefaultState());
+                TileEntityMobSpawner spawner = (TileEntityMobSpawner) world.getTileEntity(dataPos);
+
+                if(spawner != null)
+                {
+                    MobSpawnerBaseLogic logic = spawner.getSpawnerBaseLogic();
+                    NBTTagCompound compound = new NBTTagCompound();
+                    logic.writeToNBT(compound);
+                    compound.removeTag("SpawnPotentials");
+                    logic.readFromNBT(compound);
+                    logic.setEntityId(new ResourceLocation(data[1]));
+                    spawner.markDirty();
+                    IBlockState state = world.getBlockState(dataPos);
+                    world.notifyBlockUpdate(pos, state, state, 3);
+                }
+            }
+            else if(data[0].equals("entity") && data.length == 2)
+            {
+                Entity entity = EntityList.newEntity(EntityList.getClassFromName(data[1]), world);
+
+                if(entity != null)
+                {
+                    entity.setPosition(dataPos.getX() + 0.5F, dataPos.getY(), dataPos.getZ() + 0.5F);
+                    world.spawnEntity(entity);
+                }
+            }
+            else
+            {
+                world.setBlockToAir(dataPos);
+            }
         }
     }
 
