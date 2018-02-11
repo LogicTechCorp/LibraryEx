@@ -45,6 +45,7 @@ public class BiomeWrapper implements IBiomeWrapper
     protected Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> spawnableMobs = new HashMap<>();
     protected boolean enabled;
+    protected boolean genDefaultFeatures;
     protected IConfig config;
 
     public BiomeWrapper(IConfig configIn)
@@ -136,7 +137,7 @@ public class BiomeWrapper implements IBiomeWrapper
         for(IConfig featureConfig : featureConfigs)
         {
             IFeature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
-            GenerationStage generationStage = featureConfig.getEnum("generationStage", GenerationStage.class, GenerationStage.POST_DECORATE);
+            GenerationStage generationStage = featureConfig.getEnum("genStage", GenerationStage.class, GenerationStage.POST_DECORATE);
 
             if(feature != null && featureConfig.getBoolean("generate", true))
             {
@@ -149,6 +150,7 @@ public class BiomeWrapper implements IBiomeWrapper
         config.remove("features");
         config.getSubConfigs("features", featureObjects);
         enabled = config.getBoolean("enabled", true);
+        genDefaultFeatures = config.getBoolean("genDefaultFeatures", true);
     }
 
     @Override
@@ -200,5 +202,11 @@ public class BiomeWrapper implements IBiomeWrapper
     public boolean isEnabled()
     {
         return enabled;
+    }
+
+    @Override
+    public boolean shouldGenDefaultFeatures()
+    {
+        return genDefaultFeatures;
     }
 }

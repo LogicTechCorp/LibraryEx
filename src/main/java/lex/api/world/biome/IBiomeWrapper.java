@@ -40,4 +40,6 @@ public interface IBiomeWrapper
     List<Biome.SpawnListEntry> getSpawnableMobs(EnumCreatureType creatureType);
 
     boolean isEnabled();
+
+    boolean shouldGenDefaultFeatures();
 }
