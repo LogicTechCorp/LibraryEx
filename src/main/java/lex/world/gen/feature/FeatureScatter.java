@@ -41,6 +41,14 @@ public class FeatureScatter extends Feature
         placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
     }
 
+    public FeatureScatter(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minHeight, int maxHeight, IBlockState blockToSpawnIn, IBlockState blockToTargetIn, Placement placementIn)
+    {
+        super(genAttempts, genProbability, randomizeGenAttempts, minHeight, maxHeight);
+        blockToSpawn = blockToSpawnIn;
+        blockToTarget = blockToTargetIn;
+        placement = placementIn;
+    }
+
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {

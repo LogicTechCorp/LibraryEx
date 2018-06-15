@@ -15,29 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.item;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.base.CaseFormat;
+import lex.api.IModData;
+import net.minecraft.item.ItemAxe;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class ItemAxeLibEx extends ItemAxe
 {
-    @Override
-    public void preInit()
+    protected ItemAxeLibEx(IModData data, String name, ToolMaterial material, float damage, float speed)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(material, damage, speed);
+        setRegistryName(data.getModId() + ":" + name);
+        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setCreativeTab(data.getCreativeTab());
     }
 }

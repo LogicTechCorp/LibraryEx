@@ -43,6 +43,15 @@ public abstract class Feature extends WorldGenerator implements IFeature
         maxHeight = config.getInt("maxHeight", 112);
     }
 
+    public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minHeightIn, int maxHeightIn)
+    {
+        genAttempts = genAttemptsIn;
+        genProbability = genProbabilityIn;
+        randomizeGenAttempts = randomizeGenAttemptsIn;
+        minHeight = minHeightIn;
+        maxHeight = maxHeightIn;
+    }
+
     @Override
     public abstract boolean generate(World world, Random rand, BlockPos pos);
 

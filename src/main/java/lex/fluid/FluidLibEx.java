@@ -15,29 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.fluid;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import lex.api.IModData;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class FluidLibEx extends Fluid
 {
-    @Override
-    public void preInit()
+    public FluidLibEx(IModData data, String fluidName)
     {
-
+        this(data, fluidName, fluidName);
     }
 
-    @Override
-    public void init()
+    public FluidLibEx(IModData data, String fluidName, String textureName)
     {
+        super(fluidName, new ResourceLocation(data.getModId() + ":blocks/fluid_" + textureName + "_still"), new ResourceLocation(data.getModId() + ":blocks/fluid_" + textureName + "_flow"));
 
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        FluidRegistry.registerFluid(this);
+        FluidRegistry.addBucketForFluid(this);
     }
 }

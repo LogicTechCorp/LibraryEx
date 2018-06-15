@@ -15,29 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.item;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import lex.block.BlockSlabLibEx;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemSlab;
+import net.minecraft.item.ItemStack;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class ItemBlockSlabLibEx extends ItemSlab
 {
-    @Override
-    public void preInit()
+    public ItemBlockSlabLibEx(Block block, BlockSlabLibEx singleSlab, BlockSlabLibEx doubleSlab)
     {
-
+        super(block, singleSlab, doubleSlab);
+        setRegistryName(block.getRegistryName().toString());
     }
 
     @Override
-    public void init()
+    public String getUnlocalizedName(ItemStack stack)
     {
-
+        return ((BlockSlabLibEx) block).getUnlocalizedName(stack.getMetadata());
     }
 
     @Override
-    public void postInit()
+    public int getMetadata(int metadata)
     {
-
+        return metadata;
     }
+
 }

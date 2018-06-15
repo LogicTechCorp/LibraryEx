@@ -15,29 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.api;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.creativetab.CreativeTabs;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public interface IModData
 {
-    @Override
-    public void preInit()
-    {
+    String getModId();
 
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
-    }
+    CreativeTabs getCreativeTab();
 }

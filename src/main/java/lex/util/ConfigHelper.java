@@ -45,7 +45,7 @@ public class ConfigHelper
                 configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
             }
 
-            String jsonString = GSON.toJson(config.compose());
+            String jsonString = GSON.toJson(config.serialize());
 
             try
             {

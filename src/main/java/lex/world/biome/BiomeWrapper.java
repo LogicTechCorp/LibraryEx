@@ -58,11 +58,11 @@ public class BiomeWrapper implements IBiomeWrapper
     {
         biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
         weight = config.getInt("weight", 10);
-        IConfig blockConfig = config.getSubConfig("blocks", new JsonObject());
+        IConfig blockConfig = config.getDataBranch("blocks", new JsonObject());
         blockConfig.getBlock("topBlock", biome.topBlock);
         blockConfig.getBlock("fillerBlock", biome.fillerBlock);
 
-        for(Map.Entry<String, JsonElement> entry : blockConfig.getElements().entrySet())
+        for(Map.Entry<String, JsonElement> entry : blockConfig.getAllData().entrySet())
         {
             if(blockConfig.getBlock(entry.getKey()) != null)
             {
@@ -70,7 +70,7 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        List<IConfig> entityConfigs = config.getSubConfigs("entities", new ArrayList<>());
+        List<IConfig> entityConfigs = config.getDataBranches("entities", new ArrayList<>());
         List<JsonObject> entityObjects = new ArrayList<>();
 
         for(EnumCreatureType creatureType : EnumCreatureType.values())
@@ -92,7 +92,7 @@ public class BiomeWrapper implements IBiomeWrapper
                         containsEntry = true;
                     }
 
-                    entityObjects.add(entityConfig.compose().getAsJsonObject());
+                    entityObjects.add(entityConfig.serialize().getAsJsonObject());
                     configIter.remove();
 
                     if(containsEntry)
@@ -112,8 +112,8 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        config.remove("entities");
-        entityConfigs = config.getSubConfigs("entities", entityObjects);
+        config.removeData("entities");
+        entityConfigs = config.getDataBranches("entities", entityObjects);
 
         for(IConfig entityConfig : entityConfigs)
         {
@@ -131,7 +131,7 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        List<IConfig> featureConfigs = config.getSubConfigs("features", new ArrayList<>());
+        List<IConfig> featureConfigs = config.getDataBranches("features", new ArrayList<>());
         List<JsonObject> featureObjects = new ArrayList<>();
 
         for(IConfig featureConfig : featureConfigs)
@@ -144,11 +144,11 @@ public class BiomeWrapper implements IBiomeWrapper
                 generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
             }
 
-            featureObjects.add(featureConfig.compose().getAsJsonObject());
+            featureObjects.add(featureConfig.serialize().getAsJsonObject());
         }
 
-        config.remove("features");
-        config.getSubConfigs("features", featureObjects);
+        config.removeData("features");
+        config.getDataBranches("features", featureObjects);
         enabled = config.getBoolean("enabled", true);
         genDefaultFeatures = config.getBoolean("genDefaultFeatures", true);
     }
@@ -166,7 +166,7 @@ public class BiomeWrapper implements IBiomeWrapper
 
         if(value == null)
         {
-            config.getSubConfig("blocks").getBlock(key, fallbackValue);
+            config.getDataBranch("blocks").getBlock(key, fallbackValue);
             blocks.put(key, fallbackValue);
             return fallbackValue;
         }

@@ -15,29 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.world.biome;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import lex.api.IModData;
+import net.minecraft.world.biome.Biome;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class BiomeLibEx extends Biome
 {
-    @Override
-    public void preInit()
+    public BiomeLibEx(IModData data, BiomeProperties properties, String name)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(properties);
+        setRegistryName(data.getModId() + ":" + name);
+        spawnableMonsterList.clear();
+        spawnableCreatureList.clear();
+        spawnableWaterCreatureList.clear();
+        spawnableCaveCreatureList.clear();
     }
 }

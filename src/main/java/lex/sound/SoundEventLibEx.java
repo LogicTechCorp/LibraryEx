@@ -15,29 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.sound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import lex.api.IModData;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class SoundEventLibEx extends SoundEvent
 {
-    @Override
-    public void preInit()
+    public SoundEventLibEx(IModData data, String name)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(new ResourceLocation(data.getModId() + ":" + name));
+        setRegistryName(soundName);
     }
 }

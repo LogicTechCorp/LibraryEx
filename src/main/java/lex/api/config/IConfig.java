@@ -28,29 +28,29 @@ import java.util.Map;
 
 public interface IConfig
 {
-    void parse(String jsonString);
+    void deserialize(String jsonString);
 
-    JsonElement compose();
+    JsonElement serialize();
 
-    void add(String key, JsonElement element);
+    void addData(String key, JsonElement element);
 
-    void addFallback(String key, JsonElement element);
+    void addFallbackData(String key, JsonElement element);
 
-    void addSubConfig(String key, IConfig config);
+    void addDataBranch(String key, IConfig config);
 
-    boolean has(String key);
+    boolean hasData(String key);
 
-    boolean hasFallback(String key);
+    boolean hasFallbackData(String key);
 
-    boolean hasSubConfig(String key);
+    boolean hasDataBranch(String key);
 
-    JsonElement get(String key);
+    JsonElement getData(String key);
 
-    JsonElement getFallback(String key);
+    JsonElement getFallbackData(String key);
 
-    Map<String, JsonElement> getElements();
+    Map<String, JsonElement> getAllData();
 
-    void remove(String key);
+    void removeData(String key);
 
     String getString(String key, String fallbackValue);
 
@@ -68,7 +68,7 @@ public interface IConfig
 
     ItemStack getItem(String key, ItemStack fallbackValue);
 
-    IConfig getSubConfig(String key, JsonObject defaultValue);
+    IConfig getDataBranch(String key, JsonObject defaultValue);
 
     String getString(String key);
 
@@ -86,11 +86,11 @@ public interface IConfig
 
     ItemStack getItem(String key);
 
-    IConfig getSubConfig(String key);
+    IConfig getDataBranch(String key);
 
-    List<IConfig> getSubConfigs(String key, List<JsonObject> defaultValue);
+    List<IConfig> getDataBranches(String key, List<JsonObject> defaultValue);
 
-    List<IConfig> getSubConfigs(String key);
+    List<IConfig> getDataBranches(String key);
 
     List<String> getStrings(String key, List<String> defaultValue);
 

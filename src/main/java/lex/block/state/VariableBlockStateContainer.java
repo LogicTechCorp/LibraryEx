@@ -15,29 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.block.state;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class VariableBlockStateContainer extends BlockStateContainer
 {
-    @Override
-    public void preInit()
-    {
+    private BlockStateContainer container;
 
+    public VariableBlockStateContainer(BlockStateContainer containerIn, Block block, IProperty... properties)
+    {
+        super(block, properties);
+        container = containerIn;
     }
 
     @Override
-    public void init()
+    public IBlockState getBaseState()
     {
-
+        return container == null ? getValidStates().get(0) : container.getValidStates().get(0);
     }
 
-    @Override
-    public void postInit()
+    public void destroyContainer()
     {
-
+        container = null;
     }
 }

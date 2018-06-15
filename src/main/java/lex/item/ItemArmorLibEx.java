@@ -15,29 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.item;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.base.CaseFormat;
+import lex.api.IModData;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class ItemArmorLibEx extends ItemArmor
 {
-    @Override
-    public void preInit()
+    public ItemArmorLibEx(IModData data, String name, ArmorMaterial material, int renderIndex, EntityEquipmentSlot equipmentSlot)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(material, renderIndex, equipmentSlot);
+        setRegistryName(data.getModId() + ":" + name);
+        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setCreativeTab(data.getCreativeTab());
     }
 }

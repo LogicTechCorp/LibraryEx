@@ -15,29 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.potion;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.base.CaseFormat;
+import lex.api.IModData;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionType;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class PotionTypeLibEx extends PotionType
 {
-    @Override
-    public void preInit()
+    public PotionTypeLibEx(IModData data, String name, PotionEffect effect)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, data.getModId() + ":" + name), effect);
+        setRegistryName(data.getModId() + ":" + name);
     }
 }

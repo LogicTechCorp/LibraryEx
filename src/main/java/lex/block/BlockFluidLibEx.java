@@ -15,29 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.block;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.base.CaseFormat;
+import lex.api.IModData;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.fluids.BlockFluidClassic;
+import net.minecraftforge.fluids.Fluid;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class BlockFluidLibEx extends BlockFluidClassic
 {
-    @Override
-    public void preInit()
+    public BlockFluidLibEx(IModData data, String name, Fluid fluid, Material material)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(fluid, material);
+        setRegistryName(data.getModId() + ":" + name);
+        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setCreativeTab(data.getCreativeTab());
     }
 }

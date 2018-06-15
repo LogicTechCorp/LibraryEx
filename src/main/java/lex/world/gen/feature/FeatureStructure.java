@@ -61,6 +61,17 @@ public class FeatureStructure extends Feature
         clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
     }
 
+    public FeatureStructure(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minHeight, int maxHeight, ResourceLocation structureIn, Type typeIn, Mirror mirrorIn, Rotation rotationIn, Block ignoredBlockIn, float clearancePercentageIn)
+    {
+        super(genAttempts, genProbability, randomizeGenAttempts, minHeight, maxHeight);
+        structure = structureIn;
+        type = typeIn;
+        mirror = mirrorIn;
+        rotation = rotationIn;
+        ignoredBlock = ignoredBlockIn;
+        clearancePercentage = clearancePercentageIn;
+    }
+
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {

@@ -66,6 +66,7 @@ public class FeatureRegistry
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":fluid"), FeatureFluid.class);
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":ore"), FeatureOre.class);
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":pool"), FeaturePool.class);
+        registerFeature(new ResourceLocation(LibEx.MOD_ID + ":big_mushroom"), FeatureBigMushroom.class);
         registerFeature(new ResourceLocation(LibEx.MOD_ID + ":structure"), FeatureStructure.class);
     }
 }

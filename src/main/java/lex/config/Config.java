@@ -53,9 +53,9 @@ public class Config implements IConfig
 {
     protected static final JsonParser JSON_PARSER = new JsonParser();
 
-    protected final Map<String, JsonElement> ELEMENTS = new LinkedHashMap<>();
-    protected final Map<String, JsonElement> FALLBACK_ELEMENTS = new LinkedHashMap<>();
-    protected final Map<String, IConfig> SUB_CONFIGS = new LinkedHashMap<>();
+    protected final Map<String, JsonElement> DATA = new LinkedHashMap<>();
+    protected final Map<String, JsonElement> FALLBACK_DATA = new LinkedHashMap<>();
+    protected final Map<String, IConfig> DATA_BRANCHES = new LinkedHashMap<>();
 
     public Config(File configFile)
     {
@@ -73,16 +73,16 @@ public class Config implements IConfig
             }
         }
 
-        parse(jsonString);
+        deserialize(jsonString);
     }
 
     public Config(String jsonString)
     {
-        parse(jsonString);
+        deserialize(jsonString);
     }
 
     @Override
-    public void parse(String jsonString)
+    public void deserialize(String jsonString)
     {
         if(!Strings.isBlank(jsonString))
         {
@@ -92,35 +92,35 @@ public class Config implements IConfig
             {
                 for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
                 {
-                    ELEMENTS.put(entry.getKey(), entry.getValue());
+                    DATA.put(entry.getKey(), entry.getValue());
                 }
             }
         }
     }
 
     @Override
-    public JsonElement compose()
+    public JsonElement serialize()
     {
         JsonObject object = new JsonObject();
 
-        for(Map.Entry<String, IConfig> entry : SUB_CONFIGS.entrySet())
+        for(Map.Entry<String, IConfig> entry : DATA_BRANCHES.entrySet())
         {
-            if(has(entry.getKey()))
+            if(hasData(entry.getKey()))
             {
-                add(entry.getKey(), entry.getValue().compose());
+                addData(entry.getKey(), entry.getValue().serialize());
             }
-            else if(hasFallback(entry.getKey()))
+            else if(hasFallbackData(entry.getKey()))
             {
-                addFallback(entry.getKey(), entry.getValue().compose());
+                addFallbackData(entry.getKey(), entry.getValue().serialize());
             }
         }
 
-        for(Map.Entry<String, JsonElement> entry : ELEMENTS.entrySet())
+        for(Map.Entry<String, JsonElement> entry : DATA.entrySet())
         {
             object.add(entry.getKey(), entry.getValue());
         }
 
-        for(Map.Entry<String, JsonElement> entry : FALLBACK_ELEMENTS.entrySet())
+        for(Map.Entry<String, JsonElement> entry : FALLBACK_DATA.entrySet())
         {
             if(!object.has(entry.getKey()))
             {
@@ -132,63 +132,63 @@ public class Config implements IConfig
     }
 
     @Override
-    public void add(String key, JsonElement element)
+    public void addData(String key, JsonElement element)
     {
-        ELEMENTS.put(key, element);
+        DATA.put(key, element);
     }
 
     @Override
-    public void addFallback(String key, JsonElement element)
+    public void addFallbackData(String key, JsonElement element)
     {
-        FALLBACK_ELEMENTS.put(key, element);
+        FALLBACK_DATA.put(key, element);
     }
 
     @Override
-    public void addSubConfig(String key, IConfig config)
+    public void addDataBranch(String key, IConfig config)
     {
-        SUB_CONFIGS.put(key, config);
+        DATA_BRANCHES.put(key, config);
     }
 
     @Override
-    public boolean has(String key)
+    public boolean hasData(String key)
     {
-        return ELEMENTS.containsKey(key);
+        return DATA.containsKey(key);
     }
 
     @Override
-    public boolean hasFallback(String key)
+    public boolean hasFallbackData(String key)
     {
-        return FALLBACK_ELEMENTS.containsKey(key);
+        return FALLBACK_DATA.containsKey(key);
     }
 
     @Override
-    public boolean hasSubConfig(String key)
+    public boolean hasDataBranch(String key)
     {
-        return SUB_CONFIGS.containsKey(key);
+        return DATA_BRANCHES.containsKey(key);
     }
 
     @Override
-    public JsonElement get(String key)
+    public JsonElement getData(String key)
     {
-        return ELEMENTS.get(key);
+        return DATA.get(key);
     }
 
     @Override
-    public JsonElement getFallback(String key)
+    public JsonElement getFallbackData(String key)
     {
-        return FALLBACK_ELEMENTS.get(key);
+        return FALLBACK_DATA.get(key);
     }
 
     @Override
-    public Map<String, JsonElement> getElements()
+    public Map<String, JsonElement> getAllData()
     {
-        return ImmutableMap.copyOf(ELEMENTS);
+        return ImmutableMap.copyOf(DATA);
     }
 
     @Override
-    public void remove(String key)
+    public void removeData(String key)
     {
-        ELEMENTS.remove(key);
+        DATA.remove(key);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class Config implements IConfig
 
         if(value.equals("MissingNo"))
         {
-            addFallback(key, new JsonPrimitive(fallbackValue));
+            addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -212,7 +212,7 @@ public class Config implements IConfig
 
         if(value == -999)
         {
-            addFallback(key, new JsonPrimitive(fallbackValue));
+            addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -226,7 +226,7 @@ public class Config implements IConfig
 
         if(value == -999.0F)
         {
-            addFallback(key, new JsonPrimitive(fallbackValue));
+            addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -238,9 +238,9 @@ public class Config implements IConfig
     {
         boolean value = getBoolean(key);
 
-        if(!isBoolean(get(key)))
+        if(!isBoolean(getData(key)))
         {
-            addFallback(key, new JsonPrimitive(fallbackValue));
+            addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -254,7 +254,7 @@ public class Config implements IConfig
 
         if(value == null)
         {
-            addFallback(key, new JsonPrimitive(fallbackValue.name().toLowerCase()));
+            addFallbackData(key, new JsonPrimitive(fallbackValue.name().toLowerCase()));
             return fallbackValue;
         }
 
@@ -268,7 +268,7 @@ public class Config implements IConfig
 
         if(value == null)
         {
-            addFallback(key, new JsonPrimitive(fallbackValue.toString()));
+            addFallbackData(key, new JsonPrimitive(fallbackValue.toString()));
             return fallbackValue;
         }
 
@@ -292,7 +292,7 @@ public class Config implements IConfig
             }
 
             block.add("properties", properties);
-            addFallback(key, block);
+            addFallbackData(key, block);
             return fallbackValue;
         }
 
@@ -309,7 +309,7 @@ public class Config implements IConfig
             JsonObject item = new JsonObject();
             item.addProperty("item", fallbackValue.getItem().getRegistryName().toString());
             item.addProperty("meta", fallbackValue.getItemDamage());
-            addFallback(key, item);
+            addFallbackData(key, item);
             return fallbackValue;
         }
 
@@ -317,13 +317,13 @@ public class Config implements IConfig
     }
 
     @Override
-    public IConfig getSubConfig(String key, JsonObject fallbackValue)
+    public IConfig getDataBranch(String key, JsonObject fallbackValue)
     {
-        IConfig value = getSubConfig(key);
+        IConfig value = getDataBranch(key);
 
         if(value == null)
         {
-            addFallback(key, fallbackValue);
+            addFallbackData(key, fallbackValue);
             return new Config(fallbackValue.toString());
         }
 
@@ -333,9 +333,9 @@ public class Config implements IConfig
     @Override
     public String getString(String key)
     {
-        if(isString(get(key)))
+        if(isString(getData(key)))
         {
-            return get(key).getAsJsonPrimitive().getAsString();
+            return getData(key).getAsJsonPrimitive().getAsString();
         }
         else
         {
@@ -346,9 +346,9 @@ public class Config implements IConfig
     @Override
     public int getInt(String key)
     {
-        if(isInt(get(key)))
+        if(isInt(getData(key)))
         {
-            return get(key).getAsJsonPrimitive().getAsInt();
+            return getData(key).getAsJsonPrimitive().getAsInt();
         }
         else
         {
@@ -359,9 +359,9 @@ public class Config implements IConfig
     @Override
     public float getFloat(String key)
     {
-        if(isFloat(get(key)))
+        if(isFloat(getData(key)))
         {
-            return get(key).getAsJsonPrimitive().getAsFloat();
+            return getData(key).getAsJsonPrimitive().getAsFloat();
         }
         else
         {
@@ -372,9 +372,9 @@ public class Config implements IConfig
     @Override
     public boolean getBoolean(String key)
     {
-        if(isBoolean(get(key)))
+        if(isBoolean(getData(key)))
         {
-            return get(key).getAsJsonPrimitive().getAsBoolean();
+            return getData(key).getAsJsonPrimitive().getAsBoolean();
         }
         else
         {
@@ -385,9 +385,9 @@ public class Config implements IConfig
     @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
-        if(isString(get(key)))
+        if(isString(getData(key)))
         {
-            String enumIdentifier = get(key).getAsJsonPrimitive().getAsString();
+            String enumIdentifier = getData(key).getAsJsonPrimitive().getAsString();
 
             for(E value : enumClass.getEnumConstants())
             {
@@ -404,7 +404,7 @@ public class Config implements IConfig
     @Override
     public ResourceLocation getResource(String key)
     {
-        if(isString(get(key)))
+        if(isString(getData(key)))
         {
             return new ResourceLocation(getString(key));
         }
@@ -417,9 +417,9 @@ public class Config implements IConfig
     {
         JsonObject object;
 
-        if(isObject(get(key)))
+        if(isObject(getData(key)))
         {
-            object = get(key).getAsJsonObject();
+            object = getData(key).getAsJsonObject();
         }
         else
         {
@@ -479,18 +479,18 @@ public class Config implements IConfig
     @Override
     public ItemStack getItem(String key)
     {
-        IConfig itemConfig = getSubConfig(key);
+        IConfig itemConfig = getDataBranch(key);
         ItemStack stack = ItemStack.EMPTY;
 
         if(itemConfig != null)
         {
             ResourceLocation item = null;
 
-            if(isString(itemConfig.get("item")))
+            if(isString(itemConfig.getData("item")))
             {
                 item = itemConfig.getResource("item");
             }
-            else if(isString(itemConfig.get("itemBlock")))
+            else if(isString(itemConfig.getData("itemBlock")))
             {
                 item = itemConfig.getResource("itemBlock");
             }
@@ -512,19 +512,19 @@ public class Config implements IConfig
 
                 if(!stack.isEmpty())
                 {
-                    if(isString(itemConfig.get("displayName")))
+                    if(isString(itemConfig.getData("displayName")))
                     {
                         stack.setStackDisplayName(itemConfig.getString("displayName"));
                     }
 
-                    IConfig loreConfig = getSubConfig("lore");
+                    IConfig loreConfig = getDataBranch("lore");
 
-                    if(loreConfig != null && loreConfig.getElements().size() > 0)
+                    if(loreConfig != null && loreConfig.getAllData().size() > 0)
                     {
                         NBTHelper.setTag(stack);
                         NBTTagList loreList = new NBTTagList();
 
-                        for(Map.Entry<String, JsonElement> entry : loreConfig.getElements().entrySet())
+                        for(Map.Entry<String, JsonElement> entry : loreConfig.getAllData().entrySet())
                         {
                             if(isString(entry.getValue()))
                             {
@@ -539,13 +539,13 @@ public class Config implements IConfig
                         NBTHelper.setTag(stack, compound);
                     }
 
-                    List<IConfig> enchantmentConfigs = itemConfig.getSubConfigs("enchantments");
+                    List<IConfig> enchantmentConfigs = itemConfig.getDataBranches("enchantments");
 
                     if(enchantmentConfigs != null)
                     {
                         for(IConfig enchantmentConfig : enchantmentConfigs)
                         {
-                            if(isString(enchantmentConfig.get("enchantment")))
+                            if(isString(enchantmentConfig.getData("enchantment")))
                             {
                                 Enchantment enchantment = Enchantment.getEnchantmentByLocation(enchantmentConfig.getString("enchantment"));
 
@@ -573,16 +573,16 @@ public class Config implements IConfig
     }
 
     @Override
-    public IConfig getSubConfig(String key)
+    public IConfig getDataBranch(String key)
     {
-        if(hasSubConfig(key))
+        if(hasDataBranch(key))
         {
-            return SUB_CONFIGS.get(key);
+            return DATA_BRANCHES.get(key);
         }
-        else if(isObject(get(key)))
+        else if(isObject(getData(key)))
         {
-            IConfig config = new Config(get(key).toString());
-            SUB_CONFIGS.put(key, config);
+            IConfig config = new Config(getData(key).toString());
+            DATA_BRANCHES.put(key, config);
             return config;
         }
 
@@ -590,15 +590,15 @@ public class Config implements IConfig
     }
 
     @Override
-    public List<IConfig> getSubConfigs(String key, List<JsonObject> fallbackValue)
+    public List<IConfig> getDataBranches(String key, List<JsonObject> fallbackValue)
     {
-        List<IConfig> value = getSubConfigs(key);
+        List<IConfig> value = getDataBranches(key);
 
         if(value == null)
         {
             JsonArray array = new JsonArray();
             fallbackValue.forEach(array::add);
-            addFallback(key, array);
+            addFallbackData(key, array);
 
             List<IConfig> ret = new ArrayList<>();
             fallbackValue.forEach(k -> ret.add(new Config(k.toString())));
@@ -609,11 +609,11 @@ public class Config implements IConfig
     }
 
     @Override
-    public List<IConfig> getSubConfigs(String key)
+    public List<IConfig> getDataBranches(String key)
     {
-        if(isArray(get(key)))
+        if(isArray(getData(key)))
         {
-            JsonArray array = get(key).getAsJsonArray();
+            JsonArray array = getData(key).getAsJsonArray();
             List<IConfig> subConfigs = new ArrayList<>();
 
             for(JsonElement element : array)
@@ -641,7 +641,7 @@ public class Config implements IConfig
         {
             JsonArray array = new JsonArray();
             fallbackValue.forEach(array::add);
-            addFallback(key, array);
+            addFallbackData(key, array);
             return fallbackValue;
         }
 
@@ -651,9 +651,9 @@ public class Config implements IConfig
     @Override
     public List<String> getStrings(String key)
     {
-        if(isArray(get(key)))
+        if(isArray(getData(key)))
         {
-            JsonArray array = get(key).getAsJsonArray();
+            JsonArray array = getData(key).getAsJsonArray();
             List<String> strings = new ArrayList<>();
 
             for(JsonElement element : array)

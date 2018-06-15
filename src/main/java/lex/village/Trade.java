@@ -43,9 +43,9 @@ public class Trade extends MerchantRecipe implements ITrade
         ItemStack inputTwoStack = getSecondItemToBuy().copy();
         int tradesAvailable = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
 
-        IConfig outputConfig = config.getSubConfig("output");
-        IConfig inputOneConfig = config.getSubConfig("inputOne");
-        IConfig inputTwoConfig = config.getSubConfig("inputTwo");
+        IConfig outputConfig = config.getDataBranch("output");
+        IConfig inputOneConfig = config.getDataBranch("inputOne");
+        IConfig inputTwoConfig = config.getDataBranch("inputTwo");
 
         outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
         inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));

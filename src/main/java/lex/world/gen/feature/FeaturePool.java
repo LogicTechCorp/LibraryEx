@@ -38,6 +38,13 @@ public class FeaturePool extends Feature
         blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
     }
 
+    public FeaturePool(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minHeight, int maxHeight, IBlockState blockToSpawnIn, IBlockState blockToSurroundIn)
+    {
+        super(genAttempts, genProbability, randomizeGenAttempts, minHeight, maxHeight);
+        blockToSpawn = blockToSpawnIn;
+        blockToSurround = blockToSurroundIn;
+    }
+
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {

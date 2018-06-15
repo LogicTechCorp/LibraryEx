@@ -15,29 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.proxy;
+package lex.item;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.base.CaseFormat;
+import lex.api.IModData;
+import net.minecraft.item.ItemFood;
 
-@SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy
+public class ItemEdibleLibEx extends ItemFood
 {
-    @Override
-    public void preInit()
+    public ItemEdibleLibEx(IModData data, String name, int amount, float saturation, boolean isWolfFood)
     {
-
-    }
-
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
+        super(amount, saturation, isWolfFood);
+        setRegistryName(data.getModId() + ":" + name);
+        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setCreativeTab(data.getCreativeTab());
     }
 }
