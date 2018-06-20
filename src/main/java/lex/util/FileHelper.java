@@ -17,86 +17,87 @@
 
 package lex.util;
 
+import lex.LibEx;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.*;
-import java.net.MalformedURLException;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileHelper
 {
-    public static void copyDirectoryToDirectory(File sourceDirectory, File destinationDirectory)
+    public static void copyDirectoryToDirectory(URL sourceDirectory, File destinationDirectory)
     {
-        if(sourceDirectory != null && destinationDirectory != null)
+        String sourcePath = sourceDirectory.getPath();
+
+        if(LibEx.IS_DEV_ENV)
         {
-            String sourcePath = sourceDirectory.getPath();
-            String destinationPath = destinationDirectory.getPath();
-            URL resource = null;
+            if(sourceDirectory.getProtocol().equals("file"))
+            {
+                sourcePath = sourcePath.substring(1);
 
-            try
-            {
-                resource = sourceDirectory.toURI().toURL();
-            }
-            catch(MalformedURLException e)
-            {
-                e.printStackTrace();
-            }
-
-            if(resource != null)
-            {
-                if(resource.getProtocol().equals("jar"))
+                for(File file : FileUtils.listFilesAndDirs(new File(sourceDirectory.getFile()), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
                 {
-                    try
+                    File destinationFile = new File(destinationDirectory, file.getPath().substring(sourcePath.length()));
+
+                    if(!destinationFile.exists())
                     {
-                        JarFile jar = new JarFile(sourceDirectory);
-                        Enumeration<? extends JarEntry> jarEntries = jar.entries();
-
-                        while(jarEntries.hasMoreElements())
+                        if(getFileExtension(destinationFile).equals(""))
                         {
-                            File jarFile = new File(jarEntries.nextElement().toString());
-                            File destinationFile = new File(destinationPath, jarFile.getName());
-
-                            if(!destinationFile.exists())
-                            {
-                                if(getFileExtension(destinationFile).equals(""))
-                                {
-                                    destinationFile.mkdirs();
-                                }
-                                else
-                                {
-                                    copyFile(jarFile, destinationFile);
-                                }
-                            }
+                            destinationFile.mkdirs();
+                        }
+                        else
+                        {
+                            copyFile(file, destinationFile);
                         }
                     }
-                    catch(IOException e)
-                    {
-                        e.printStackTrace();
-                    }
                 }
-                else if(resource.getProtocol().equals("file"))
-                {
-                    for(File file : FileUtils.listFilesAndDirs(sourceDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
-                    {
-                        File destinationFile = new File(destinationPath, file.getPath().substring(sourcePath.length()));
+            }
+        }
+        else
+        {
+            if(sourceDirectory.getProtocol().equals("jar"))
+            {
+                sourcePath = sourcePath.substring(sourcePath.indexOf(".jar!/") + 6);
 
-                        if(!destinationFile.exists())
+                try
+                {
+                    ZipFile zipFile = ((JarURLConnection) sourceDirectory.openConnection()).getJarFile();
+                    Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+
+                    while(zipEntries.hasMoreElements())
+                    {
+                        ZipEntry zipEntry = zipEntries.nextElement();
+                        String zipName = zipEntry.getName();
+
+                        if(!zipName.contains(sourcePath))
                         {
-                            if(getFileExtension(destinationFile).equals(""))
+                            continue;
+                        }
+
+                        File file = new File(destinationDirectory, zipName.substring(sourcePath.length()));
+
+                        if(!file.exists())
+                        {
+                            if(zipEntry.isDirectory())
                             {
-                                destinationFile.mkdirs();
+                                file.mkdirs();
                             }
                             else
                             {
-                                copyFile(file, destinationFile);
+                                copyFile(zipFile.getInputStream(zipEntry), new BufferedOutputStream(new FileOutputStream(file)));
                             }
                         }
                     }
+                }
+                catch(IOException e)
+                {
+                    e.printStackTrace();
                 }
             }
         }
@@ -108,15 +109,26 @@ public class FileHelper
         return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
     }
 
+    private static void copyFile(InputStream inputStream, OutputStream outputStream)
+    {
+        try
+        {
+            IOUtils.copy(inputStream, outputStream);
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private static void copyFile(File sourceFile, File destinationFile)
     {
         try
         {
-            InputStream inputStream = new FileInputStream(sourceFile);
-            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destinationFile));
-            IOUtils.copy(inputStream, outputStream);
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
+            copyFile(new FileInputStream(sourceFile), new BufferedOutputStream(new FileOutputStream(destinationFile)));
 
         }
         catch(IOException e)
