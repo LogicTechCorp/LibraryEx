@@ -18,8 +18,7 @@
 package lex.world.gen.feature;
 
 import lex.LibEx;
-import lex.api.config.IConfig;
-import lex.api.world.gen.feature.IFeature;
+import lex.config.Config;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,13 +41,13 @@ public class FeatureRegistry
         }
     }
 
-    public static IFeature createFeature(ResourceLocation name, IConfig config)
+    public static Feature createFeature(ResourceLocation name, Config config)
     {
         if(FEATURES.containsKey(name))
         {
             try
             {
-                return FEATURES.get(name).getConstructor(IConfig.class).newInstance(config);
+                return FEATURES.get(name).getConstructor(Config.class).newInstance(config);
             }
             catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
             {

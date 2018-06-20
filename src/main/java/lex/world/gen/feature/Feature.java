@@ -17,8 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
-import lex.api.world.gen.feature.IFeature;
+import lex.config.Config;
 import lex.util.NumberHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,7 +25,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 
 import java.util.Random;
 
-public abstract class Feature extends WorldGenerator implements IFeature
+public abstract class Feature extends WorldGenerator
 {
     protected int genAttempts;
     protected float genProbability;
@@ -34,13 +33,13 @@ public abstract class Feature extends WorldGenerator implements IFeature
     protected int minHeight;
     protected int maxHeight;
 
-    public Feature(IConfig config)
+    public Feature(Config config)
     {
         genAttempts = config.getInt("genAttempts", 4);
         genProbability = config.getFloat("genProbability", 1.0F);
         randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
-        minHeight = config.getInt("minHeight", 16);
-        maxHeight = config.getInt("maxHeight", 112);
+        minHeight = config.getInt("minHeight", 0);
+        maxHeight = config.getInt("maxHeight", 255);
     }
 
     public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minHeightIn, int maxHeightIn)
@@ -55,13 +54,11 @@ public abstract class Feature extends WorldGenerator implements IFeature
     @Override
     public abstract boolean generate(World world, Random rand, BlockPos pos);
 
-    @Override
     public int getGenAttempts()
     {
         return genAttempts;
     }
 
-    @Override
     public int getGenAttempts(Random rand)
     {
         int attempts = genAttempts;
@@ -78,25 +75,21 @@ public abstract class Feature extends WorldGenerator implements IFeature
         return attempts;
     }
 
-    @Override
     public float getGenProbability()
     {
         return genProbability;
     }
 
-    @Override
     public boolean randomizeGenAttempts()
     {
         return randomizeGenAttempts;
     }
 
-    @Override
     public int getMinHeight()
     {
         return minHeight;
     }
 
-    @Override
     public int getMaxHeight()
     {
         return maxHeight;

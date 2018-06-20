@@ -18,7 +18,7 @@
 package lex.potion;
 
 import com.google.common.base.CaseFormat;
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 

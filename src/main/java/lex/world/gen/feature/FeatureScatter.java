@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -33,7 +33,7 @@ public class FeatureScatter extends Feature
     private IBlockState blockToTarget;
     private Placement placement;
 
-    public FeatureScatter(IConfig config)
+    public FeatureScatter(Config config)
     {
         super(config);
         blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());

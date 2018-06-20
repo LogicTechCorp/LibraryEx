@@ -18,7 +18,7 @@
 package lex.item;
 
 import com.google.common.base.CaseFormat;
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.item.Item;
 
 public class ItemLibEx extends Item

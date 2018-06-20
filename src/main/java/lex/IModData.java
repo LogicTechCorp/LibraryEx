@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package lex.api.world.gen.feature;
+package lex;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.creativetab.CreativeTabs;
 
-import java.util.Random;
-
-public interface IFeature
+public interface IModData
 {
-    boolean generate(World world, Random rand, BlockPos pos);
+    String getModId();
 
-    int getGenAttempts();
-
-    int getGenAttempts(Random rand);
-
-    float getGenProbability();
-
-    boolean randomizeGenAttempts();
-
-    int getMinHeight();
-
-    int getMaxHeight();
+    CreativeTabs getCreativeTab();
 }

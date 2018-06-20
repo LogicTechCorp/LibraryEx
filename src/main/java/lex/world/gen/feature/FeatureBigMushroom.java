@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -33,7 +33,7 @@ public class FeatureBigMushroom extends Feature
     private IBlockState blockToPlaceOn;
     private Shape shape;
 
-    public FeatureBigMushroom(IConfig config)
+    public FeatureBigMushroom(Config config)
     {
         super(config);
         mushroomCap = config.getBlock("mushroomCap", Blocks.BARRIER.getDefaultState());

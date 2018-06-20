@@ -17,7 +17,7 @@
 
 package lex.block;
 
-import lex.api.IModData;
+import lex.IModData;
 import lex.tileentity.TileEntityInventory;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

@@ -19,7 +19,6 @@ package lex.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
-import lex.api.config.IConfig;
 import lex.util.BlockStateHelper;
 import lex.util.NBTHelper;
 import lex.util.NumberHelper;
@@ -49,13 +48,13 @@ import java.util.Map;
 
 import static lex.util.ConfigHelper.*;
 
-public class Config implements IConfig
+public class Config
 {
     protected static final JsonParser JSON_PARSER = new JsonParser();
 
     protected final Map<String, JsonElement> DATA = new LinkedHashMap<>();
     protected final Map<String, JsonElement> FALLBACK_DATA = new LinkedHashMap<>();
-    protected final Map<String, IConfig> DATA_BRANCHES = new LinkedHashMap<>();
+    protected final Map<String, Config> DATA_BRANCHES = new LinkedHashMap<>();
 
     public Config(File configFile)
     {
@@ -81,7 +80,6 @@ public class Config implements IConfig
         deserialize(jsonString);
     }
 
-    @Override
     public void deserialize(String jsonString)
     {
         if(!Strings.isBlank(jsonString))
@@ -98,12 +96,11 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public JsonElement serialize()
     {
         JsonObject object = new JsonObject();
 
-        for(Map.Entry<String, IConfig> entry : DATA_BRANCHES.entrySet())
+        for(Map.Entry<String, Config> entry : DATA_BRANCHES.entrySet())
         {
             if(hasData(entry.getKey()))
             {
@@ -131,67 +128,56 @@ public class Config implements IConfig
         return object;
     }
 
-    @Override
     public void addData(String key, JsonElement element)
     {
         DATA.put(key, element);
     }
 
-    @Override
     public void addFallbackData(String key, JsonElement element)
     {
         FALLBACK_DATA.put(key, element);
     }
 
-    @Override
-    public void addDataBranch(String key, IConfig config)
+    public void addDataBranch(String key, Config config)
     {
         DATA_BRANCHES.put(key, config);
     }
 
-    @Override
     public boolean hasData(String key)
     {
         return DATA.containsKey(key);
     }
 
-    @Override
     public boolean hasFallbackData(String key)
     {
         return FALLBACK_DATA.containsKey(key);
     }
 
-    @Override
     public boolean hasDataBranch(String key)
     {
         return DATA_BRANCHES.containsKey(key);
     }
 
-    @Override
     public JsonElement getData(String key)
     {
         return DATA.get(key);
     }
 
-    @Override
     public JsonElement getFallbackData(String key)
     {
         return FALLBACK_DATA.get(key);
     }
 
-    @Override
     public Map<String, JsonElement> getAllData()
     {
         return ImmutableMap.copyOf(DATA);
     }
 
-    @Override
     public void removeData(String key)
     {
         DATA.remove(key);
     }
 
-    @Override
     public String getString(String key, String fallbackValue)
     {
         String value = getString(key);
@@ -205,7 +191,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public int getInt(String key, int fallbackValue)
     {
         int value = getInt(key);
@@ -219,7 +204,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public float getFloat(String key, float fallbackValue)
     {
         float value = getFloat(key);
@@ -233,7 +217,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public boolean getBoolean(String key, boolean fallbackValue)
     {
         boolean value = getBoolean(key);
@@ -247,7 +230,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue)
     {
         E value = getEnum(key, enumClass);
@@ -261,7 +243,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public ResourceLocation getResource(String key, ResourceLocation fallbackValue)
     {
         ResourceLocation value = getResource(key);
@@ -275,7 +256,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
         IBlockState value = getBlock(key);
@@ -299,7 +279,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public ItemStack getItem(String key, ItemStack fallbackValue)
     {
         ItemStack value = getItem(key);
@@ -316,10 +295,9 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
-    public IConfig getDataBranch(String key, JsonObject fallbackValue)
+    public Config getDataBranch(String key, JsonObject fallbackValue)
     {
-        IConfig value = getDataBranch(key);
+        Config value = getDataBranch(key);
 
         if(value == null)
         {
@@ -330,7 +308,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public String getString(String key)
     {
         if(isString(getData(key)))
@@ -343,7 +320,6 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public int getInt(String key)
     {
         if(isInt(getData(key)))
@@ -356,7 +332,6 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public float getFloat(String key)
     {
         if(isFloat(getData(key)))
@@ -369,7 +344,6 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public boolean getBoolean(String key)
     {
         if(isBoolean(getData(key)))
@@ -382,7 +356,6 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
         if(isString(getData(key)))
@@ -401,7 +374,6 @@ public class Config implements IConfig
         return null;
     }
 
-    @Override
     public ResourceLocation getResource(String key)
     {
         if(isString(getData(key)))
@@ -412,7 +384,6 @@ public class Config implements IConfig
         return null;
     }
 
-    @Override
     public IBlockState getBlock(String key)
     {
         JsonObject object;
@@ -476,10 +447,9 @@ public class Config implements IConfig
         return null;
     }
 
-    @Override
     public ItemStack getItem(String key)
     {
-        IConfig itemConfig = getDataBranch(key);
+        Config itemConfig = getDataBranch(key);
         ItemStack stack = ItemStack.EMPTY;
 
         if(itemConfig != null)
@@ -517,7 +487,7 @@ public class Config implements IConfig
                         stack.setStackDisplayName(itemConfig.getString("displayName"));
                     }
 
-                    IConfig loreConfig = getDataBranch("lore");
+                    Config loreConfig = getDataBranch("lore");
 
                     if(loreConfig != null && loreConfig.getAllData().size() > 0)
                     {
@@ -539,11 +509,11 @@ public class Config implements IConfig
                         NBTHelper.setTag(stack, compound);
                     }
 
-                    List<IConfig> enchantmentConfigs = itemConfig.getDataBranches("enchantments");
+                    List<Config> enchantmentConfigs = itemConfig.getDataBranches("enchantments");
 
                     if(enchantmentConfigs != null)
                     {
-                        for(IConfig enchantmentConfig : enchantmentConfigs)
+                        for(Config enchantmentConfig : enchantmentConfigs)
                         {
                             if(isString(enchantmentConfig.getData("enchantment")))
                             {
@@ -572,8 +542,7 @@ public class Config implements IConfig
         return stack;
     }
 
-    @Override
-    public IConfig getDataBranch(String key)
+    public Config getDataBranch(String key)
     {
         if(hasDataBranch(key))
         {
@@ -581,7 +550,7 @@ public class Config implements IConfig
         }
         else if(isObject(getData(key)))
         {
-            IConfig config = new Config(getData(key).toString());
+            Config config = new Config(getData(key).toString());
             DATA_BRANCHES.put(key, config);
             return config;
         }
@@ -589,10 +558,9 @@ public class Config implements IConfig
         return null;
     }
 
-    @Override
-    public List<IConfig> getDataBranches(String key, List<JsonObject> fallbackValue)
+    public List<Config> getDataBranches(String key, List<JsonObject> fallbackValue)
     {
-        List<IConfig> value = getDataBranches(key);
+        List<Config> value = getDataBranches(key);
 
         if(value == null)
         {
@@ -600,7 +568,7 @@ public class Config implements IConfig
             fallbackValue.forEach(array::add);
             addFallbackData(key, array);
 
-            List<IConfig> ret = new ArrayList<>();
+            List<Config> ret = new ArrayList<>();
             fallbackValue.forEach(k -> ret.add(new Config(k.toString())));
             return ret;
         }
@@ -608,13 +576,12 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
-    public List<IConfig> getDataBranches(String key)
+    public List<Config> getDataBranches(String key)
     {
         if(isArray(getData(key)))
         {
             JsonArray array = getData(key).getAsJsonArray();
-            List<IConfig> subConfigs = new ArrayList<>();
+            List<Config> subConfigs = new ArrayList<>();
 
             for(JsonElement element : array)
             {
@@ -632,7 +599,6 @@ public class Config implements IConfig
         }
     }
 
-    @Override
     public List<String> getStrings(String key, List<String> fallbackValue)
     {
         List<String> value = getStrings(key);
@@ -648,7 +614,6 @@ public class Config implements IConfig
         return value;
     }
 
-    @Override
     public List<String> getStrings(String key)
     {
         if(isArray(getData(key)))

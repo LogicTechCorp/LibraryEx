@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;
@@ -33,7 +33,7 @@ public class FeatureOre extends Feature
     private IBlockState blockToReplace;
     private int veinSize;
 
-    public FeatureOre(IConfig config)
+    public FeatureOre(Config config)
     {
         super(config);
         blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());

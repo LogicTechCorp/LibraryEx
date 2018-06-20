@@ -18,7 +18,7 @@
 package lex.block;
 
 import com.google.common.base.CaseFormat;
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;

@@ -20,10 +20,9 @@ package lex.world.biome;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lex.api.config.IConfig;
-import lex.api.world.biome.IBiomeWrapper;
-import lex.api.world.gen.feature.IFeature;
+import lex.config.Config;
 import lex.world.gen.GenerationStage;
+import lex.world.gen.feature.Feature;
 import lex.world.gen.feature.FeatureRegistry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -37,18 +36,18 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.*;
 
-public class BiomeWrapper implements IBiomeWrapper
+public class BiomeWrapper
 {
     protected Biome biome;
     protected int weight;
     protected Map<String, IBlockState> blocks = new HashMap<>();
-    protected Map<GenerationStage, List<IFeature>> generationStageFeatures = new HashMap<>();
+    protected Map<GenerationStage, List<Feature>> generationStageFeatures = new HashMap<>();
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> spawnableMobs = new HashMap<>();
     protected boolean enabled;
     protected boolean genDefaultFeatures;
-    protected IConfig config;
+    protected Config config;
 
-    public BiomeWrapper(IConfig configIn)
+    public BiomeWrapper(Config configIn)
     {
         config = configIn;
         parse();
@@ -58,7 +57,7 @@ public class BiomeWrapper implements IBiomeWrapper
     {
         biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
         weight = config.getInt("weight", 10);
-        IConfig blockConfig = config.getDataBranch("blocks", new JsonObject());
+        Config blockConfig = config.getDataBranch("blocks", new JsonObject());
         blockConfig.getBlock("topBlock", biome.topBlock);
         blockConfig.getBlock("fillerBlock", biome.fillerBlock);
 
@@ -70,7 +69,7 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        List<IConfig> entityConfigs = config.getDataBranches("entities", new ArrayList<>());
+        List<Config> entityConfigs = config.getDataBranches("entities", new ArrayList<>());
         List<JsonObject> entityObjects = new ArrayList<>();
 
         for(EnumCreatureType creatureType : EnumCreatureType.values())
@@ -81,11 +80,11 @@ public class BiomeWrapper implements IBiomeWrapper
                 ResourceLocation entityName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
                 boolean containsEntry = false;
 
-                Iterator<IConfig> configIter = entityConfigs.iterator();
+                Iterator<Config> configIter = entityConfigs.iterator();
 
                 while(configIter.hasNext())
                 {
-                    IConfig entityConfig = configIter.next();
+                    Config entityConfig = configIter.next();
 
                     if(entityName != null && entityConfig.getString("entity").equals(entityName.toString()))
                     {
@@ -115,7 +114,7 @@ public class BiomeWrapper implements IBiomeWrapper
         config.removeData("entities");
         entityConfigs = config.getDataBranches("entities", entityObjects);
 
-        for(IConfig entityConfig : entityConfigs)
+        for(Config entityConfig : entityConfigs)
         {
             EntityEntry entry = ForgeRegistries.ENTITIES.getValue(entityConfig.getResource("entity"));
 
@@ -131,16 +130,16 @@ public class BiomeWrapper implements IBiomeWrapper
             }
         }
 
-        List<IConfig> featureConfigs = config.getDataBranches("features", new ArrayList<>());
+        List<Config> featureConfigs = config.getDataBranches("features", new ArrayList<>());
         List<JsonObject> featureObjects = new ArrayList<>();
 
-        for(IConfig featureConfig : featureConfigs)
+        for(Config featureConfig : featureConfigs)
         {
-            IFeature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
-            GenerationStage generationStage = featureConfig.getEnum("genStage", GenerationStage.class, GenerationStage.POST_DECORATE);
+            Feature feature = FeatureRegistry.createFeature(featureConfig.getResource("feature"), featureConfig);
 
             if(feature != null && featureConfig.getBoolean("generate", true))
             {
+                GenerationStage generationStage = featureConfig.getEnum("genStage", GenerationStage.class, GenerationStage.POST_DECORATE);
                 generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
             }
 
@@ -153,13 +152,11 @@ public class BiomeWrapper implements IBiomeWrapper
         genDefaultFeatures = config.getBoolean("genDefaultFeatures", true);
     }
 
-    @Override
     public Biome getBiome()
     {
         return biome;
     }
 
-    @Override
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
         IBlockState value = getBlock(key);
@@ -174,37 +171,31 @@ public class BiomeWrapper implements IBiomeWrapper
         return value;
     }
 
-    @Override
     public IBlockState getBlock(String key)
     {
         return blocks.get(key);
     }
 
-    @Override
     public List<IBlockState> getBlocks()
     {
         return ImmutableList.copyOf(blocks.values());
     }
 
-    @Override
-    public List<IFeature> getFeatures(GenerationStage generationStage)
+    public List<Feature> getFeatures(GenerationStage generationStage)
     {
         return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
     }
 
-    @Override
     public List<Biome.SpawnListEntry> getSpawnableMobs(EnumCreatureType creatureType)
     {
         return ImmutableList.copyOf(spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()));
     }
 
-    @Override
     public boolean isEnabled()
     {
         return enabled;
     }
 
-    @Override
     public boolean shouldGenDefaultFeatures()
     {
         return genDefaultFeatures;

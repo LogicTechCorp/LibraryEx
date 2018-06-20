@@ -17,7 +17,7 @@
 
 package lex.fluid;
 
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;

@@ -21,7 +21,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import lex.LibEx;
-import lex.api.config.IConfig;
 import lex.config.Config;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -36,7 +35,7 @@ public class ConfigHelper
 {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    public static void saveConfig(IConfig config, File configFile)
+    public static void saveConfig(Config config, File configFile)
     {
         if(configFile != null)
         {
@@ -58,9 +57,9 @@ public class ConfigHelper
         }
     }
 
-    public static List<IConfig> getFileConfigs(File directory)
+    public static List<Config> getFileConfigs(File directory)
     {
-        List<IConfig> configs = new ArrayList<>();
+        List<Config> configs = new ArrayList<>();
 
         if(directory.exists())
         {

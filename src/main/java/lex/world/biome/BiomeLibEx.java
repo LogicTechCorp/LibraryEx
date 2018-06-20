@@ -17,7 +17,7 @@
 
 package lex.world.biome;
 
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.world.biome.Biome;
 
 public class BiomeLibEx extends Biome

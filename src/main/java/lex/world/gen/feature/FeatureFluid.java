@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public class FeatureFluid extends Feature
     private IBlockState blockToTarget;
     private boolean hidden;
 
-    public FeatureFluid(IConfig config)
+    public FeatureFluid(Config config)
     {
         super(config);
         blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());

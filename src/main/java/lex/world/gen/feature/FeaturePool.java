@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -31,7 +31,7 @@ public class FeaturePool extends Feature
     private IBlockState blockToSpawn;
     private IBlockState blockToSurround;
 
-    public FeaturePool(IConfig config)
+    public FeaturePool(Config config)
     {
         super(config);
         blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());

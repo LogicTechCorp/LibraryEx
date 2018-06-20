@@ -17,25 +17,23 @@
 
 package lex.village;
 
-import lex.api.config.IConfig;
-import lex.api.village.ITrade;
+import lex.config.Config;
 import lex.util.NumberHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
-public class Trade extends MerchantRecipe implements ITrade
+public class Trade extends MerchantRecipe
 {
     protected int tradeLevel;
-    private IConfig config;
+    private Config config;
 
-    public Trade(IConfig configIn)
+    public Trade(Config configIn)
     {
         super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7));
         tradeLevel = configIn.getInt("tradeLevel", 1);
         config = configIn;
     }
 
-    @Override
     public MerchantRecipe randomize()
     {
         ItemStack outputStack = getItemToSell().copy();
@@ -43,9 +41,9 @@ public class Trade extends MerchantRecipe implements ITrade
         ItemStack inputTwoStack = getSecondItemToBuy().copy();
         int tradesAvailable = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
 
-        IConfig outputConfig = config.getDataBranch("output");
-        IConfig inputOneConfig = config.getDataBranch("inputOne");
-        IConfig inputTwoConfig = config.getDataBranch("inputTwo");
+        Config outputConfig = config.getDataBranch("output");
+        Config inputOneConfig = config.getDataBranch("inputOne");
+        Config inputTwoConfig = config.getDataBranch("inputTwo");
 
         outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
         inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
@@ -58,7 +56,6 @@ public class Trade extends MerchantRecipe implements ITrade
         return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);
     }
 
-    @Override
     public int getTradeLevel()
     {
         return tradeLevel;

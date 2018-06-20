@@ -17,7 +17,7 @@
 
 package lex.sound;
 
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 

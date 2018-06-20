@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import lex.util.StructureHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -50,7 +50,7 @@ public class FeatureStructure extends Feature
     private Block ignoredBlock;
     private float clearancePercentage;
 
-    public FeatureStructure(IConfig config)
+    public FeatureStructure(Config config)
     {
         super(config);
         structure = config.getResource("structure");

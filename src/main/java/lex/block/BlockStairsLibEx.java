@@ -18,7 +18,7 @@
 package lex.block;
 
 import com.google.common.base.CaseFormat;
-import lex.api.IModData;
+import lex.IModData;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;

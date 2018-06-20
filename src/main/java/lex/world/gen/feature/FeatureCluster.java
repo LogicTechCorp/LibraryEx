@@ -17,7 +17,7 @@
 
 package lex.world.gen.feature;
 
-import lex.api.config.IConfig;
+import lex.config.Config;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -32,7 +32,7 @@ public class FeatureCluster extends Feature
     private IBlockState blockToAttachTo;
     private EnumFacing direction;
 
-    public FeatureCluster(IConfig config)
+    public FeatureCluster(Config config)
     {
         super(config);
         blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
