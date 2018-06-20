@@ -59,24 +59,18 @@ public class LibEx
     @Mod.EventHandler
     public void onFMLPreInitialization(FMLPreInitializationEvent event)
     {
-        LOGGER.info("PreInitialization started.");
         proxy.preInit();
-        LOGGER.info("PreInitialization completed.");
     }
 
     @Mod.EventHandler
     public void onFMLInitialization(FMLInitializationEvent event)
     {
-        LOGGER.info("Initialization started.");
         proxy.init();
-        LOGGER.info("Initialization completed.");
     }
 
     @Mod.EventHandler
     public void onFMLPostInitialization(FMLPostInitializationEvent event)
     {
-        LOGGER.info("PostInitialization started.");
         proxy.postInit();
-        LOGGER.info("PostInitialization completed.");
     }
 }
