@@ -102,7 +102,7 @@ public class FeatureStructure extends Feature
         if(spawnPos != null && spawnPos.getY() >= minHeight && spawnPos.getY() <= maxHeight)
         {
             template.addBlocksToWorld(world, spawnPos, placementSettings);
-            handleDataBlocks(world, pos, template, placementSettings, rand);
+            handleDataBlocks(world, spawnPos, template, placementSettings, rand);
             return true;
         }
 

@@ -362,11 +362,18 @@ public class Config
         {
             String enumIdentifier = getData(key).getAsJsonPrimitive().getAsString();
 
-            for(E value : enumClass.getEnumConstants())
+            if(enumIdentifier.equalsIgnoreCase("random") || enumIdentifier.equalsIgnoreCase("rand"))
             {
-                if(value.name().equalsIgnoreCase(enumIdentifier))
+                return enumClass.getEnumConstants()[NumberHelper.getRand().nextInt(enumClass.getEnumConstants().length)];
+            }
+            else
+            {
+                for(E value : enumClass.getEnumConstants())
                 {
-                    return value;
+                    if(value.name().equalsIgnoreCase(enumIdentifier))
+                    {
+                        return value;
+                    }
                 }
             }
         }
