@@ -54,8 +54,9 @@ public class Config
     protected Map<String, JsonElement> DATA;
     protected Map<String, JsonElement> FALLBACK_DATA;
     protected Map<String, Config> DATA_BRANCHES;
+    private boolean keepDataOrder;
 
-    public Config(File configFile, boolean keepDataOrder)
+    public Config(File configFile, boolean keepDataOrderIn)
     {
         String jsonString = new JsonObject().toString();
 
@@ -71,7 +72,9 @@ public class Config
             }
         }
 
-        if(keepDataOrder)
+        keepDataOrder = keepDataOrderIn;
+
+        if(keepDataOrderIn)
         {
             DATA = new LinkedHashMap<>();
             FALLBACK_DATA = new LinkedHashMap<>();
@@ -87,8 +90,23 @@ public class Config
         deserialize(jsonString);
     }
 
-    public Config(String jsonString)
+    public Config(String jsonString, boolean keepDataOrderIn)
     {
+        keepDataOrder = keepDataOrderIn;
+
+        if(keepDataOrderIn)
+        {
+            DATA = new LinkedHashMap<>();
+            FALLBACK_DATA = new LinkedHashMap<>();
+            DATA_BRANCHES = new LinkedHashMap<>();
+        }
+        else
+        {
+            DATA = new HashMap<>();
+            FALLBACK_DATA = new HashMap<>();
+            DATA_BRANCHES = new HashMap<>();
+        }
+
         deserialize(jsonString);
     }
 
@@ -314,7 +332,7 @@ public class Config
         if(value == null)
         {
             addFallbackData(key, fallbackValue);
-            return new Config(fallbackValue.toString());
+            return new Config(fallbackValue.toString(), keepDataOrder);
         }
 
         return value;
@@ -569,7 +587,7 @@ public class Config
         }
         else if(isObject(getData(key)))
         {
-            Config config = new Config(getData(key).toString());
+            Config config = new Config(getData(key).toString(), keepDataOrder);
             DATA_BRANCHES.put(key, config);
             return config;
         }
@@ -588,7 +606,7 @@ public class Config
             addFallbackData(key, array);
 
             List<Config> ret = new ArrayList<>();
-            fallbackValue.forEach(k -> ret.add(new Config(k.toString())));
+            fallbackValue.forEach(k -> ret.add(new Config(k.toString(), keepDataOrder)));
             return ret;
         }
 
@@ -606,7 +624,7 @@ public class Config
             {
                 if(isObject(element))
                 {
-                    subConfigs.add(new Config(element.toString()));
+                    subConfigs.add(new Config(element.toString(), keepDataOrder));
                 }
             }
 
