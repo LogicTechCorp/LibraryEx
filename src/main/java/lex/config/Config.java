@@ -19,6 +19,7 @@ package lex.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
+import lex.LibEx;
 import lex.util.BlockStateHelper;
 import lex.util.NBTHelper;
 import lex.util.NumberHelper;
@@ -41,22 +42,20 @@ import org.apache.logging.log4j.util.Strings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static lex.util.ConfigHelper.*;
 
 public class Config
 {
     protected static final JsonParser JSON_PARSER = new JsonParser();
+    protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    protected final Map<String, JsonElement> DATA = new LinkedHashMap<>();
-    protected final Map<String, JsonElement> FALLBACK_DATA = new LinkedHashMap<>();
-    protected final Map<String, Config> DATA_BRANCHES = new LinkedHashMap<>();
+    protected Map<String, JsonElement> DATA;
+    protected Map<String, JsonElement> FALLBACK_DATA;
+    protected Map<String, Config> DATA_BRANCHES;
 
-    public Config(File configFile)
+    public Config(File configFile, boolean keepDataOrder)
     {
         String jsonString = new JsonObject().toString();
 
@@ -70,6 +69,19 @@ public class Config
             {
                 e.printStackTrace();
             }
+        }
+
+        if(keepDataOrder)
+        {
+            DATA = new LinkedHashMap<>();
+            FALLBACK_DATA = new LinkedHashMap<>();
+            DATA_BRANCHES = new LinkedHashMap<>();
+        }
+        else
+        {
+            DATA = new HashMap<>();
+            FALLBACK_DATA = new HashMap<>();
+            DATA_BRANCHES = new HashMap<>();
         }
 
         deserialize(jsonString);
@@ -641,6 +653,28 @@ public class Config
         else
         {
             return null;
+        }
+    }
+
+    public void save(File configFile)
+    {
+        if(configFile != null)
+        {
+            if(configFile.getPath().startsWith("~"))
+            {
+                configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
+            }
+
+            String jsonString = GSON.toJson(serialize());
+
+            try
+            {
+                FileUtils.write(configFile, jsonString, Charset.defaultCharset());
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }
