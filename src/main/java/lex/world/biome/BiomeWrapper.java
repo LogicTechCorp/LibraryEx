@@ -53,7 +53,7 @@ public class BiomeWrapper
         parse();
     }
 
-    private void parse()
+    protected void parse()
     {
         biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
 
