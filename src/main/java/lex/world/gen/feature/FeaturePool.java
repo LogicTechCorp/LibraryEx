@@ -38,9 +38,9 @@ public class FeaturePool extends Feature
         blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
     }
 
-    public FeaturePool(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minHeight, int maxHeight, IBlockState blockToSpawnIn, IBlockState blockToSurroundIn)
+    public FeaturePool(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawnIn, IBlockState blockToSurroundIn)
     {
-        super(genAttempts, genProbability, randomizeGenAttempts, minHeight, maxHeight);
+        super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         blockToSpawn = blockToSpawnIn;
         blockToSurround = blockToSurroundIn;
     }
@@ -53,12 +53,12 @@ public class FeaturePool extends Feature
             return false;
         }
 
-        for(pos = pos.add(-8, 0, -8); pos.getY() > minHeight && world.isAirBlock(pos); pos = pos.down())
+        for(pos = pos.add(-8, 0, -8); pos.getY() > minGenHeight && world.isAirBlock(pos); pos = pos.down())
         {
 
         }
 
-        if(pos.getY() <= 4 || pos.getY() < minHeight)
+        if(pos.getY() <= 4 || pos.getY() < minGenHeight)
         {
             return false;
         }

@@ -208,6 +208,21 @@ public class Config
         DATA.remove(key);
     }
 
+    public void removeFallbackData(String key)
+    {
+        FALLBACK_DATA.remove(key);
+    }
+
+    public JsonElement replaceData(String key, JsonElement data)
+    {
+        return DATA.replace(key, data);
+    }
+
+    public JsonElement replaceFallbackData(String key, JsonElement data)
+    {
+        return FALLBACK_DATA.replace(key, data);
+    }
+
     public String getString(String key, String fallbackValue)
     {
         String value = getString(key);

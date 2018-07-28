@@ -17,6 +17,7 @@
 
 package lex.world.gen.feature;
 
+import com.google.gson.JsonPrimitive;
 import lex.config.Config;
 import lex.util.NumberHelper;
 import net.minecraft.util.math.BlockPos;
@@ -30,25 +31,45 @@ public abstract class Feature extends WorldGenerator
     protected int genAttempts;
     protected float genProbability;
     protected boolean randomizeGenAttempts;
-    protected int minHeight;
-    protected int maxHeight;
+    protected int minGenHeight;
+    protected int maxGenHeight;
 
     public Feature(Config config)
     {
         genAttempts = config.getInt("genAttempts", 4);
         genProbability = config.getFloat("genProbability", 1.0F);
         randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
-        minHeight = config.getInt("minHeight", 0);
-        maxHeight = config.getInt("maxHeight", 255);
+
+        if(config.hasData("minHeight"))
+        {
+            minGenHeight = config.getInt("minHeight");
+            config.removeData("minHeight");
+            config.addData("minGenHeight", new JsonPrimitive(minGenHeight));
+        }
+        else
+        {
+            minGenHeight = config.getInt("minGenHeight", 0);
+        }
+
+        if(config.hasData("maxHeight"))
+        {
+            maxGenHeight = config.getInt("maxHeight");
+            config.removeData("maxHeight");
+            config.addData("maxGenHeight", new JsonPrimitive(maxGenHeight));
+        }
+        else
+        {
+            maxGenHeight = config.getInt("maxGenHeight", 255);
+        }
     }
 
-    public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minHeightIn, int maxHeightIn)
+    public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minGenHeightIn, int maxGenHeightIn)
     {
         genAttempts = genAttemptsIn;
         genProbability = genProbabilityIn;
         randomizeGenAttempts = randomizeGenAttemptsIn;
-        minHeight = minHeightIn;
-        maxHeight = maxHeightIn;
+        minGenHeight = minGenHeightIn;
+        maxGenHeight = maxGenHeightIn;
     }
 
     @Override
@@ -87,11 +108,11 @@ public abstract class Feature extends WorldGenerator
 
     public int getMinHeight()
     {
-        return minHeight;
+        return minGenHeight;
     }
 
     public int getMaxHeight()
     {
-        return maxHeight;
+        return maxGenHeight;
     }
 }

@@ -61,9 +61,9 @@ public class FeatureStructure extends Feature
         clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
     }
 
-    public FeatureStructure(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minHeight, int maxHeight, ResourceLocation structureIn, Type typeIn, Mirror mirrorIn, Rotation rotationIn, Block ignoredBlockIn, float clearancePercentageIn)
+    public FeatureStructure(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, ResourceLocation structureIn, Type typeIn, Mirror mirrorIn, Rotation rotationIn, Block ignoredBlockIn, float clearancePercentageIn)
     {
-        super(genAttempts, genProbability, randomizeGenAttempts, minHeight, maxHeight);
+        super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         structure = structureIn;
         type = typeIn;
         mirror = mirrorIn;
@@ -99,7 +99,7 @@ public class FeatureStructure extends Feature
             spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, clearancePercentage);
         }
 
-        if(spawnPos != null && spawnPos.getY() >= minHeight && spawnPos.getY() <= maxHeight)
+        if(spawnPos != null && spawnPos.getY() >= minGenHeight && spawnPos.getY() <= maxGenHeight)
         {
             template.addBlocksToWorld(world, spawnPos, placementSettings);
             handleDataBlocks(world, spawnPos, template, placementSettings, rand);
