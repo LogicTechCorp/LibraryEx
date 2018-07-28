@@ -148,7 +148,7 @@ public class FeatureStructure extends Feature
             }
             else if(data[0].equals("entity") && data.length == 2)
             {
-                Entity entity = EntityList.newEntity(EntityList.getClassFromName(data[1]), world);
+                Entity entity = EntityList.newEntity(EntityList.getClass(new ResourceLocation(data[1])), world);
 
                 if(entity != null)
                 {

@@ -18,7 +18,6 @@
 package lex.block;
 
 import lex.IModData;
-import lex.block.BlockLibEx;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

@@ -74,7 +74,7 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
     {
         if(world.isRainingAt(pos.up()) && !world.getBlockState(pos.down()).isTopSolid() && rand.nextInt(15) == 1)
         {
-            world.spawnParticle(EnumParticleTypes.DRIP_WATER, pos.getX() + rand.nextFloat(),  pos.getY() - 0.05D, pos.getZ() + rand.nextFloat(), 0.0D, 0.0D, 0.0D);
+            world.spawnParticle(EnumParticleTypes.DRIP_WATER, pos.getX() + rand.nextFloat(), pos.getY() - 0.05D, pos.getZ() + rand.nextFloat(), 0.0D, 0.0D, 0.0D);
         }
     }
 
