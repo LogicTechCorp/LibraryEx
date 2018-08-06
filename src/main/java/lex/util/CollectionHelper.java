@@ -17,23 +17,31 @@
 
 package lex.util;
 
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.HashMap;
-import java.util.Map;
-
-public class EntityHelper
+public class CollectionHelper
 {
-    private static Map<Class<? extends EntityLivingBase>, String> ENTITY_RESOURCE_LOCATION_CACHE = new HashMap<>();
-
-    public static String getEntityLocation(EntityLivingBase entity)
+    public static boolean contains(String[] haystack, String needle)
     {
-        Class<? extends EntityLivingBase> cls = entity.getClass();
-        return ENTITY_RESOURCE_LOCATION_CACHE.computeIfAbsent(cls, k -> {
-            ResourceLocation location = EntityList.getKey(k);
-            return location != null ? location.toString() : null;
-        });
+        if(needle == null)
+        {
+            for(String hay : haystack)
+            {
+                if(hay == null)
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            for(String hay : haystack)
+            {
+                if(needle.equals(hay))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
