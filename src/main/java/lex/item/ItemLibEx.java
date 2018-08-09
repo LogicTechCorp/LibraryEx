@@ -26,7 +26,7 @@ public class ItemLibEx extends Item
     public ItemLibEx(IModData data, String name)
     {
         setRegistryName(data.getModId() + ":" + name);
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
         setCreativeTab(data.getCreativeTab());
     }
 }

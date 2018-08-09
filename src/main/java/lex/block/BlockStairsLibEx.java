@@ -29,7 +29,7 @@ public class BlockStairsLibEx extends BlockStairs
     {
         super(state);
         setRegistryName(data.getModId() + ":" + name + "_stairs");
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
         useNeighborBrightness = true;
         setSoundType(SoundType.STONE);
         setCreativeTab(data.getCreativeTab());

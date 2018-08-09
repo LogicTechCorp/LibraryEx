@@ -58,9 +58,9 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
-        return Blocks.LEAVES.getBlockLayer();
+        return Blocks.LEAVES.getRenderLayer();
     }
 
     @SideOnly(Side.CLIENT)

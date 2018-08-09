@@ -27,7 +27,7 @@ public class ItemHoeLibEx extends ItemHoe
     {
         super(material);
         setRegistryName(data.getModId() + ":" + name);
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
         setCreativeTab(data.getCreativeTab());
     }
 }

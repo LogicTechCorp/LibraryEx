@@ -31,9 +31,9 @@ public class ItemBlockSlabLibEx extends ItemSlab
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack)
+    public String getTranslationKey(ItemStack stack)
     {
-        return ((BlockSlabLibEx) block).getUnlocalizedName(stack.getMetadata());
+        return ((BlockSlabLibEx) block).getTranslationKey(stack.getMetadata());
     }
 
     @Override

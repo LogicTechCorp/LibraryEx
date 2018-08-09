@@ -55,7 +55,7 @@ public class WorldHelper
             d3 = ((EntityPlayerMP) entity).interactionManager.player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
         }
 
-        Vec3d vec31 = vec3.addVector((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
+        Vec3d vec31 = vec3.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
         return world.rayTraceBlocks(vec3, vec31, countNonSolidBlock, !countNonSolidBlock, countNonSolidBlock);
     }
 }

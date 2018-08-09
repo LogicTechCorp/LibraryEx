@@ -32,7 +32,7 @@ public class BlockWallLibEx extends BlockWall
     {
         super(baseBlock);
         setRegistryName(data.getModId() + ":" + name);
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
         setSoundType(SoundType.STONE);
         useNeighborBrightness = true;
         setCreativeTab(data.getCreativeTab());

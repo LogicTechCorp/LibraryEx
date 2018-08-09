@@ -35,7 +35,7 @@ public abstract class BlockSlabLibEx extends BlockSlab
     {
         super(material);
         setRegistryName(!isDouble() ? data.getModId() + ":" + name : data.getModId() + ":" + name + "_double");
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
         setSoundType(SoundType.STONE);
 
         if(!isDouble())

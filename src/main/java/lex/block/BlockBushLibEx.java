@@ -48,7 +48,7 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }

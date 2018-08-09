@@ -36,7 +36,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,9 +56,9 @@ public class BlockFenceGateLibEx extends BlockFenceGate
     {
         super(BlockPlanks.EnumType.OAK);
         setRegistryName(data.getModId() + ":" + name + "_fence_gate");
-        setUnlocalizedName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        ReflectionHelper.setPrivateValue(Block.class, this, material, "field_149764_J", "blockMaterial");
-        ReflectionHelper.setPrivateValue(Block.class, this, material.getMaterialMapColor(), "field_181083_K", "blockMapColor");
+        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, material, "field_149764_J", "material");
+        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, material.getMaterialMapColor(), "field_181083_K", "blockMapColor");
         useNeighborBrightness = true;
         setSoundType(SoundType.STONE);
         setCreativeTab(data.getCreativeTab());
@@ -227,7 +227,7 @@ public class BlockFenceGateLibEx extends BlockFenceGate
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta)).withProperty(OPEN, (meta & 4) != 0).withProperty(POWERED, (meta & 8) != 0);
+        return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta)).withProperty(OPEN, (meta & 4) != 0).withProperty(POWERED, (meta & 8) != 0);
     }
 
     @Override

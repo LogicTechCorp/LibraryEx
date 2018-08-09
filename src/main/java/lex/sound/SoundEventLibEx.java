@@ -25,7 +25,12 @@ public class SoundEventLibEx extends SoundEvent
 {
     public SoundEventLibEx(IModData data, String name)
     {
-        super(new ResourceLocation(data.getModId() + ":" + name));
-        setRegistryName(soundName);
+        this(new ResourceLocation(data.getModId() + ":" + name));
+    }
+
+    private SoundEventLibEx(ResourceLocation name)
+    {
+        super(name);
+        setRegistryName(name);
     }
 }
