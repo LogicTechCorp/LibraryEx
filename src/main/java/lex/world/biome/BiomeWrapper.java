@@ -47,9 +47,9 @@ public class BiomeWrapper
     protected boolean genDefaultFeatures;
     protected Config config;
 
-    public BiomeWrapper(Config configIn)
+    public BiomeWrapper(Config config)
     {
-        config = configIn;
+        this.config = config;
         parse();
     }
 

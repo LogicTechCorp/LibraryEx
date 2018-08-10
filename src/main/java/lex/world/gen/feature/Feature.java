@@ -63,13 +63,13 @@ public abstract class Feature extends WorldGenerator
         }
     }
 
-    public Feature(int genAttemptsIn, float genProbabilityIn, boolean randomizeGenAttemptsIn, int minGenHeightIn, int maxGenHeightIn)
+    public Feature(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight)
     {
-        genAttempts = genAttemptsIn;
-        genProbability = genProbabilityIn;
-        randomizeGenAttempts = randomizeGenAttemptsIn;
-        minGenHeight = minGenHeightIn;
-        maxGenHeight = maxGenHeightIn;
+        this.genAttempts = genAttempts;
+        this.genProbability = genProbability;
+        this.randomizeGenAttempts = randomizeGenAttempts;
+        this.minGenHeight = minGenHeight;
+        this.maxGenHeight = maxGenHeight;
     }
 
     @Override

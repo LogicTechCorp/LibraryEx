@@ -26,10 +26,10 @@ public class VariableBlockStateContainer extends BlockStateContainer
 {
     private BlockStateContainer container;
 
-    public VariableBlockStateContainer(BlockStateContainer containerIn, Block block, IProperty... properties)
+    public VariableBlockStateContainer(BlockStateContainer container, Block block, IProperty... properties)
     {
         super(block, properties);
-        container = containerIn;
+        this.container = container;
     }
 
     @Override

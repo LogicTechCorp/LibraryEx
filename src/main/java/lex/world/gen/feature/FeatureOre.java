@@ -41,12 +41,12 @@ public class FeatureOre extends Feature
         veinSize = config.getInt("veinSize", 8);
     }
 
-    public FeatureOre(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawnIn, IBlockState blockToReplaceIn, int veinSizeIn)
+    public FeatureOre(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
-        blockToSpawn = blockToSpawnIn;
-        blockToReplace = blockToReplaceIn;
-        veinSize = veinSizeIn;
+        this.blockToSpawn = blockToSpawn;
+        this.blockToReplace = blockToReplace;
+        this.veinSize = veinSize;
     }
 
     @Override

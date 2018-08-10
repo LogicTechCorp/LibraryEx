@@ -45,13 +45,13 @@ public class FeatureOakTree extends Feature
         maxGrowthHeight = config.getInt("maxGrowthHeight", 32);
     }
 
-    public FeatureOakTree(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState logBlockIn, IBlockState leafBlockIn, int minGrowthHeightIn, int maxGrowthHeightIn)
+    public FeatureOakTree(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
-        logBlock = logBlockIn;
-        leafBlock = leafBlockIn;
-        minGrowthHeight = minGrowthHeightIn;
-        maxGrowthHeight = maxGrowthHeightIn;
+        this.logBlock = logBlock;
+        this.leafBlock = leafBlock;
+        this.minGrowthHeight = minGrowthHeight;
+        this.maxGrowthHeight = maxGrowthHeight;
     }
 
     @Override

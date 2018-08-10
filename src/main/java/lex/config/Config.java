@@ -56,7 +56,7 @@ public class Config
     protected Map<String, Config> DATA_BRANCHES;
     private boolean keepDataOrder;
 
-    public Config(File configFile, boolean keepDataOrderIn)
+    public Config(File configFile, boolean keepDataOrder)
     {
         String jsonString = new JsonObject().toString();
 
@@ -72,9 +72,9 @@ public class Config
             }
         }
 
-        keepDataOrder = keepDataOrderIn;
+        this.keepDataOrder = keepDataOrder;
 
-        if(keepDataOrderIn)
+        if(keepDataOrder)
         {
             DATA = new LinkedHashMap<>();
             FALLBACK_DATA = new LinkedHashMap<>();
@@ -90,11 +90,11 @@ public class Config
         deserialize(jsonString);
     }
 
-    public Config(String jsonString, boolean keepDataOrderIn)
+    public Config(String jsonString, boolean keepDataOrder)
     {
-        keepDataOrder = keepDataOrderIn;
+        this.keepDataOrder = keepDataOrder;
 
-        if(keepDataOrderIn)
+        if(keepDataOrder)
         {
             DATA = new LinkedHashMap<>();
             FALLBACK_DATA = new LinkedHashMap<>();

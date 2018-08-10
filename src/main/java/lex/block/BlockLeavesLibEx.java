@@ -49,7 +49,6 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
     public BlockLeavesLibEx(IModData data, String name, Material material)
     {
         super(data, name, material);
-
         setTickRandomly(true);
         setCreativeTab(CreativeTabs.DECORATIONS);
         setHardness(0.2F);

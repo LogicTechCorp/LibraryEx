@@ -42,13 +42,13 @@ public class FeatureBigMushroom extends Feature
         shape = config.getEnum("shape", Shape.class, Shape.FLAT);
     }
 
-    public FeatureBigMushroom(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState mushroomCapIn, IBlockState mushroomStemIn, IBlockState blockToPlaceOnIn, Shape shapeIn)
+    public FeatureBigMushroom(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
-        mushroomCap = mushroomCapIn;
-        mushroomStem = mushroomStemIn;
-        blockToPlaceOn = blockToPlaceOnIn;
-        shape = shapeIn;
+        this.mushroomCap = mushroomCap;
+        this.mushroomStem = mushroomStem;
+        this.blockToPlaceOn = blockToPlaceOn;
+        this.shape = shape;
     }
 
     @Override

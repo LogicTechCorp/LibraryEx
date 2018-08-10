@@ -27,11 +27,11 @@ public class Trade extends MerchantRecipe
     protected int tradeLevel;
     private Config config;
 
-    public Trade(Config configIn)
+    public Trade(Config config)
     {
-        super(configIn.getItem("inputOne"), configIn.getItem("inputTwo"), configIn.getItem("output"), 0, configIn.getInt("maxTradesAvailable", 7));
-        tradeLevel = configIn.getInt("tradeLevel", 1);
-        config = configIn;
+        super(config.getItem("inputOne"), config.getItem("inputTwo"), config.getItem("output"), 0, config.getInt("maxTradesAvailable", 7));
+        tradeLevel = config.getInt("tradeLevel", 1);
+        this.config = config;
     }
 
     public MerchantRecipe randomize()

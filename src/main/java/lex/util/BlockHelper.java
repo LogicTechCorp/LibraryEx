@@ -165,7 +165,6 @@ public class BlockHelper
 
         world.playEvent(playerMP, 2001, pos, Block.getStateId(state));
 
-
         if(player.capabilities.isCreativeMode)
         {
             if(!world.isRemote)

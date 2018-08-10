@@ -40,12 +40,12 @@ public class FeatureCluster extends Feature
         direction = config.getEnum("direction", EnumFacing.class, EnumFacing.DOWN);
     }
 
-    public FeatureCluster(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawnIn, IBlockState blockToAttachToIn, EnumFacing directionIn)
+    public FeatureCluster(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
-        blockToSpawn = blockToSpawnIn;
-        blockToAttachTo = blockToAttachToIn;
-        direction = directionIn;
+        this.blockToSpawn = blockToSpawn;
+        this.blockToAttachTo = blockToAttachTo;
+        this.direction = direction;
     }
 
     @Override

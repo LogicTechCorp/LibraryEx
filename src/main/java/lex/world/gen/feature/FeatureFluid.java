@@ -39,12 +39,12 @@ public class FeatureFluid extends Feature
         hidden = config.getBoolean("hidden", true);
     }
 
-    public FeatureFluid(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawnIn, IBlockState blockToTargetIn, boolean hiddenIn)
+    public FeatureFluid(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
-        blockToSpawn = blockToSpawnIn;
-        blockToTarget = blockToTargetIn;
-        hidden = hiddenIn;
+        this.blockToSpawn = blockToSpawn;
+        this.blockToTarget = blockToTarget;
+        this.hidden = hidden;
     }
 
     @Override

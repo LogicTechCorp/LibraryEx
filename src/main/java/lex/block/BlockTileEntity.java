@@ -31,11 +31,11 @@ public class BlockTileEntity<T extends TileEntity> extends BlockLibEx
 {
     private final Class<T> cls;
 
-    public BlockTileEntity(IModData data, String name, Material material, Class<T> clsIn)
+    public BlockTileEntity(IModData data, String name, Material material, Class<T> cls)
     {
         super(data, name, material);
-        GameRegistry.registerTileEntity(clsIn, new ResourceLocation(data.getModId() + ":" + name));
-        cls = clsIn;
+        GameRegistry.registerTileEntity(cls, new ResourceLocation(data.getModId() + ":" + name));
+        this.cls = cls;
     }
 
     @Override

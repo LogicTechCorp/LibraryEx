@@ -32,7 +32,6 @@ public class FluidLibEx extends Fluid
     public FluidLibEx(IModData data, String fluidName, String textureName)
     {
         super(fluidName, new ResourceLocation(data.getModId() + ":blocks/fluid_" + textureName + "_still"), new ResourceLocation(data.getModId() + ":blocks/fluid_" + textureName + "_flow"));
-
         FluidRegistry.registerFluid(this);
         FluidRegistry.addBucketForFluid(this);
     }

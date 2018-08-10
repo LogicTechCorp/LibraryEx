@@ -40,12 +40,12 @@ public class ItemBlockEdible extends ItemBlockLibEx
     private PotionEffect potionId;
     private float potionEffectProbability;
 
-    public ItemBlockEdible(Block block, int healAmountIn, float saturationIn, boolean isWolfFoodIn)
+    public ItemBlockEdible(Block block, int healAmount, float saturation, boolean isWolfFood)
     {
         super(block);
-        healAmount = healAmountIn;
-        isWolfFood = isWolfFoodIn;
-        saturation = saturationIn;
+        this.healAmount = healAmount;
+        this.saturation = saturation;
+        this.isWolfFood = isWolfFood;
     }
 
     @Override
