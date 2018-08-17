@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArmorHelper
@@ -29,7 +30,7 @@ public class ArmorHelper
     public static boolean isWearingFullArmorSet(EntityPlayer player, ItemArmor.ArmorMaterial material)
     {
         Iterable<ItemStack> armor = player.getArmorInventoryList();
-        List<ItemArmor.ArmorMaterial> armorMaterials = Lists.newArrayList();
+        List<ItemArmor.ArmorMaterial> armorMaterials = new ArrayList<>();
 
         for(ItemStack testStack : armor)
         {

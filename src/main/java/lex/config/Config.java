@@ -543,7 +543,7 @@ public class Config
 
                     if(loreConfig != null && loreConfig.getAllData().size() > 0)
                     {
-                        NBTHelper.setTag(stack);
+                        NBTHelper.setTagCompound(stack);
                         NBTTagList loreList = new NBTTagList();
 
                         for(Map.Entry<String, JsonElement> entry : loreConfig.getAllData().entrySet())
@@ -558,7 +558,7 @@ public class Config
                         displayCompound.setTag("Lore", loreList);
                         NBTTagCompound compound = new NBTTagCompound();
                         compound.setTag("display", displayCompound);
-                        NBTHelper.setTag(stack, compound);
+                        NBTHelper.setTagCompound(stack, compound);
                     }
 
                     List<Config> enchantmentConfigs = itemConfig.getDataBranches("enchantments");

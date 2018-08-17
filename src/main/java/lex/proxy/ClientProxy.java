@@ -17,6 +17,8 @@
 
 package lex.proxy;
 
+import net.minecraft.client.particle.IParticleFactory;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,6 +39,12 @@ public class ClientProxy implements IProxy
 
     @Override
     public void postInit()
+    {
+
+    }
+
+    @Override
+    public void spawnParticle(World world, IParticleFactory factory, double posX, double posY, double posZ, double speedX, double speedY, double speedZ)
     {
 
     }

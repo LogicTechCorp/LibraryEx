@@ -22,17 +22,12 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class NBTHelper
 {
-    public static ItemStack setTag(ItemStack stack)
+    public static NBTTagCompound setTagCompound(ItemStack stack)
     {
-        if(stack.getTagCompound() == null)
-        {
-            stack.setTagCompound(new NBTTagCompound());
-        }
-
-        return stack;
+        return setTagCompound(stack, new NBTTagCompound());
     }
 
-    public static ItemStack setTag(ItemStack stack, NBTTagCompound compound)
+    public static NBTTagCompound setTagCompound(ItemStack stack, NBTTagCompound compound)
     {
         if(stack.getTagCompound() == null)
         {
@@ -43,6 +38,16 @@ public class NBTHelper
             stack.getTagCompound().merge(compound);
         }
 
-        return stack;
+        return stack.getTagCompound();
+    }
+
+    public static NBTTagCompound setTagCompound(NBTTagCompound base, String key, NBTTagCompound value)
+    {
+        if(!base.hasKey(key))
+        {
+            base.setTag(key, value);
+        }
+
+        return base.getCompoundTag(key);
     }
 }
