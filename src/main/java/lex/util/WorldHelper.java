@@ -58,4 +58,10 @@ public class WorldHelper
         Vec3d vec31 = vec3.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
         return world.rayTraceBlocks(vec3, vec31, countNonSolidBlock, !countNonSolidBlock, countNonSolidBlock);
     }
+
+    public static boolean isDaytime(World world)
+    {
+        long time = world.getWorldTime();
+        return time >= 1000 && time < 13000;
+    }
 }

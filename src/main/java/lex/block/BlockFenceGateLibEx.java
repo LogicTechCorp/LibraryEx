@@ -213,12 +213,6 @@ public class BlockFenceGateLibEx extends BlockFenceGate
     }
 
     @Override
-    public PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos)
-    {
-        return state.getValue(OPEN) ? PathNodeType.DOOR_OPEN : PathNodeType.DOOR_WOOD_CLOSED;
-    }
-
-    @Override
     protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, FACING, OPEN, POWERED, IN_WALL);
