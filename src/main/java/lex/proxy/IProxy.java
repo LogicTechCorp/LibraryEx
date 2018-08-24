@@ -17,7 +17,6 @@
 
 package lex.proxy;
 
-import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.world.World;
 
 public interface IProxy
@@ -28,5 +27,5 @@ public interface IProxy
 
     void postInit();
 
-    void spawnParticle(World world, IParticleFactory factory, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
+    void spawnParticle(World world, int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
 }
