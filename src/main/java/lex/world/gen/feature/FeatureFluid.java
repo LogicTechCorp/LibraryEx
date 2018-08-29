@@ -34,9 +34,9 @@ public class FeatureFluid extends Feature
     public FeatureFluid(Config config)
     {
         super(config);
-        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
-        hidden = config.getBoolean("hidden", true);
+        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        this.blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
+        this.hidden = config.getBoolean("hidden", true);
     }
 
     public FeatureFluid(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
@@ -50,16 +50,16 @@ public class FeatureFluid extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToTarget.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToTarget.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
 
-        if(world.getBlockState(pos.up()) != blockToTarget)
+        if(world.getBlockState(pos.up()) != this.blockToTarget)
         {
             return false;
         }
-        else if(!world.isAirBlock(pos) && world.getBlockState(pos) != blockToTarget)
+        else if(!world.isAirBlock(pos) && world.getBlockState(pos) != this.blockToTarget)
         {
             return false;
         }
@@ -67,27 +67,27 @@ public class FeatureFluid extends Feature
         {
             int i = 0;
 
-            if(world.getBlockState(pos.west()) == blockToTarget)
+            if(world.getBlockState(pos.west()) == this.blockToTarget)
             {
                 i++;
             }
 
-            if(world.getBlockState(pos.east()) == blockToTarget)
+            if(world.getBlockState(pos.east()) == this.blockToTarget)
             {
                 i++;
             }
 
-            if(world.getBlockState(pos.north()) == blockToTarget)
+            if(world.getBlockState(pos.north()) == this.blockToTarget)
             {
                 i++;
             }
 
-            if(world.getBlockState(pos.south()) == blockToTarget)
+            if(world.getBlockState(pos.south()) == this.blockToTarget)
             {
                 i++;
             }
 
-            if(world.getBlockState(pos.down()) == blockToTarget)
+            if(world.getBlockState(pos.down()) == this.blockToTarget)
             {
                 i++;
             }
@@ -119,10 +119,10 @@ public class FeatureFluid extends Feature
                 j++;
             }
 
-            if(!hidden && i == 4 && j == 1 || i == 5)
+            if(!this.hidden && i == 4 && j == 1 || i == 5)
             {
-                world.setBlockState(pos, blockToSpawn, 2);
-                world.immediateBlockTick(pos, blockToSpawn, rand);
+                world.setBlockState(pos, this.blockToSpawn, 2);
+                world.immediateBlockTick(pos, this.blockToSpawn, rand);
             }
 
             return true;

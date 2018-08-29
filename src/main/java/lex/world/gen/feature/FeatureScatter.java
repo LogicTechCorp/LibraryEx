@@ -36,9 +36,9 @@ public class FeatureScatter extends Feature
     public FeatureScatter(Config config)
     {
         super(config);
-        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
-        placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
+        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        this.blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
+        this.placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
     }
 
     public FeatureScatter(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
@@ -52,7 +52,7 @@ public class FeatureScatter extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToTarget.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToTarget.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
@@ -61,18 +61,18 @@ public class FeatureScatter extends Feature
         {
             BlockPos newPos = pos.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
-            if(world.isAirBlock(newPos) && world.getBlockState(newPos.down()) == blockToTarget)
+            if(world.isAirBlock(newPos) && world.getBlockState(newPos.down()) == this.blockToTarget)
             {
-                if(blockToSpawn instanceof BlockBush)
+                if(this.blockToSpawn instanceof BlockBush)
                 {
-                    if(((BlockBush) blockToSpawn).canBlockStay(world, placement.offsetPos(pos), blockToSpawn))
+                    if(((BlockBush) this.blockToSpawn).canBlockStay(world, this.placement.offsetPos(pos), this.blockToSpawn))
                     {
-                        world.setBlockState(placement.offsetPos(newPos), blockToSpawn, 2);
+                        world.setBlockState(this.placement.offsetPos(newPos), this.blockToSpawn, 2);
                     }
                 }
                 else
                 {
-                    world.setBlockState(placement.offsetPos(newPos), blockToSpawn, 2);
+                    world.setBlockState(this.placement.offsetPos(newPos), this.blockToSpawn, 2);
                 }
             }
         }
@@ -89,14 +89,14 @@ public class FeatureScatter extends Feature
 
         Placement(EnumFacing offsetIn)
         {
-            offset = offsetIn;
+            this.offset = offsetIn;
         }
 
         public BlockPos offsetPos(BlockPos pos)
         {
-            if(offset != null)
+            if(this.offset != null)
             {
-                return pos.offset(offset);
+                return pos.offset(this.offset);
             }
             else
             {

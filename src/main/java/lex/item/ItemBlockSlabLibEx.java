@@ -27,13 +27,13 @@ public class ItemBlockSlabLibEx extends ItemSlab
     public ItemBlockSlabLibEx(Block block, BlockSlabLibEx singleSlab, BlockSlabLibEx doubleSlab)
     {
         super(block, singleSlab, doubleSlab);
-        setRegistryName(block.getRegistryName().toString());
+        this.setRegistryName(block.getRegistryName().toString());
     }
 
     @Override
     public String getTranslationKey(ItemStack stack)
     {
-        return ((BlockSlabLibEx) block).getTranslationKey(stack.getMetadata());
+        return ((BlockSlabLibEx) this.block).getTranslationKey(stack.getMetadata());
     }
 
     @Override

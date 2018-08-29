@@ -80,7 +80,7 @@ public class BlockRising extends BlockLibEx
     {
         if(!worldIn.isRemote)
         {
-            rise(worldIn, pos);
+            this.rise(worldIn, pos);
         }
     }
 

@@ -36,9 +36,9 @@ public class PotionLibEx extends Potion
     public PotionLibEx(IModData data, String name, boolean isBadEffect, int red, int green, int blue)
     {
         super(isBadEffect, new Color(red, green, blue).getRGB());
-        setRegistryName(data.getModId() + ":" + name);
-        setPotionName("potion.effect." + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        iconTexture = new ResourceLocation(data.getModId() + ":textures/potions/" + name + ".png");
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setPotionName("potion.effect." + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.iconTexture = new ResourceLocation(data.getModId() + ":textures/potions/" + name + ".png");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class PotionLibEx extends Potion
     {
         if(mc.currentScreen != null)
         {
-            mc.getTextureManager().bindTexture(iconTexture);
+            mc.getTextureManager().bindTexture(this.iconTexture);
             Gui.drawModalRectWithCustomSizedTexture(x + 6, y + 7, 0, 0, 18, 18, 18, 18);
         }
     }
@@ -62,7 +62,7 @@ public class PotionLibEx extends Potion
     @SideOnly(Side.CLIENT)
     public void renderHUDEffect(int x, int y, PotionEffect effect, Minecraft mc, float alpha)
     {
-        mc.getTextureManager().bindTexture(iconTexture);
+        mc.getTextureManager().bindTexture(this.iconTexture);
         Gui.drawModalRectWithCustomSizedTexture(x + 3, y + 3, 0, 0, 18, 18, 18, 18);
     }
 }

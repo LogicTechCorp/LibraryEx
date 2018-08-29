@@ -49,11 +49,11 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
     public BlockLeavesLibEx(IModData data, String name, Material material)
     {
         super(data, name, material);
-        setTickRandomly(true);
-        setCreativeTab(CreativeTabs.DECORATIONS);
-        setHardness(0.2F);
-        setLightOpacity(1);
-        setSoundType(SoundType.PLANT);
+        this.setTickRandomly(true);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
+        this.setHardness(0.2F);
+        this.setLightOpacity(1);
+        this.setSoundType(SoundType.PLANT);
     }
 
     @SideOnly(Side.CLIENT)
@@ -94,9 +94,9 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
                 int posY = pos.getY();
                 int posZ = pos.getZ();
 
-                if(surroundings == null)
+                if(this.surroundings == null)
                 {
-                    surroundings = new int[32768];
+                    this.surroundings = new int[32768];
                 }
 
                 if(world.isAreaLoaded(new BlockPos(posX - 5, posY - 5, posZ - 5), new BlockPos(posX + 5, posY + 5, posZ + 5)))
@@ -116,16 +116,16 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
                                 {
                                     if(testBlock.isLeaves(testState, world, mutableBlockPos.setPos(posX + offsetX, posY + offsetY, posZ + offsetZ)))
                                     {
-                                        surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = -2;
+                                        this.surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = -2;
                                     }
                                     else
                                     {
-                                        surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = -1;
+                                        this.surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = -1;
                                     }
                                 }
                                 else
                                 {
-                                    surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = 0;
+                                    this.surroundings[(offsetX + 16) * 1024 + (offsetY + 16) * 32 + offsetZ + 16] = 0;
                                 }
                             }
                         }
@@ -139,36 +139,36 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
                             {
                                 for(int localZ = -4; localZ <= 4; localZ++)
                                 {
-                                    if(surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16] == check - 1)
+                                    if(this.surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16] == check - 1)
                                     {
-                                        if(surroundings[(localX + 16 - 1) * 1024 + (localY + 16) * 32 + localZ + 16] == -2)
+                                        if(this.surroundings[(localX + 16 - 1) * 1024 + (localY + 16) * 32 + localZ + 16] == -2)
                                         {
-                                            surroundings[(localX + 16 - 1) * 1024 + (localY + 16) * 32 + localZ + 16] = check;
+                                            this.surroundings[(localX + 16 - 1) * 1024 + (localY + 16) * 32 + localZ + 16] = check;
                                         }
 
-                                        if(surroundings[(localX + 16 + 1) * 1024 + (localY + 16) * 32 + localZ + 16] == -2)
+                                        if(this.surroundings[(localX + 16 + 1) * 1024 + (localY + 16) * 32 + localZ + 16] == -2)
                                         {
-                                            surroundings[(localX + 16 + 1) * 1024 + (localY + 16) * 32 + localZ + 16] = check;
+                                            this.surroundings[(localX + 16 + 1) * 1024 + (localY + 16) * 32 + localZ + 16] = check;
                                         }
 
-                                        if(surroundings[(localX + 16) * 1024 + (localY + 16 - 1) * 32 + localZ + 16] == -2)
+                                        if(this.surroundings[(localX + 16) * 1024 + (localY + 16 - 1) * 32 + localZ + 16] == -2)
                                         {
-                                            surroundings[(localX + 16) * 1024 + (localY + 16 - 1) * 32 + localZ + 16] = check;
+                                            this.surroundings[(localX + 16) * 1024 + (localY + 16 - 1) * 32 + localZ + 16] = check;
                                         }
 
-                                        if(surroundings[(localX + 16) * 1024 + (localY + 16 + 1) * 32 + localZ + 16] == -2)
+                                        if(this.surroundings[(localX + 16) * 1024 + (localY + 16 + 1) * 32 + localZ + 16] == -2)
                                         {
-                                            surroundings[(localX + 16) * 1024 + (localY + 16 + 1) * 32 + localZ + 16] = check;
+                                            this.surroundings[(localX + 16) * 1024 + (localY + 16 + 1) * 32 + localZ + 16] = check;
                                         }
 
-                                        if(surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + (localZ + 16 - 1)] == -2)
+                                        if(this.surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + (localZ + 16 - 1)] == -2)
                                         {
-                                            surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + (localZ + 16 - 1)] = check;
+                                            this.surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + (localZ + 16 - 1)] = check;
                                         }
 
-                                        if(surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16 + 1] == -2)
+                                        if(this.surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16 + 1] == -2)
                                         {
-                                            surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16 + 1] = check;
+                                            this.surroundings[(localX + 16) * 1024 + (localY + 16) * 32 + localZ + 16 + 1] = check;
                                         }
                                     }
                                 }
@@ -177,13 +177,13 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
                     }
                 }
 
-                if(surroundings[16912] >= 0)
+                if(this.surroundings[16912] >= 0)
                 {
                     world.setBlockState(pos, state.withProperty(CHECK_DECAY, false), 4);
                 }
                 else
                 {
-                    destroy(world, pos);
+                    this.destroy(world, pos);
                 }
             }
         }
@@ -254,7 +254,7 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
         Random rand = world instanceof World ? ((World) world).rand : new Random();
-        int chance = getSaplingDropChance(state);
+        int chance = this.getSaplingDropChance(state);
 
         if(fortune > 0)
         {
@@ -268,7 +268,7 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
         if(rand.nextInt(chance) == 0)
         {
 
-            ItemStack drop = new ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state));
+            ItemStack drop = new ItemStack(this.getItemDropped(state, rand, fortune), 1, this.damageDropped(state));
 
             if(!drop.isEmpty())
             {
@@ -288,14 +288,14 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
             }
         }
 
-        captureDrops(true);
+        this.captureDrops(true);
 
         if(world instanceof World)
         {
-            dropRareItem((World) world, pos, state, chance);
+            this.dropRareItem((World) world, pos, state, chance);
         }
 
-        drops.addAll(captureDrops(false));
+        drops.addAll(this.captureDrops(false));
     }
 
     @Override
@@ -307,7 +307,7 @@ public abstract class BlockLeavesLibEx extends BlockLibEx implements IShearable
 
     private void destroy(World world, BlockPos pos)
     {
-        dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
+        this.dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
         world.setBlockToAir(pos);
     }
 }

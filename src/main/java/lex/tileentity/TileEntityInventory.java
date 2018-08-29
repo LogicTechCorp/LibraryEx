@@ -40,8 +40,8 @@ public class TileEntityInventory extends TileEntity
 
     public TileEntityInventory(int size)
     {
-        inventory = new ItemStackHandler(size);
-        rand = new Random();
+        this.inventory = new ItemStackHandler(size);
+        this.rand = new Random();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class TileEntityInventory extends TileEntity
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
-        compound.setTag("Inventory", inventory.serializeNBT());
+        compound.setTag("Inventory", this.inventory.serializeNBT());
         return compound;
     }
 
@@ -62,21 +62,21 @@ public class TileEntityInventory extends TileEntity
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        inventory.deserializeNBT(compound.getCompoundTag("Inventory"));
+        this.inventory.deserializeNBT(compound.getCompoundTag("Inventory"));
     }
 
     @Override
     public SPacketUpdateTileEntity getUpdatePacket()
     {
         NBTTagCompound compound = new NBTTagCompound();
-        writeToNBT(compound);
-        return new SPacketUpdateTileEntity(pos, 0, compound);
+        this.writeToNBT(compound);
+        return new SPacketUpdateTileEntity(this.pos, 0, compound);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
     {
-        readFromNBT(packet.getNbtCompound());
+        this.readFromNBT(packet.getNbtCompound());
     }
 
     @Override
@@ -88,45 +88,45 @@ public class TileEntityInventory extends TileEntity
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) inventory : null;
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) this.inventory : null;
     }
 
     public void dropInventoryItems(World world, BlockPos pos)
     {
-        for(int i = 0; i < inventory.getSlots(); i++)
+        for(int i = 0; i < this.inventory.getSlots(); i++)
         {
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stack = this.inventory.getStackInSlot(i);
 
             if(!stack.isEmpty())
             {
-                spawnItemStack(world, pos, stack);
+                this.spawnItemStack(world, pos, stack);
             }
         }
     }
 
     public void spawnItemStack(World world, BlockPos pos, ItemStack stack)
     {
-        double offsetX = rand.nextFloat() * 0.8F + 0.1F;
-        double offsetY = rand.nextFloat() * 0.8F + 0.1F;
-        double offsetZ = rand.nextFloat() * 0.8F + 0.1F;
+        double offsetX = this.rand.nextFloat() * 0.8F + 0.1F;
+        double offsetY = this.rand.nextFloat() * 0.8F + 0.1F;
+        double offsetZ = this.rand.nextFloat() * 0.8F + 0.1F;
 
         while(!stack.isEmpty())
         {
-            EntityItem entityItem = new EntityItem(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.splitStack(rand.nextInt(21) + 10));
-            entityItem.motionX = rand.nextGaussian() * 0.05000000074505806D;
-            entityItem.motionY = rand.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-            entityItem.motionZ = rand.nextGaussian() * 0.05000000074505806D;
+            EntityItem entityItem = new EntityItem(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.splitStack(this.rand.nextInt(21) + 10));
+            entityItem.motionX = this.rand.nextGaussian() * 0.05000000074505806D;
+            entityItem.motionY = this.rand.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
+            entityItem.motionZ = this.rand.nextGaussian() * 0.05000000074505806D;
             world.spawnEntity(entityItem);
         }
     }
 
     public ItemStackHandler getInventory()
     {
-        return inventory;
+        return this.inventory;
     }
 
     public Random getRand()
     {
-        return rand;
+        return this.rand;
     }
 }

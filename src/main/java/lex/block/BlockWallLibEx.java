@@ -31,11 +31,11 @@ public class BlockWallLibEx extends BlockWall
     public BlockWallLibEx(IModData data, String name, Block baseBlock)
     {
         super(baseBlock);
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setSoundType(SoundType.STONE);
-        useNeighborBrightness = true;
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setSoundType(SoundType.STONE);
+        this.useNeighborBrightness = true;
+        this.setCreativeTab(data.getCreativeTab());
     }
 
     @Override

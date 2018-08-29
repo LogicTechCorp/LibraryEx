@@ -35,9 +35,9 @@ public class FeatureCluster extends Feature
     public FeatureCluster(Config config)
     {
         super(config);
-        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        blockToAttachTo = config.getBlock("blockToAttachTo", Blocks.BARRIER.getDefaultState());
-        direction = config.getEnum("direction", EnumFacing.class, EnumFacing.DOWN);
+        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        this.blockToAttachTo = config.getBlock("blockToAttachTo", Blocks.BARRIER.getDefaultState());
+        this.direction = config.getEnum("direction", EnumFacing.class, EnumFacing.DOWN);
     }
 
     public FeatureCluster(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
@@ -51,7 +51,7 @@ public class FeatureCluster extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToAttachTo.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToAttachTo.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
@@ -60,19 +60,19 @@ public class FeatureCluster extends Feature
         {
             return false;
         }
-        else if(world.getBlockState(pos.offset(direction.getOpposite())) != blockToAttachTo)
+        else if(world.getBlockState(pos.offset(this.direction.getOpposite())) != this.blockToAttachTo)
         {
             return false;
         }
         else
         {
-            world.setBlockState(pos, blockToSpawn, 3);
+            world.setBlockState(pos, this.blockToSpawn, 3);
 
             for(int i = 0; i < 1500; i++)
             {
                 BlockPos newPos;
 
-                switch(direction)
+                switch(this.direction)
                 {
                     default:
                     case DOWN:
@@ -101,7 +101,7 @@ public class FeatureCluster extends Feature
 
                     for(EnumFacing facing : EnumFacing.values())
                     {
-                        if(world.getBlockState(newPos.offset(facing)).getBlock() == blockToSpawn.getBlock())
+                        if(world.getBlockState(newPos.offset(facing)).getBlock() == this.blockToSpawn.getBlock())
                         {
                             j++;
                         }
@@ -114,7 +114,7 @@ public class FeatureCluster extends Feature
 
                     if(j == 1)
                     {
-                        world.setBlockState(newPos, blockToSpawn, 3);
+                        world.setBlockState(newPos, this.blockToSpawn, 3);
                     }
                 }
             }

@@ -54,13 +54,13 @@ public class BlockFenceGateLibEx extends BlockFenceGate
     public BlockFenceGateLibEx(IModData data, String name, Material material)
     {
         super(BlockPlanks.EnumType.OAK);
-        setRegistryName(data.getModId() + ":" + name + "_fence_gate");
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
+        this.setRegistryName(data.getModId() + ":" + name + "_fence_gate");
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         ObfuscationReflectionHelper.setPrivateValue(Block.class, this, material, "field_149764_J", "material");
         ObfuscationReflectionHelper.setPrivateValue(Block.class, this, material.getMaterialMapColor(), "field_181083_K", "blockMapColor");
-        useNeighborBrightness = true;
-        setSoundType(SoundType.STONE);
-        setCreativeTab(data.getCreativeTab());
+        this.useNeighborBrightness = true;
+        this.setSoundType(SoundType.STONE);
+        this.setCreativeTab(data.getCreativeTab());
     }
 
     @Override

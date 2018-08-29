@@ -28,8 +28,8 @@ public class BlockFluidLibEx extends BlockFluidClassic
     public BlockFluidLibEx(IModData data, String name, Fluid fluid, Material material)
     {
         super(fluid, material);
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setCreativeTab(data.getCreativeTab());
     }
 }

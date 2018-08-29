@@ -31,11 +31,11 @@ public class BlockFenceLibEx extends BlockFence
     public BlockFenceLibEx(IModData data, String name, Material material)
     {
         super(material, material.getMaterialMapColor());
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        useNeighborBrightness = true;
-        setSoundType(SoundType.STONE);
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.useNeighborBrightness = true;
+        this.setSoundType(SoundType.STONE);
+        this.setCreativeTab(data.getCreativeTab());
     }
 
     @Override

@@ -26,8 +26,8 @@ public class ItemAxeLibEx extends ItemAxe
     protected ItemAxeLibEx(IModData data, String name, ToolMaterial material, float damage, float speed)
     {
         super(material, damage, speed);
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setCreativeTab(data.getCreativeTab());
     }
 }

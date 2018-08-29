@@ -36,10 +36,10 @@ public class FeatureBigMushroom extends Feature
     public FeatureBigMushroom(Config config)
     {
         super(config);
-        mushroomCap = config.getBlock("mushroomCap", Blocks.BARRIER.getDefaultState());
-        mushroomStem = config.getBlock("mushroomStem", Blocks.BARRIER.getDefaultState());
-        blockToPlaceOn = config.getBlock("blockToPlaceOn", Blocks.BARRIER.getDefaultState());
-        shape = config.getEnum("shape", Shape.class, Shape.FLAT);
+        this.mushroomCap = config.getBlock("mushroomCap", Blocks.BARRIER.getDefaultState());
+        this.mushroomStem = config.getBlock("mushroomStem", Blocks.BARRIER.getDefaultState());
+        this.blockToPlaceOn = config.getBlock("blockToPlaceOn", Blocks.BARRIER.getDefaultState());
+        this.shape = config.getEnum("shape", Shape.class, Shape.FLAT);
     }
 
     public FeatureBigMushroom(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
@@ -54,7 +54,7 @@ public class FeatureBigMushroom extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(mushroomCap.getBlock() == Blocks.BARRIER || mushroomStem.getBlock() == Blocks.BARRIER || blockToPlaceOn.getBlock() == Blocks.BARRIER)
+        if(this.mushroomCap.getBlock() == Blocks.BARRIER || this.mushroomStem.getBlock() == Blocks.BARRIER || this.blockToPlaceOn.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
@@ -108,7 +108,7 @@ public class FeatureBigMushroom extends Feature
             }
             else
             {
-                if(world.getBlockState(pos.down()) != blockToPlaceOn)
+                if(world.getBlockState(pos.down()) != this.blockToPlaceOn)
                 {
                     return false;
                 }
@@ -116,7 +116,7 @@ public class FeatureBigMushroom extends Feature
                 {
                     int k2 = pos.getY() + stemHeight;
 
-                    if(shape == Shape.BULB)
+                    if(this.shape == Shape.BULB)
                     {
                         k2 = pos.getY() + stemHeight - 3;
                     }
@@ -130,7 +130,7 @@ public class FeatureBigMushroom extends Feature
                             ++j3;
                         }
 
-                        if(shape == Shape.FLAT)
+                        if(this.shape == Shape.FLAT)
                         {
                             j3 = 3;
                         }
@@ -166,7 +166,7 @@ public class FeatureBigMushroom extends Feature
 
                                 BlockHugeMushroom.EnumType mushroomType = BlockHugeMushroom.EnumType.byMetadata(j2);
 
-                                if(shape == Shape.FLAT || l2 < pos.getY() + stemHeight)
+                                if(this.shape == Shape.FLAT || l2 < pos.getY() + stemHeight)
                                 {
                                     if((l1 == k3 || l1 == l3) && (i2 == j1 || i2 == k1))
                                     {
@@ -226,7 +226,7 @@ public class FeatureBigMushroom extends Feature
 
                                     if(state.getBlock().canBeReplacedByLeaves(state, world, blockpos))
                                     {
-                                        setBlockAndNotifyAdequately(world, blockpos, mushroomCap);
+                                        this.setBlockAndNotifyAdequately(world, blockpos, this.mushroomCap);
                                     }
                                 }
                             }
@@ -239,7 +239,7 @@ public class FeatureBigMushroom extends Feature
 
                         if(iblockstate.getBlock().canBeReplacedByLeaves(iblockstate, world, pos.up(i3)))
                         {
-                            setBlockAndNotifyAdequately(world, pos.up(i3), mushroomStem);
+                            this.setBlockAndNotifyAdequately(world, pos.up(i3), this.mushroomStem);
                         }
                     }
 

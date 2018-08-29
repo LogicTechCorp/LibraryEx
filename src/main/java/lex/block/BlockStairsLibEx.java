@@ -28,10 +28,10 @@ public class BlockStairsLibEx extends BlockStairs
     public BlockStairsLibEx(IModData data, String name, IBlockState state)
     {
         super(state);
-        setRegistryName(data.getModId() + ":" + name + "_stairs");
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        useNeighborBrightness = true;
-        setSoundType(SoundType.STONE);
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name + "_stairs");
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.useNeighborBrightness = true;
+        this.setSoundType(SoundType.STONE);
+        this.setCreativeTab(data.getCreativeTab());
     }
 }

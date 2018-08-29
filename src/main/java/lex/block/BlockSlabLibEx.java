@@ -34,27 +34,27 @@ public abstract class BlockSlabLibEx extends BlockSlab
     public BlockSlabLibEx(IModData data, String name, Material material)
     {
         super(material);
-        setRegistryName(!isDouble() ? data.getModId() + ":" + name : data.getModId() + ":" + name + "_double");
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setSoundType(SoundType.STONE);
+        this.setRegistryName(!this.isDouble() ? data.getModId() + ":" + name : data.getModId() + ":" + name + "_double");
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setSoundType(SoundType.STONE);
 
-        if(!isDouble())
+        if(!this.isDouble())
         {
-            useNeighborBrightness = true;
-            setCreativeTab(data.getCreativeTab());
+            this.useNeighborBrightness = true;
+            this.setCreativeTab(data.getCreativeTab());
         }
     }
 
     @Override
     public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        IBlockState state = getStateFromMeta(meta);
-        return isDouble() ? state : (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || (double) hitY <= 0.5D) ? state.withProperty(HALF, BlockSlab.EnumBlockHalf.BOTTOM) : state.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP));
+        IBlockState state = this.getStateFromMeta(meta);
+        return this.isDouble() ? state : (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || (double) hitY <= 0.5D) ? state.withProperty(HALF, BlockSlab.EnumBlockHalf.BOTTOM) : state.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP));
     }
 
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return !isDouble() ? new BlockStateContainer(this, getVariantProperty(), HALF) : new BlockStateContainer(this, getVariantProperty());
+        return !this.isDouble() ? new BlockStateContainer(this, this.getVariantProperty(), HALF) : new BlockStateContainer(this, this.getVariantProperty());
     }
 }

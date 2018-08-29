@@ -39,10 +39,10 @@ public class FeatureOakTree extends Feature
     public FeatureOakTree(Config config)
     {
         super(config);
-        logBlock = config.getBlock("logBlock", Blocks.BARRIER.getDefaultState());
-        leafBlock = config.getBlock("leafBlock", Blocks.BARRIER.getDefaultState());
-        minGrowthHeight = config.getInt("minGrowthHeight", 2);
-        maxGrowthHeight = config.getInt("maxGrowthHeight", 32);
+        this.logBlock = config.getBlock("logBlock", Blocks.BARRIER.getDefaultState());
+        this.leafBlock = config.getBlock("leafBlock", Blocks.BARRIER.getDefaultState());
+        this.minGrowthHeight = config.getInt("minGrowthHeight", 2);
+        this.maxGrowthHeight = config.getInt("maxGrowthHeight", 32);
     }
 
     public FeatureOakTree(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
@@ -57,7 +57,7 @@ public class FeatureOakTree extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        int height = NumberHelper.getNumberInRange(minGrowthHeight, maxGrowthHeight, rand);
+        int height = NumberHelper.getNumberInRange(this.minGrowthHeight, this.maxGrowthHeight, rand);
         boolean flag = true;
 
         if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getHeight())
@@ -84,7 +84,7 @@ public class FeatureOakTree extends Feature
                     {
                         if(posY >= 0 && posY < world.getHeight())
                         {
-                            if(!isReplaceable(world, mutablePos.setPos(posX, posY, posZ)))
+                            if(!this.isReplaceable(world, mutablePos.setPos(posX, posY, posZ)))
                             {
                                 flag = false;
                             }
@@ -129,7 +129,7 @@ public class FeatureOakTree extends Feature
 
                                     if(checkState.getBlock().isAir(checkState, world, checkPos) || checkState.getBlock().isLeaves(checkState, world, checkPos) || checkState.getMaterial() == Material.VINE)
                                     {
-                                        setBlockAndNotifyAdequately(world, checkPos, leafBlock);
+                                        this.setBlockAndNotifyAdequately(world, checkPos, this.leafBlock);
                                     }
                                 }
                             }
@@ -143,7 +143,7 @@ public class FeatureOakTree extends Feature
 
                         if(checkState.getBlock().isAir(checkState, world, offsetPos) || checkState.getBlock().isLeaves(checkState, world, offsetPos) || checkState.getMaterial() == Material.VINE)
                         {
-                            setBlockAndNotifyAdequately(world, pos.up(heightOffset), logBlock);
+                            this.setBlockAndNotifyAdequately(world, pos.up(heightOffset), this.logBlock);
                         }
                     }
 
@@ -170,7 +170,7 @@ public class FeatureOakTree extends Feature
     public boolean isReplaceable(World world, BlockPos pos)
     {
         IBlockState state = world.getBlockState(pos);
-        return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || canGrowInto(state.getBlock());
+        return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || this.canGrowInto(state.getBlock());
     }
 
 }

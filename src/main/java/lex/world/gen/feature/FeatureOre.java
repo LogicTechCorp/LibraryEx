@@ -36,9 +36,9 @@ public class FeatureOre extends Feature
     public FeatureOre(Config config)
     {
         super(config);
-        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        blockToReplace = config.getBlock("blockToReplace", Blocks.BARRIER.getDefaultState());
-        veinSize = config.getInt("veinSize", 8);
+        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        this.blockToReplace = config.getBlock("blockToReplace", Blocks.BARRIER.getDefaultState());
+        this.veinSize = config.getInt("veinSize", 8);
     }
 
     public FeatureOre(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
@@ -52,26 +52,26 @@ public class FeatureOre extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToReplace.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToReplace.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
 
         float f = rand.nextFloat() * (float) Math.PI;
-        double d0 = (double) ((float) pos.getX() + MathHelper.sin(f) * (float) veinSize / 8.0F);
-        double d1 = (double) ((float) pos.getX() - MathHelper.sin(f) * (float) veinSize / 8.0F);
-        double d2 = (double) ((float) pos.getZ() + MathHelper.cos(f) * (float) veinSize / 8.0F);
-        double d3 = (double) ((float) pos.getZ() - MathHelper.cos(f) * (float) veinSize / 8.0F);
+        double d0 = (double) ((float) pos.getX() + MathHelper.sin(f) * (float) this.veinSize / 8.0F);
+        double d1 = (double) ((float) pos.getX() - MathHelper.sin(f) * (float) this.veinSize / 8.0F);
+        double d2 = (double) ((float) pos.getZ() + MathHelper.cos(f) * (float) this.veinSize / 8.0F);
+        double d3 = (double) ((float) pos.getZ() - MathHelper.cos(f) * (float) this.veinSize / 8.0F);
         double d4 = (double) (pos.getY() + rand.nextInt(3) - 2);
         double d5 = (double) (pos.getY() + rand.nextInt(3) - 2);
 
-        for(int i = 0; i < veinSize; ++i)
+        for(int i = 0; i < this.veinSize; ++i)
         {
-            float f1 = (float) i / (float) veinSize;
+            float f1 = (float) i / (float) this.veinSize;
             double d6 = d0 + (d1 - d0) * (double) f1;
             double d7 = d4 + (d5 - d4) * (double) f1;
             double d8 = d2 + (d3 - d2) * (double) f1;
-            double d9 = rand.nextDouble() * (double) veinSize / 16.0D;
+            double d9 = rand.nextDouble() * (double) this.veinSize / 16.0D;
             double d10 = (double) (MathHelper.sin((float) Math.PI * f1) + 1.0F) * d9 + 1.0D;
             double d11 = (double) (MathHelper.sin((float) Math.PI * f1) + 1.0F) * d9 + 1.0D;
             int j = MathHelper.floor(d6 - d10 / 2.0D);
@@ -102,9 +102,9 @@ public class FeatureOre extends Feature
                                     BlockPos newPos = new BlockPos(l1, i2, j2);
                                     IBlockState state = world.getBlockState(newPos);
 
-                                    if(state.getBlock().isReplaceableOreGen(state, world, newPos, BlockMatcher.forBlock(blockToReplace.getBlock())) && state == blockToReplace)
+                                    if(state.getBlock().isReplaceableOreGen(state, world, newPos, BlockMatcher.forBlock(this.blockToReplace.getBlock())) && state == this.blockToReplace)
                                     {
-                                        world.setBlockState(newPos, blockToSpawn, 2);
+                                        world.setBlockState(newPos, this.blockToSpawn, 2);
                                     }
                                 }
                             }

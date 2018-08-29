@@ -64,9 +64,9 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
     public BlockVinesLibEx(IModData data, String name, Material material)
     {
         super(data, name, material);
-        setSoundType(SoundType.PLANT);
-        setDefaultState(blockState.getBaseState().withProperty(UP, false).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false));
-        setTickRandomly(true);
+        this.setSoundType(SoundType.PLANT);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(UP, false).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false));
+        this.setTickRandomly(true);
     }
 
     @Override
@@ -174,7 +174,7 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
 
                     for(EnumFacing horizontalFacing : EnumFacing.Plane.HORIZONTAL)
                     {
-                        if(rand.nextBoolean() && canAttachTo(world, upPos, horizontalFacing.getOpposite()))
+                        if(rand.nextBoolean() && this.canAttachTo(world, upPos, horizontalFacing.getOpposite()))
                         {
                             originalState = originalState.withProperty(getPropertyFor(horizontalFacing), true);
                         }
@@ -205,21 +205,21 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
                             BlockPos rotatedPos = offsetPos.offset(rotatedFacing);
                             BlockPos reverseRotatedPos = offsetPos.offset(reverseRotatedFacing);
 
-                            if(rotated && canAttachTo(world, rotatedPos.offset(rotatedFacing), rotatedFacing))
+                            if(rotated && this.canAttachTo(world, rotatedPos.offset(rotatedFacing), rotatedFacing))
                             {
-                                world.setBlockState(offsetPos, getDefaultState().withProperty(getPropertyFor(rotatedFacing), true), 2);
+                                world.setBlockState(offsetPos, this.getDefaultState().withProperty(getPropertyFor(rotatedFacing), true), 2);
                             }
-                            else if(reverseRotated && canAttachTo(world, reverseRotatedPos.offset(reverseRotatedFacing), reverseRotatedFacing))
+                            else if(reverseRotated && this.canAttachTo(world, reverseRotatedPos.offset(reverseRotatedFacing), reverseRotatedFacing))
                             {
-                                world.setBlockState(offsetPos, getDefaultState().withProperty(getPropertyFor(reverseRotatedFacing), true), 2);
+                                world.setBlockState(offsetPos, this.getDefaultState().withProperty(getPropertyFor(reverseRotatedFacing), true), 2);
                             }
-                            else if(rotated && world.isAirBlock(rotatedPos) && canAttachTo(world, rotatedPos, facing))
+                            else if(rotated && world.isAirBlock(rotatedPos) && this.canAttachTo(world, rotatedPos, facing))
                             {
-                                world.setBlockState(rotatedPos, getDefaultState().withProperty(getPropertyFor(facing.getOpposite()), true), 2);
+                                world.setBlockState(rotatedPos, this.getDefaultState().withProperty(getPropertyFor(facing.getOpposite()), true), 2);
                             }
-                            else if(reverseRotated && world.isAirBlock(reverseRotatedPos) && canAttachTo(world, reverseRotatedPos, facing))
+                            else if(reverseRotated && world.isAirBlock(reverseRotatedPos) && this.canAttachTo(world, reverseRotatedPos, facing))
                             {
-                                world.setBlockState(reverseRotatedPos, getDefaultState().withProperty(getPropertyFor(facing.getOpposite()), true), 2);
+                                world.setBlockState(reverseRotatedPos, this.getDefaultState().withProperty(getPropertyFor(facing.getOpposite()), true), 2);
                             }
                         }
                         else if(checkState.getBlockFaceShape(world, offsetPos, facing) == BlockFaceShape.SOLID)
@@ -287,15 +287,15 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
     @Override
     public boolean canPlaceBlockOnSide(World world, BlockPos pos, EnumFacing side)
     {
-        return side != EnumFacing.DOWN && side != EnumFacing.UP && canAttachTo(world, pos, side);
+        return side != EnumFacing.DOWN && side != EnumFacing.UP && this.canAttachTo(world, pos, side);
     }
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        if(!world.isRemote && !recheckGrownSides(world, pos, state))
+        if(!world.isRemote && !this.recheckGrownSides(world, pos, state))
         {
-            dropBlockAsItem(world, pos, state, 0);
+            this.dropBlockAsItem(world, pos, state, 0);
             world.setBlockToAir(pos);
         }
     }
@@ -303,7 +303,7 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
-        IBlockState state = getDefaultState().withProperty(UP, false).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false);
+        IBlockState state = this.getDefaultState().withProperty(UP, false).withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false).withProperty(WEST, false);
         return facing.getAxis().isHorizontal() ? state.withProperty(getPropertyFor(facing.getOpposite()), true) : state;
     }
 
@@ -391,7 +391,7 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return getDefaultState().withProperty(SOUTH, (meta & 1) > 0).withProperty(WEST, (meta & 2) > 0).withProperty(NORTH, (meta & 4) > 0).withProperty(EAST, (meta & 8) > 0);
+        return this.getDefaultState().withProperty(SOUTH, (meta & 1) > 0).withProperty(WEST, (meta & 2) > 0).withProperty(NORTH, (meta & 4) > 0).withProperty(EAST, (meta & 8) > 0);
     }
 
     @Override
@@ -431,7 +431,7 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
     public boolean canAttachTo(World world, BlockPos pos, EnumFacing facing)
     {
         Block block = world.getBlockState(pos.up()).getBlock();
-        return isAcceptableNeighbor(world, pos.offset(facing.getOpposite()), facing) && (block == Blocks.AIR || block == Blocks.VINE || isAcceptableNeighbor(world, pos.up(), EnumFacing.UP));
+        return this.isAcceptableNeighbor(world, pos.offset(facing.getOpposite()), facing) && (block == Blocks.AIR || block == Blocks.VINE || this.isAcceptableNeighbor(world, pos.up(), EnumFacing.UP));
     }
 
     private boolean isAcceptableNeighbor(World world, BlockPos pos, EnumFacing facing)
@@ -453,7 +453,7 @@ public abstract class BlockVinesLibEx extends BlockLibEx implements IShearable
         {
             PropertyBool bool = getPropertyFor(facing);
 
-            if(state.getValue(bool) && !canAttachTo(world, pos, facing.getOpposite()))
+            if(state.getValue(bool) && !this.canAttachTo(world, pos, facing.getOpposite()))
             {
                 IBlockState checkState = world.getBlockState(pos.up());
 

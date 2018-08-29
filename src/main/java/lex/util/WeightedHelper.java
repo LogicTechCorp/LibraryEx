@@ -33,15 +33,15 @@ public class WeightedHelper
     {
         private String name;
 
-        public NamedItem(String nameIn, int weight)
+        public NamedItem(String name, int weight)
         {
             super(weight);
-            name = nameIn;
+            this.name = name;
         }
 
         public String getName()
         {
-            return name;
+            return this.name;
         }
     }
 }

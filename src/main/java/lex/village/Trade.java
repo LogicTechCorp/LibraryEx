@@ -30,20 +30,20 @@ public class Trade extends MerchantRecipe
     public Trade(Config config)
     {
         super(config.getItem("inputOne"), config.getItem("inputTwo"), config.getItem("output"), 0, config.getInt("maxTradesAvailable", 7));
-        tradeLevel = config.getInt("tradeLevel", 1);
+        this.tradeLevel = config.getInt("tradeLevel", 1);
         this.config = config;
     }
 
     public MerchantRecipe randomize()
     {
-        ItemStack outputStack = getItemToSell().copy();
-        ItemStack inputOneStack = getItemToBuy().copy();
-        ItemStack inputTwoStack = getSecondItemToBuy().copy();
-        int tradesAvailable = NumberHelper.getNumberInRange(config.getInt("minTradesAvailable", 1), config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
+        ItemStack outputStack = this.getItemToSell().copy();
+        ItemStack inputOneStack = this.getItemToBuy().copy();
+        ItemStack inputTwoStack = this.getSecondItemToBuy().copy();
+        int tradesAvailable = NumberHelper.getNumberInRange(this.config.getInt("minTradesAvailable", 1), this.config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
 
-        Config outputConfig = config.getDataBranch("output");
-        Config inputOneConfig = config.getDataBranch("inputOne");
-        Config inputTwoConfig = config.getDataBranch("inputTwo");
+        Config outputConfig = this.config.getDataBranch("output");
+        Config inputOneConfig = this.config.getDataBranch("inputOne");
+        Config inputTwoConfig = this.config.getDataBranch("inputTwo");
 
         outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
         inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
@@ -58,6 +58,6 @@ public class Trade extends MerchantRecipe
 
     public int getTradeLevel()
     {
-        return tradeLevel;
+        return this.tradeLevel;
     }
 }

@@ -27,8 +27,8 @@ public class ItemArmorLibEx extends ItemArmor
     public ItemArmorLibEx(IModData data, String name, ArmorMaterial material, int renderIndex, EntityEquipmentSlot equipmentSlot)
     {
         super(material, renderIndex, equipmentSlot);
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setCreativeTab(data.getCreativeTab());
     }
 }

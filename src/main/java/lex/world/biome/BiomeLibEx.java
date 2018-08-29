@@ -25,10 +25,10 @@ public class BiomeLibEx extends Biome
     public BiomeLibEx(IModData data, BiomeProperties properties, String name)
     {
         super(properties);
-        setRegistryName(data.getModId() + ":" + name);
-        spawnableMonsterList.clear();
-        spawnableCreatureList.clear();
-        spawnableWaterCreatureList.clear();
-        spawnableCaveCreatureList.clear();
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.spawnableMonsterList.clear();
+        this.spawnableCreatureList.clear();
+        this.spawnableWaterCreatureList.clear();
+        this.spawnableCaveCreatureList.clear();
     }
 }

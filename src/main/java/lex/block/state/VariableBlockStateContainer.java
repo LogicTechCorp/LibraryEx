@@ -35,11 +35,11 @@ public class VariableBlockStateContainer extends BlockStateContainer
     @Override
     public IBlockState getBaseState()
     {
-        return container == null ? getValidStates().get(0) : container.getValidStates().get(0);
+        return this.container == null ? this.getValidStates().get(0) : this.container.getValidStates().get(0);
     }
 
     public void destroyContainer()
     {
-        container = null;
+        this.container = null;
     }
 }

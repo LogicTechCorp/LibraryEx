@@ -42,8 +42,8 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
     public BlockBushLibEx(IModData data, String name, Material material)
     {
         super(data, name, material);
-        setSoundType(SoundType.PLANT);
-        setTickRandomly(true);
+        this.setSoundType(SoundType.PLANT);
+        this.setTickRandomly(true);
     }
 
     @Override
@@ -83,21 +83,21 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
     {
-        checkAndDropBlock(world, pos, state);
+        this.checkAndDropBlock(world, pos, state);
     }
 
     @Override
     public boolean canPlaceBlockAt(World world, BlockPos pos)
     {
         IBlockState soil = world.getBlockState(pos.down());
-        return super.canPlaceBlockAt(world, pos) && canSustainBush(soil);
+        return super.canPlaceBlockAt(world, pos) && this.canSustainBush(soil);
     }
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         super.neighborChanged(state, world, pos, blockIn, fromPos);
-        checkAndDropBlock(world, pos, state);
+        this.checkAndDropBlock(world, pos, state);
     }
 
     @Override
@@ -107,7 +107,7 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
 
         if(state.getBlock() != this)
         {
-            return getDefaultState();
+            return this.getDefaultState();
         }
 
         return state;
@@ -117,9 +117,9 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
 
     protected void checkAndDropBlock(World world, BlockPos pos, IBlockState state)
     {
-        if(!canBlockStay(world, pos, state))
+        if(!this.canBlockStay(world, pos, state))
         {
-            dropBlockAsItem(world, pos, state, 0);
+            this.dropBlockAsItem(world, pos, state, 0);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
         }
     }
@@ -129,9 +129,9 @@ public abstract class BlockBushLibEx extends BlockLibEx implements IPlantable
         if(state.getBlock() == this)
         {
             IBlockState soil = world.getBlockState(pos.down());
-            return canSustainBush(soil);
+            return this.canSustainBush(soil);
         }
 
-        return canSustainBush(world.getBlockState(pos.down()));
+        return this.canSustainBush(world.getBlockState(pos.down()));
     }
 }

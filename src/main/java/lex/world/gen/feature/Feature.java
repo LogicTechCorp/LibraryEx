@@ -36,30 +36,30 @@ public abstract class Feature extends WorldGenerator
 
     public Feature(Config config)
     {
-        genAttempts = config.getInt("genAttempts", 4);
-        genProbability = config.getFloat("genProbability", 1.0F);
-        randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
+        this.genAttempts = config.getInt("genAttempts", 4);
+        this.genProbability = config.getFloat("genProbability", 1.0F);
+        this.randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
 
         if(config.hasData("minHeight"))
         {
-            minGenHeight = config.getInt("minHeight");
+            this.minGenHeight = config.getInt("minHeight");
             config.removeData("minHeight");
-            config.addData("minGenHeight", new JsonPrimitive(minGenHeight));
+            config.addData("minGenHeight", new JsonPrimitive(this.minGenHeight));
         }
         else
         {
-            minGenHeight = config.getInt("minGenHeight", 0);
+            this.minGenHeight = config.getInt("minGenHeight", 0);
         }
 
         if(config.hasData("maxHeight"))
         {
-            maxGenHeight = config.getInt("maxHeight");
+            this.maxGenHeight = config.getInt("maxHeight");
             config.removeData("maxHeight");
-            config.addData("maxGenHeight", new JsonPrimitive(maxGenHeight));
+            config.addData("maxGenHeight", new JsonPrimitive(this.maxGenHeight));
         }
         else
         {
-            maxGenHeight = config.getInt("maxGenHeight", 255);
+            this.maxGenHeight = config.getInt("maxGenHeight", 255);
         }
     }
 
@@ -77,18 +77,18 @@ public abstract class Feature extends WorldGenerator
 
     public int getGenAttempts()
     {
-        return genAttempts;
+        return this.genAttempts;
     }
 
     public int getGenAttempts(Random rand)
     {
-        int attempts = genAttempts;
+        int attempts = this.genAttempts;
 
-        if(genProbability > 0.0F && genProbability < 1.0F && rand.nextFloat() > genProbability)
+        if(this.genProbability > 0.0F && this.genProbability < 1.0F && rand.nextFloat() > this.genProbability)
         {
             attempts = 0;
         }
-        if(randomizeGenAttempts)
+        if(this.randomizeGenAttempts)
         {
             attempts = NumberHelper.getNumberInRange(1, attempts, rand);
         }
@@ -98,21 +98,21 @@ public abstract class Feature extends WorldGenerator
 
     public float getGenProbability()
     {
-        return genProbability;
+        return this.genProbability;
     }
 
     public boolean randomizeGenAttempts()
     {
-        return randomizeGenAttempts;
+        return this.randomizeGenAttempts;
     }
 
     public int getMinHeight()
     {
-        return minGenHeight;
+        return this.minGenHeight;
     }
 
     public int getMaxHeight()
     {
-        return maxGenHeight;
+        return this.maxGenHeight;
     }
 }

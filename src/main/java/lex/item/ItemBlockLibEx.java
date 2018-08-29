@@ -25,7 +25,7 @@ public class ItemBlockLibEx extends ItemBlock
     public ItemBlockLibEx(Block block)
     {
         super(block);
-        setRegistryName(block.getRegistryName().toString());
+        this.setRegistryName(block.getRegistryName().toString());
     }
 
     @Override

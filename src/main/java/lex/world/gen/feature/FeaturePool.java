@@ -34,8 +34,8 @@ public class FeaturePool extends Feature
     public FeaturePool(Config config)
     {
         super(config);
-        blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
+        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
+        this.blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
     }
 
     public FeaturePool(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
@@ -48,17 +48,17 @@ public class FeaturePool extends Feature
     @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(blockToSpawn.getBlock() == Blocks.BARRIER || blockToSurround.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToSurround.getBlock() == Blocks.BARRIER)
         {
             return false;
         }
 
-        for(pos = pos.add(-8, 0, -8); pos.getY() > minGenHeight && world.isAirBlock(pos); pos = pos.down())
+        for(pos = pos.add(-8, 0, -8); pos.getY() > this.minGenHeight && world.isAirBlock(pos); pos = pos.down())
         {
 
         }
 
-        if(pos.getY() <= 4 || pos.getY() < minGenHeight)
+        if(pos.getY() <= 4 || pos.getY() < this.minGenHeight)
         {
             return false;
         }
@@ -114,7 +114,7 @@ public class FeaturePool extends Feature
                                 return false;
                             }
 
-                            if(k < 4 && !material.isSolid() && world.getBlockState(pos.add(k1, k, l2)) != blockToSpawn)
+                            if(k < 4 && !material.isSolid() && world.getBlockState(pos.add(k1, k, l2)) != this.blockToSpawn)
                             {
                                 return false;
                             }
@@ -131,7 +131,7 @@ public class FeaturePool extends Feature
                     {
                         if(hasSpace[(l1 * 16 + i3) * 8 + i4])
                         {
-                            world.setBlockState(pos.add(l1, i4, i3), i4 >= 4 ? Blocks.AIR.getDefaultState() : blockToSpawn, 2);
+                            world.setBlockState(pos.add(l1, i4, i3), i4 >= 4 ? Blocks.AIR.getDefaultState() : this.blockToSpawn, 2);
                         }
                     }
                 }
@@ -147,7 +147,7 @@ public class FeaturePool extends Feature
 
                         if(flag1 && (k4 < 4 || rand.nextInt(2) != 0) && world.getBlockState(pos.add(j2, k4, k3)).getMaterial().isSolid())
                         {
-                            world.setBlockState(pos.add(j2, k4, k3), blockToSurround, 2);
+                            world.setBlockState(pos.add(j2, k4, k3), this.blockToSurround, 2);
                         }
                     }
                 }

@@ -28,10 +28,10 @@ public class BlockLibEx extends Block
     public BlockLibEx(IModData data, String name, Material material)
     {
         super(material);
-        setRegistryName(data.getModId() + ":" + name);
-        setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, getRegistryName().toString()));
-        setSoundType(SoundType.STONE);
-        setHarvestLevel("pickaxe", 0);
-        setCreativeTab(data.getCreativeTab());
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setSoundType(SoundType.STONE);
+        this.setHarvestLevel("pickaxe", 0);
+        this.setCreativeTab(data.getCreativeTab());
     }
 }

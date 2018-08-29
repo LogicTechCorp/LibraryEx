@@ -27,6 +27,6 @@ public class PotionTypeLibEx extends PotionType
     public PotionTypeLibEx(IModData data, String name, PotionEffect effect)
     {
         super(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, data.getModId() + ":" + name), effect);
-        setRegistryName(data.getModId() + ":" + name);
+        this.setRegistryName(data.getModId() + ":" + name);
     }
 }

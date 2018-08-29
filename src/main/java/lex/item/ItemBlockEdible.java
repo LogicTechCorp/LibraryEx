@@ -54,9 +54,9 @@ public class ItemBlockEdible extends ItemBlockLibEx
         if(entityLiving instanceof EntityPlayer)
         {
             EntityPlayer player = (EntityPlayer) entityLiving;
-            player.getFoodStats().addStats(healAmount, saturation);
+            player.getFoodStats().addStats(this.healAmount, this.saturation);
             world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
-            onFoodEaten(stack, world, player);
+            this.onFoodEaten(stack, world, player);
             player.addStat(StatList.getObjectUseStats(this));
         }
 
@@ -81,7 +81,7 @@ public class ItemBlockEdible extends ItemBlockLibEx
     {
         ItemStack stack = player.getHeldItem(hand);
 
-        if(player.canEat(alwaysEdible))
+        if(player.canEat(this.alwaysEdible))
         {
             player.setActiveHand(hand);
             return new ActionResult(EnumActionResult.SUCCESS, stack);
@@ -94,37 +94,37 @@ public class ItemBlockEdible extends ItemBlockLibEx
 
     protected void onFoodEaten(ItemStack stack, World world, EntityPlayer player)
     {
-        if(!world.isRemote && this.potionId != null && world.rand.nextFloat() < potionEffectProbability)
+        if(!world.isRemote && this.potionId != null && world.rand.nextFloat() < this.potionEffectProbability)
         {
-            player.addPotionEffect(new PotionEffect(potionId));
+            player.addPotionEffect(new PotionEffect(this.potionId));
         }
     }
 
     public int getHealAmount(ItemStack stack)
     {
-        return healAmount;
+        return this.healAmount;
     }
 
     public float getSaturation(ItemStack stack)
     {
-        return saturation;
+        return this.saturation;
     }
 
     public boolean isWolfsFood()
     {
-        return isWolfFood;
+        return this.isWolfFood;
     }
 
     public ItemBlockEdible setPotionEffect(PotionEffect effect, float probability)
     {
-        potionId = effect;
-        potionEffectProbability = probability;
+        this.potionId = effect;
+        this.potionEffectProbability = probability;
         return this;
     }
 
     public ItemBlockEdible setAlwaysEdible()
     {
-        alwaysEdible = true;
+        this.alwaysEdible = true;
         return this;
     }
 }

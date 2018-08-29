@@ -53,12 +53,12 @@ public class FeatureStructure extends Feature
     public FeatureStructure(Config config)
     {
         super(config);
-        structure = config.getResource("structure");
-        type = config.getEnum("type", Type.class, Type.GROUNDED);
-        mirror = config.getEnum("mirror", Mirror.class, Mirror.NONE);
-        rotation = config.getEnum("rotation", Rotation.class, Rotation.NONE);
-        ignoredBlock = config.getBlock("ignoredBlock", Blocks.STRUCTURE_VOID.getDefaultState()).getBlock();
-        clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
+        this.structure = config.getResource("structure");
+        this.type = config.getEnum("type", Type.class, Type.GROUNDED);
+        this.mirror = config.getEnum("mirror", Mirror.class, Mirror.NONE);
+        this.rotation = config.getEnum("rotation", Rotation.class, Rotation.NONE);
+        this.ignoredBlock = config.getBlock("ignoredBlock", Blocks.STRUCTURE_VOID.getDefaultState()).getBlock();
+        this.clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
     }
 
     public FeatureStructure(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, ResourceLocation structure, Type type, Mirror mirror, Rotation rotation, Block ignoredBlock, float clearancePercentage)
@@ -77,32 +77,32 @@ public class FeatureStructure extends Feature
     {
         MinecraftServer server = world.getMinecraftServer();
         TemplateManager manager = world.getSaveHandler().getStructureTemplateManager();
-        Template template = manager.getTemplate(server, structure);
-        PlacementSettings placementSettings = new PlacementSettings().setMirror(mirror).setRotation(rotation).setReplacedBlock(ignoredBlock).setRandom(rand);
-        BlockPos structureSize = template.transformedSize(rotation);
+        Template template = manager.getTemplate(server, this.structure);
+        PlacementSettings placementSettings = new PlacementSettings().setMirror(this.mirror).setRotation(this.rotation).setReplacedBlock(this.ignoredBlock).setRandom(rand);
+        BlockPos structureSize = template.transformedSize(this.rotation);
         BlockPos spawnPos = null;
 
-        if(type == Type.GROUNDED)
+        if(this.type == Type.GROUNDED)
         {
-            spawnPos = StructureHelper.getGroundedPos(world, pos, structureSize, clearancePercentage);
+            spawnPos = StructureHelper.getGroundedPos(world, pos, structureSize, this.clearancePercentage);
         }
-        else if(type == Type.FLOATING)
+        else if(this.type == Type.FLOATING)
         {
-            spawnPos = StructureHelper.getFloatingPos(world, pos, structureSize, clearancePercentage);
+            spawnPos = StructureHelper.getFloatingPos(world, pos, structureSize, this.clearancePercentage);
         }
-        else if(type == Type.HANGING)
+        else if(this.type == Type.HANGING)
         {
-            spawnPos = StructureHelper.getHangingPos(world, pos, structureSize, clearancePercentage);
+            spawnPos = StructureHelper.getHangingPos(world, pos, structureSize, this.clearancePercentage);
         }
-        else if(type == Type.BURIED)
+        else if(this.type == Type.BURIED)
         {
-            spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, clearancePercentage);
+            spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, this.clearancePercentage);
         }
 
-        if(spawnPos != null && spawnPos.getY() >= minGenHeight && spawnPos.getY() <= maxGenHeight)
+        if(spawnPos != null && spawnPos.getY() >= this.minGenHeight && spawnPos.getY() <= this.maxGenHeight)
         {
             template.addBlocksToWorld(world, spawnPos, placementSettings);
-            handleDataBlocks(world, spawnPos, template, placementSettings, rand);
+            this.handleDataBlocks(world, spawnPos, template, placementSettings, rand);
             return true;
         }
 

@@ -50,35 +50,35 @@ public class BiomeWrapper
     public BiomeWrapper(Config config)
     {
         this.config = config;
-        parse();
+        this.parse();
     }
 
     protected void parse()
     {
-        biome = ForgeRegistries.BIOMES.getValue(config.getResource("biome"));
+        this.biome = ForgeRegistries.BIOMES.getValue(this.config.getResource("biome"));
 
-        if(biome != null)
+        if(this.biome != null)
         {
-            weight = config.getInt("weight", 10);
-            Config blockConfig = config.getDataBranch("blocks", new JsonObject());
-            blockConfig.getBlock("topBlock", biome.topBlock);
-            blockConfig.getBlock("fillerBlock", biome.fillerBlock);
+            this.weight = this.config.getInt("weight", 10);
+            Config blockConfig = this.config.getDataBranch("blocks", new JsonObject());
+            blockConfig.getBlock("topBlock", this.biome.topBlock);
+            blockConfig.getBlock("fillerBlock", this.biome.fillerBlock);
 
             for(Map.Entry<String, JsonElement> entry : blockConfig.getAllData().entrySet())
             {
                 if(blockConfig.getBlock(entry.getKey()) != null)
                 {
-                    blocks.put(entry.getKey(), blockConfig.getBlock(entry.getKey()));
+                    this.blocks.put(entry.getKey(), blockConfig.getBlock(entry.getKey()));
                 }
             }
 
-            List<Config> entityConfigs = config.getDataBranches("entities", new ArrayList<>());
+            List<Config> entityConfigs = this.config.getDataBranches("entities", new ArrayList<>());
             List<JsonObject> entityObjects = new ArrayList<>();
 
             for(EnumCreatureType creatureType : EnumCreatureType.values())
             {
                 entryLoop:
-                for(Biome.SpawnListEntry entry : biome.getSpawnableList(creatureType))
+                for(Biome.SpawnListEntry entry : this.biome.getSpawnableList(creatureType))
                 {
                     ResourceLocation entityName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
                     boolean containsEntry = false;
@@ -114,8 +114,8 @@ public class BiomeWrapper
                 }
             }
 
-            config.removeData("entities");
-            entityConfigs = config.getDataBranches("entities", entityObjects);
+            this.config.removeData("entities");
+            entityConfigs = this.config.getDataBranches("entities", entityObjects);
 
             for(Config entityConfig : entityConfigs)
             {
@@ -128,12 +128,12 @@ public class BiomeWrapper
 
                     if(EntityLiving.class.isAssignableFrom(entityCls))
                     {
-                        spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, entityConfig.getInt("weight", 10), entityConfig.getInt("minGroupCount", 1), entityConfig.getInt("maxGroupCount", 4)));
+                        this.spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityCls, entityConfig.getInt("weight", 10), entityConfig.getInt("minGroupCount", 1), entityConfig.getInt("maxGroupCount", 4)));
                     }
                 }
             }
 
-            List<Config> featureConfigs = config.getDataBranches("features", new ArrayList<>());
+            List<Config> featureConfigs = this.config.getDataBranches("features", new ArrayList<>());
             List<JsonObject> featureObjects = new ArrayList<>();
 
             for(Config featureConfig : featureConfigs)
@@ -143,32 +143,32 @@ public class BiomeWrapper
                 if(feature != null && featureConfig.getBoolean("generate", true))
                 {
                     GenerationStage generationStage = featureConfig.getEnum("genStage", GenerationStage.class, GenerationStage.POST_DECORATE);
-                    generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
+                    this.generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(feature);
                 }
 
                 featureObjects.add(featureConfig.serialize().getAsJsonObject());
             }
 
-            config.removeData("features");
-            config.getDataBranches("features", featureObjects);
-            enabled = config.getBoolean("enabled", true);
-            genDefaultFeatures = config.getBoolean("genDefaultFeatures", true);
+            this.config.removeData("features");
+            this.config.getDataBranches("features", featureObjects);
+            this.enabled = this.config.getBoolean("enabled", true);
+            this.genDefaultFeatures = this.config.getBoolean("genDefaultFeatures", true);
         }
     }
 
     public Biome getBiome()
     {
-        return biome;
+        return this.biome;
     }
 
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
-        IBlockState value = getBlock(key);
+        IBlockState value = this.getBlock(key);
 
         if(value == null)
         {
-            config.getDataBranch("blocks").getBlock(key, fallbackValue);
-            blocks.put(key, fallbackValue);
+            this.config.getDataBranch("blocks").getBlock(key, fallbackValue);
+            this.blocks.put(key, fallbackValue);
             return fallbackValue;
         }
 
@@ -177,31 +177,31 @@ public class BiomeWrapper
 
     public IBlockState getBlock(String key)
     {
-        return blocks.get(key);
+        return this.blocks.get(key);
     }
 
     public List<IBlockState> getBlocks()
     {
-        return ImmutableList.copyOf(blocks.values());
+        return ImmutableList.copyOf(this.blocks.values());
     }
 
     public List<Feature> getFeatures(GenerationStage generationStage)
     {
-        return ImmutableList.copyOf(generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
+        return ImmutableList.copyOf(this.generationStageFeatures.computeIfAbsent(generationStage, k -> new ArrayList<>()));
     }
 
     public List<Biome.SpawnListEntry> getSpawnableMobs(EnumCreatureType creatureType)
     {
-        return ImmutableList.copyOf(spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()));
+        return ImmutableList.copyOf(this.spawnableMobs.computeIfAbsent(creatureType, k -> new ArrayList<>()));
     }
 
     public boolean isEnabled()
     {
-        return enabled;
+        return this.enabled;
     }
 
     public boolean shouldGenDefaultFeatures()
     {
-        return genDefaultFeatures;
+        return this.genDefaultFeatures;
     }
 }

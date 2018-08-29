@@ -54,7 +54,7 @@ public abstract class BlockLogLibEx extends BlockLibEx
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
-        return getStateFromMeta(meta).withProperty(AXIS, EnumAxis.fromAxis(facing.getAxis()));
+        return this.getStateFromMeta(meta).withProperty(AXIS, EnumAxis.fromAxis(facing.getAxis()));
     }
 
     @Override
@@ -107,7 +107,7 @@ public abstract class BlockLogLibEx extends BlockLibEx
         @Override
         public String getName()
         {
-            return toString().toLowerCase();
+            return this.toString().toLowerCase();
         }
 
         public static EnumAxis fromAxis(EnumFacing.Axis axis)

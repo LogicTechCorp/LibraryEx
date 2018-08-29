@@ -49,7 +49,7 @@ public class BlockTileEntity<T extends TileEntity> extends BlockLibEx
     {
         try
         {
-            return cls.newInstance();
+            return this.cls.newInstance();
         }
         catch(InstantiationException | IllegalAccessException e)
         {

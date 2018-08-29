@@ -76,18 +76,18 @@ public class Config
 
         if(keepDataOrder)
         {
-            DATA = new LinkedHashMap<>();
-            FALLBACK_DATA = new LinkedHashMap<>();
-            DATA_BRANCHES = new LinkedHashMap<>();
+            this.DATA = new LinkedHashMap<>();
+            this.FALLBACK_DATA = new LinkedHashMap<>();
+            this.DATA_BRANCHES = new LinkedHashMap<>();
         }
         else
         {
-            DATA = new HashMap<>();
-            FALLBACK_DATA = new HashMap<>();
-            DATA_BRANCHES = new HashMap<>();
+            this.DATA = new HashMap<>();
+            this.FALLBACK_DATA = new HashMap<>();
+            this.DATA_BRANCHES = new HashMap<>();
         }
 
-        deserialize(jsonString);
+        this.deserialize(jsonString);
     }
 
     public Config(String jsonString, boolean keepDataOrder)
@@ -96,18 +96,18 @@ public class Config
 
         if(keepDataOrder)
         {
-            DATA = new LinkedHashMap<>();
-            FALLBACK_DATA = new LinkedHashMap<>();
-            DATA_BRANCHES = new LinkedHashMap<>();
+            this.DATA = new LinkedHashMap<>();
+            this.FALLBACK_DATA = new LinkedHashMap<>();
+            this.DATA_BRANCHES = new LinkedHashMap<>();
         }
         else
         {
-            DATA = new HashMap<>();
-            FALLBACK_DATA = new HashMap<>();
-            DATA_BRANCHES = new HashMap<>();
+            this.DATA = new HashMap<>();
+            this.FALLBACK_DATA = new HashMap<>();
+            this.DATA_BRANCHES = new HashMap<>();
         }
 
-        deserialize(jsonString);
+        this.deserialize(jsonString);
     }
 
     public void deserialize(String jsonString)
@@ -120,7 +120,7 @@ public class Config
             {
                 for(Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet())
                 {
-                    DATA.put(entry.getKey(), entry.getValue());
+                    this.DATA.put(entry.getKey(), entry.getValue());
                 }
             }
         }
@@ -130,24 +130,24 @@ public class Config
     {
         JsonObject object = new JsonObject();
 
-        for(Map.Entry<String, Config> entry : DATA_BRANCHES.entrySet())
+        for(Map.Entry<String, Config> entry : this.DATA_BRANCHES.entrySet())
         {
-            if(hasData(entry.getKey()))
+            if(this.hasData(entry.getKey()))
             {
-                addData(entry.getKey(), entry.getValue().serialize());
+                this.addData(entry.getKey(), entry.getValue().serialize());
             }
-            else if(hasFallbackData(entry.getKey()))
+            else if(this.hasFallbackData(entry.getKey()))
             {
-                addFallbackData(entry.getKey(), entry.getValue().serialize());
+                this.addFallbackData(entry.getKey(), entry.getValue().serialize());
             }
         }
 
-        for(Map.Entry<String, JsonElement> entry : DATA.entrySet())
+        for(Map.Entry<String, JsonElement> entry : this.DATA.entrySet())
         {
             object.add(entry.getKey(), entry.getValue());
         }
 
-        for(Map.Entry<String, JsonElement> entry : FALLBACK_DATA.entrySet())
+        for(Map.Entry<String, JsonElement> entry : this.FALLBACK_DATA.entrySet())
         {
             if(!object.has(entry.getKey()))
             {
@@ -160,76 +160,76 @@ public class Config
 
     public void addData(String key, JsonElement element)
     {
-        DATA.put(key, element);
+        this.DATA.put(key, element);
     }
 
     public void addFallbackData(String key, JsonElement element)
     {
-        FALLBACK_DATA.put(key, element);
+        this.FALLBACK_DATA.put(key, element);
     }
 
     public void addDataBranch(String key, Config config)
     {
-        DATA_BRANCHES.put(key, config);
+        this.DATA_BRANCHES.put(key, config);
     }
 
     public boolean hasData(String key)
     {
-        return DATA.containsKey(key);
+        return this.DATA.containsKey(key);
     }
 
     public boolean hasFallbackData(String key)
     {
-        return FALLBACK_DATA.containsKey(key);
+        return this.FALLBACK_DATA.containsKey(key);
     }
 
     public boolean hasDataBranch(String key)
     {
-        return DATA_BRANCHES.containsKey(key);
+        return this.DATA_BRANCHES.containsKey(key);
     }
 
     public JsonElement getData(String key)
     {
-        return DATA.get(key);
+        return this.DATA.get(key);
     }
 
     public JsonElement getFallbackData(String key)
     {
-        return FALLBACK_DATA.get(key);
+        return this.FALLBACK_DATA.get(key);
     }
 
     public Map<String, JsonElement> getAllData()
     {
-        return ImmutableMap.copyOf(DATA);
+        return ImmutableMap.copyOf(this.DATA);
     }
 
     public void removeData(String key)
     {
-        DATA.remove(key);
+        this.DATA.remove(key);
     }
 
     public void removeFallbackData(String key)
     {
-        FALLBACK_DATA.remove(key);
+        this.FALLBACK_DATA.remove(key);
     }
 
     public JsonElement replaceData(String key, JsonElement data)
     {
-        return DATA.replace(key, data);
+        return this.DATA.replace(key, data);
     }
 
     public JsonElement replaceFallbackData(String key, JsonElement data)
     {
-        return FALLBACK_DATA.replace(key, data);
+        return this.FALLBACK_DATA.replace(key, data);
     }
 
     public String getString(String key, String fallbackValue)
     {
-        String value = getString(key);
+        String value = this.getString(key);
 
         if(value.equals("MissingNo"))
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -238,11 +238,11 @@ public class Config
 
     public int getInt(String key, int fallbackValue)
     {
-        int value = getInt(key);
+        int value = this.getInt(key);
 
         if(value == -999)
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -251,11 +251,11 @@ public class Config
 
     public float getFloat(String key, float fallbackValue)
     {
-        float value = getFloat(key);
+        float value = this.getFloat(key);
 
         if(value == -999.0F)
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -264,11 +264,11 @@ public class Config
 
     public boolean getBoolean(String key, boolean fallbackValue)
     {
-        boolean value = getBoolean(key);
+        boolean value = this.getBoolean(key);
 
-        if(!isBoolean(getData(key)))
+        if(!isBoolean(this.getData(key)))
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue));
             return fallbackValue;
         }
 
@@ -277,11 +277,11 @@ public class Config
 
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass, E fallbackValue)
     {
-        E value = getEnum(key, enumClass);
+        E value = this.getEnum(key, enumClass);
 
         if(value == null)
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue.name().toLowerCase()));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue.name().toLowerCase()));
             return fallbackValue;
         }
 
@@ -290,11 +290,11 @@ public class Config
 
     public ResourceLocation getResource(String key, ResourceLocation fallbackValue)
     {
-        ResourceLocation value = getResource(key);
+        ResourceLocation value = this.getResource(key);
 
         if(value == null)
         {
-            addFallbackData(key, new JsonPrimitive(fallbackValue.toString()));
+            this.addFallbackData(key, new JsonPrimitive(fallbackValue.toString()));
             return fallbackValue;
         }
 
@@ -303,7 +303,7 @@ public class Config
 
     public IBlockState getBlock(String key, IBlockState fallbackValue)
     {
-        IBlockState value = getBlock(key);
+        IBlockState value = this.getBlock(key);
 
         if(value == null)
         {
@@ -317,7 +317,7 @@ public class Config
             }
 
             block.add("properties", properties);
-            addFallbackData(key, block);
+            this.addFallbackData(key, block);
             return fallbackValue;
         }
 
@@ -326,14 +326,14 @@ public class Config
 
     public ItemStack getItem(String key, ItemStack fallbackValue)
     {
-        ItemStack value = getItem(key);
+        ItemStack value = this.getItem(key);
 
         if(value.isEmpty())
         {
             JsonObject item = new JsonObject();
             item.addProperty("item", fallbackValue.getItem().getRegistryName().toString());
             item.addProperty("meta", fallbackValue.getItemDamage());
-            addFallbackData(key, item);
+            this.addFallbackData(key, item);
             return fallbackValue;
         }
 
@@ -342,12 +342,12 @@ public class Config
 
     public Config getDataBranch(String key, JsonObject fallbackValue)
     {
-        Config value = getDataBranch(key);
+        Config value = this.getDataBranch(key);
 
         if(value == null)
         {
-            addFallbackData(key, fallbackValue);
-            return new Config(fallbackValue.toString(), keepDataOrder);
+            this.addFallbackData(key, fallbackValue);
+            return new Config(fallbackValue.toString(), this.keepDataOrder);
         }
 
         return value;
@@ -355,9 +355,9 @@ public class Config
 
     public String getString(String key)
     {
-        if(isString(getData(key)))
+        if(isString(this.getData(key)))
         {
-            return getData(key).getAsJsonPrimitive().getAsString();
+            return this.getData(key).getAsJsonPrimitive().getAsString();
         }
         else
         {
@@ -367,9 +367,9 @@ public class Config
 
     public int getInt(String key)
     {
-        if(isInt(getData(key)))
+        if(isInt(this.getData(key)))
         {
-            return getData(key).getAsJsonPrimitive().getAsInt();
+            return this.getData(key).getAsJsonPrimitive().getAsInt();
         }
         else
         {
@@ -379,9 +379,9 @@ public class Config
 
     public float getFloat(String key)
     {
-        if(isFloat(getData(key)))
+        if(isFloat(this.getData(key)))
         {
-            return getData(key).getAsJsonPrimitive().getAsFloat();
+            return this.getData(key).getAsJsonPrimitive().getAsFloat();
         }
         else
         {
@@ -391,9 +391,9 @@ public class Config
 
     public boolean getBoolean(String key)
     {
-        if(isBoolean(getData(key)))
+        if(isBoolean(this.getData(key)))
         {
-            return getData(key).getAsJsonPrimitive().getAsBoolean();
+            return this.getData(key).getAsJsonPrimitive().getAsBoolean();
         }
         else
         {
@@ -403,9 +403,9 @@ public class Config
 
     public <E extends Enum> E getEnum(String key, Class<? extends E> enumClass)
     {
-        if(isString(getData(key)))
+        if(isString(this.getData(key)))
         {
-            String enumIdentifier = getData(key).getAsJsonPrimitive().getAsString();
+            String enumIdentifier = this.getData(key).getAsJsonPrimitive().getAsString();
 
             if(enumIdentifier.equalsIgnoreCase("random") || enumIdentifier.equalsIgnoreCase("rand"))
             {
@@ -428,9 +428,9 @@ public class Config
 
     public ResourceLocation getResource(String key)
     {
-        if(isString(getData(key)))
+        if(isString(this.getData(key)))
         {
-            return new ResourceLocation(getString(key));
+            return new ResourceLocation(this.getString(key));
         }
 
         return null;
@@ -440,9 +440,9 @@ public class Config
     {
         JsonObject object;
 
-        if(isObject(getData(key)))
+        if(isObject(this.getData(key)))
         {
-            object = getData(key).getAsJsonObject();
+            object = this.getData(key).getAsJsonObject();
         }
         else
         {
@@ -501,7 +501,7 @@ public class Config
 
     public ItemStack getItem(String key)
     {
-        Config itemConfig = getDataBranch(key);
+        Config itemConfig = this.getDataBranch(key);
         ItemStack stack = ItemStack.EMPTY;
 
         if(itemConfig != null)
@@ -527,7 +527,7 @@ public class Config
                 }
                 else if(ForgeRegistries.BLOCKS.containsKey(item))
                 {
-                    IBlockState state = getBlock(key);
+                    IBlockState state = this.getBlock(key);
                     Block block = state.getBlock();
                     stack = new ItemStack(block, 1, block.getMetaFromState(state));
                 }
@@ -539,7 +539,7 @@ public class Config
                         stack.setStackDisplayName(itemConfig.getString("displayName"));
                     }
 
-                    Config loreConfig = getDataBranch("lore");
+                    Config loreConfig = this.getDataBranch("lore");
 
                     if(loreConfig != null && loreConfig.getAllData().size() > 0)
                     {
@@ -596,14 +596,14 @@ public class Config
 
     public Config getDataBranch(String key)
     {
-        if(hasDataBranch(key))
+        if(this.hasDataBranch(key))
         {
-            return DATA_BRANCHES.get(key);
+            return this.DATA_BRANCHES.get(key);
         }
-        else if(isObject(getData(key)))
+        else if(isObject(this.getData(key)))
         {
-            Config config = new Config(getData(key).toString(), keepDataOrder);
-            DATA_BRANCHES.put(key, config);
+            Config config = new Config(this.getData(key).toString(), this.keepDataOrder);
+            this.DATA_BRANCHES.put(key, config);
             return config;
         }
 
@@ -612,16 +612,16 @@ public class Config
 
     public List<Config> getDataBranches(String key, List<JsonObject> fallbackValue)
     {
-        List<Config> value = getDataBranches(key);
+        List<Config> value = this.getDataBranches(key);
 
         if(value == null)
         {
             JsonArray array = new JsonArray();
             fallbackValue.forEach(array::add);
-            addFallbackData(key, array);
+            this.addFallbackData(key, array);
 
             List<Config> ret = new ArrayList<>();
-            fallbackValue.forEach(k -> ret.add(new Config(k.toString(), keepDataOrder)));
+            fallbackValue.forEach(k -> ret.add(new Config(k.toString(), this.keepDataOrder)));
             return ret;
         }
 
@@ -630,16 +630,16 @@ public class Config
 
     public List<Config> getDataBranches(String key)
     {
-        if(isArray(getData(key)))
+        if(isArray(this.getData(key)))
         {
-            JsonArray array = getData(key).getAsJsonArray();
+            JsonArray array = this.getData(key).getAsJsonArray();
             List<Config> subConfigs = new ArrayList<>();
 
             for(JsonElement element : array)
             {
                 if(isObject(element))
                 {
-                    subConfigs.add(new Config(element.toString(), keepDataOrder));
+                    subConfigs.add(new Config(element.toString(), this.keepDataOrder));
                 }
             }
 
@@ -653,13 +653,13 @@ public class Config
 
     public List<String> getStrings(String key, List<String> fallbackValue)
     {
-        List<String> value = getStrings(key);
+        List<String> value = this.getStrings(key);
 
         if(value == null)
         {
             JsonArray array = new JsonArray();
             fallbackValue.forEach(array::add);
-            addFallbackData(key, array);
+            this.addFallbackData(key, array);
             return fallbackValue;
         }
 
@@ -668,9 +668,9 @@ public class Config
 
     public List<String> getStrings(String key)
     {
-        if(isArray(getData(key)))
+        if(isArray(this.getData(key)))
         {
-            JsonArray array = getData(key).getAsJsonArray();
+            JsonArray array = this.getData(key).getAsJsonArray();
             List<String> strings = new ArrayList<>();
 
             for(JsonElement element : array)
@@ -698,7 +698,7 @@ public class Config
                 configFile = new File(configFile.getPath().replace("~", LibEx.CONFIG_DIRECTORY.getPath()));
             }
 
-            String jsonString = GSON.toJson(serialize());
+            String jsonString = GSON.toJson(this.serialize());
 
             try
             {

@@ -31,6 +31,6 @@ public class SoundEventLibEx extends SoundEvent
     private SoundEventLibEx(ResourceLocation name)
     {
         super(name);
-        setRegistryName(name);
+        this.setRegistryName(name);
     }
 }
