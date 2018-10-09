@@ -17,13 +17,13 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
 import lex.util.BlockHelper;
-import lex.util.NumberHelper;
+import lex.util.ConfigHelper;
+import lex.util.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -39,10 +39,10 @@ public class FeatureOakTree extends Feature
     public FeatureOakTree(Config config)
     {
         super(config);
-        this.logBlock = config.getBlock("logBlock", Blocks.BARRIER.getDefaultState());
-        this.leafBlock = config.getBlock("leafBlock", Blocks.BARRIER.getDefaultState());
-        this.minGrowthHeight = config.getInt("minGrowthHeight", 2);
-        this.maxGrowthHeight = config.getInt("maxGrowthHeight", 32);
+        this.logBlock = ConfigHelper.getOrSetBlockState(config, "logBlock", null);
+        this.leafBlock = ConfigHelper.getOrSetBlockState(config, "leafBlock", null);
+        this.minGrowthHeight = ConfigHelper.getOrSet(config, "minGrowthHeight", 2);
+        this.maxGrowthHeight = ConfigHelper.getOrSet(config, "maxGrowthHeight", 32);
     }
 
     public FeatureOakTree(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
@@ -55,9 +55,25 @@ public class FeatureOakTree extends Feature
     }
 
     @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        config.add("maxGrowthHeight", this.maxGrowthHeight);
+        config.add("minGrowthHeight", this.minGrowthHeight);
+        ConfigHelper.getOrSetBlockState(config, "leafBlock", this.leafBlock);
+        ConfigHelper.getOrSetBlockState(config, "logBlock", this.logBlock);
+        return config;
+    }
+
+    @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        int height = NumberHelper.getNumberInRange(this.minGrowthHeight, this.maxGrowthHeight, rand);
+        if(this.logBlock == null || this.leafBlock == null)
+        {
+            return false;
+        }
+
+        int height = RandomHelper.getRandomNumberInRange(this.minGrowthHeight, this.maxGrowthHeight, rand);
         boolean flag = true;
 
         if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getHeight())

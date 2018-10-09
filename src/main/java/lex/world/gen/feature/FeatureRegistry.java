@@ -17,13 +17,15 @@
 
 package lex.world.gen.feature;
 
+import com.electronwill.nightconfig.core.Config;
 import lex.LibEx;
-import lex.config.Config;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FeatureRegistry
 {
@@ -56,6 +58,11 @@ public class FeatureRegistry
         }
 
         return null;
+    }
+
+    public static ResourceLocation getFeatureRegistryName(Class<? extends Feature> cls)
+    {
+        return FEATURES.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), cls)).map(Map.Entry::getKey).collect(Collectors.toList()).get(0);
     }
 
     static

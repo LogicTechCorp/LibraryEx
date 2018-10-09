@@ -20,7 +20,7 @@ package lex.world.biome;
 import lex.IModData;
 import net.minecraft.world.biome.Biome;
 
-public class BiomeLibEx extends Biome
+public abstract class BiomeLibEx extends Biome
 {
     public BiomeLibEx(IModData data, BiomeProperties properties, String name)
     {
@@ -31,4 +31,6 @@ public class BiomeLibEx extends Biome
         this.spawnableWaterCreatureList.clear();
         this.spawnableCaveCreatureList.clear();
     }
+
+    public abstract BiomeConfigurations getConfigurations();
 }

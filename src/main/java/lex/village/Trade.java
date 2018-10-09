@@ -17,8 +17,9 @@
 
 package lex.village;
 
-import lex.config.Config;
-import lex.util.NumberHelper;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
+import lex.util.RandomHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
@@ -29,8 +30,8 @@ public class Trade extends MerchantRecipe
 
     public Trade(Config config)
     {
-        super(config.getItem("inputOne"), config.getItem("inputTwo"), config.getItem("output"), 0, config.getInt("maxTradesAvailable", 7));
-        this.tradeLevel = config.getInt("tradeLevel", 1);
+        super(ConfigHelper.getOrSetItemStack(config, "inputOne", null), ConfigHelper.getOrSetItemStack(config, "inputTwo", null), ConfigHelper.getOrSetItemStack(config, "output", null), 0, ConfigHelper.getOrSet(config, "maxTradesAvailable", 7));
+        this.tradeLevel = ConfigHelper.getOrSet(config, "tradeLevel", 1);
         this.config = config;
     }
 
@@ -39,18 +40,18 @@ public class Trade extends MerchantRecipe
         ItemStack outputStack = this.getItemToSell().copy();
         ItemStack inputOneStack = this.getItemToBuy().copy();
         ItemStack inputTwoStack = this.getSecondItemToBuy().copy();
-        int tradesAvailable = NumberHelper.getNumberInRange(this.config.getInt("minTradesAvailable", 1), this.config.getInt("maxTradesAvailable", 7), NumberHelper.getRand());
+        int tradesAvailable = RandomHelper.getRandomNumberInRange(ConfigHelper.getOrSet(this.config, "minTradesAvailable", 1), ConfigHelper.getOrSet(this.config, "maxTradesAvailable", 7), RandomHelper.getRand());
 
-        Config outputConfig = this.config.getDataBranch("output");
-        Config inputOneConfig = this.config.getDataBranch("inputOne");
-        Config inputTwoConfig = this.config.getDataBranch("inputTwo");
+        Config outputConfig = ConfigHelper.getOrSet(this.config, "output", null);
+        Config inputOneConfig = ConfigHelper.getOrSet(this.config, "inputOne", null);
+        Config inputTwoConfig = ConfigHelper.getOrSet(this.config, "inputTwo", null);
 
-        outputStack.setCount(NumberHelper.getNumberInRange(outputConfig.getInt("minStackSize", 1), outputConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
-        inputOneStack.setCount(NumberHelper.getNumberInRange(inputOneConfig.getInt("minStackSize", 1), inputOneConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
+        outputStack.setCount(RandomHelper.getRandomNumberInRange(outputConfig.getOrElse("minStackSize", 1), outputConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
+        inputOneStack.setCount(RandomHelper.getRandomNumberInRange(inputOneConfig.getOrElse("minStackSize", 1), inputOneConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
 
         if(inputTwoConfig != null)
         {
-            inputTwoStack.setCount(NumberHelper.getNumberInRange(inputTwoConfig.getInt("minStackSize", 1), inputTwoConfig.getInt("maxStackSize", 8), NumberHelper.getRand()));
+            inputTwoStack.setCount(RandomHelper.getRandomNumberInRange(inputTwoConfig.getOrElse("minStackSize", 1), inputTwoConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
         }
 
         return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);

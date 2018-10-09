@@ -30,8 +30,18 @@ public class BlockLibEx extends Block
         super(material);
         this.setRegistryName(data.getModId() + ":" + name);
         this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setCreativeTab(data.getCreativeTab());
+    }
+
+    public BlockLibEx(IModData data, String name, String harvestTool, int harvestLevel, float hardness, float resistance, Material material)
+    {
+        super(material);
+        this.setRegistryName(data.getModId() + ":" + name);
+        this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         this.setSoundType(SoundType.STONE);
-        this.setHarvestLevel("pickaxe", 0);
+        this.setHardness(hardness);
+        this.setResistance(resistance);
+        this.setHarvestLevel(harvestTool, harvestLevel);
         this.setCreativeTab(data.getCreativeTab());
     }
 }

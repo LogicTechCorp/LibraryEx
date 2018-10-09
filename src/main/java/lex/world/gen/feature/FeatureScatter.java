@@ -17,10 +17,10 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -36,12 +36,12 @@ public class FeatureScatter extends Feature
     public FeatureScatter(Config config)
     {
         super(config);
-        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        this.blockToTarget = config.getBlock("blockToTarget", Blocks.BARRIER.getDefaultState());
-        this.placement = config.getEnum("placement", Placement.class, Placement.ON_GROUND);
+        this.blockToSpawn = ConfigHelper.getOrSetBlockState(config, "blockToSpawn", null);
+        this.blockToTarget = ConfigHelper.getOrSetBlockState(config, "blockToTarget", null);
+        this.placement = ConfigHelper.getOrSetEnum(config, "placement", Placement.class, Placement.ON_GROUND);
     }
 
-    public FeatureScatter(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
+    public FeatureScatter(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         this.blockToSpawn = blockToSpawn;
@@ -50,14 +50,24 @@ public class FeatureScatter extends Feature
     }
 
     @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        config.add("placement", this.placement.toString().toLowerCase());
+        ConfigHelper.getOrSetBlockState(config, "blockToSpawn", this.blockToSpawn);
+        ConfigHelper.getOrSetBlockState(config, "blockToTarget", this.blockToTarget);
+        return config;
+    }
+
+    @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToTarget.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn == null || this.blockToTarget == null)
         {
             return false;
         }
 
-        for(int i = 0; i < 64; ++i)
+        for(int i = 0; i < 64; i++)
         {
             BlockPos newPos = pos.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 

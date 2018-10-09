@@ -17,10 +17,10 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
 import net.minecraft.block.BlockHugeMushroom;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -36,13 +36,13 @@ public class FeatureBigMushroom extends Feature
     public FeatureBigMushroom(Config config)
     {
         super(config);
-        this.mushroomCap = config.getBlock("mushroomCap", Blocks.BARRIER.getDefaultState());
-        this.mushroomStem = config.getBlock("mushroomStem", Blocks.BARRIER.getDefaultState());
-        this.blockToPlaceOn = config.getBlock("blockToPlaceOn", Blocks.BARRIER.getDefaultState());
-        this.shape = config.getEnum("shape", Shape.class, Shape.FLAT);
+        this.mushroomCap = ConfigHelper.getOrSetBlockState(config, "mushroomCap", null);
+        this.mushroomStem = ConfigHelper.getOrSetBlockState(config, "mushroomStem", null);
+        this.blockToPlaceOn = ConfigHelper.getOrSetBlockState(config, "blockToPlaceOn", null);
+        this.shape = ConfigHelper.getOrSetEnum(config, "shape", Shape.class, Shape.FLAT);
     }
 
-    public FeatureBigMushroom(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
+    public FeatureBigMushroom(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         this.mushroomCap = mushroomCap;
@@ -52,9 +52,20 @@ public class FeatureBigMushroom extends Feature
     }
 
     @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        config.add("shape", this.shape.toString().toLowerCase());
+        ConfigHelper.getOrSetBlockState(config, "blockToPlaceOn", this.blockToPlaceOn);
+        ConfigHelper.getOrSetBlockState(config, "mushroomStem", this.mushroomStem);
+        ConfigHelper.getOrSetBlockState(config, "mushroomCap", this.mushroomCap);
+        return config;
+    }
+
+    @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(this.mushroomCap.getBlock() == Blocks.BARRIER || this.mushroomStem.getBlock() == Blocks.BARRIER || this.blockToPlaceOn.getBlock() == Blocks.BARRIER)
+        if(this.mushroomCap == null || this.mushroomStem == null || this.blockToPlaceOn == null)
         {
             return false;
         }

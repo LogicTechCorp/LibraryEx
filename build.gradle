@@ -15,22 +15,24 @@ buildscript {
 
 version = mod_version
 group = "com.github.mineex"
-archivesBaseName = mod_name + "-" + minecraft_version
+archivesBaseName = "${mod_name}-${minecraft_version}"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version = minecraft_version + "-" + forge_version
+    version = "${minecraft_version}-${forge_version}"
     mappings = mcp_version
     runDir = "run"
     makeObfSourceJar = false
 }
 
 repositories {
+    mavenCentral()
 }
 
 dependencies {
+    compile "com.electronwill.night-config:json:${night_config_version}"
 }
 
 processResources {
@@ -50,6 +52,9 @@ processResources {
 
 jar {
     manifest {
-        attributes 'FMLAT': "lex_at.cfg"
+        attributes([
+                'FMLAT': "lex_at.cfg",
+                'ContainedDeps': "night-config-core-${night_config_version}.jar night-config-json-${night_config_version}.jar"
+        ])
     }
 }

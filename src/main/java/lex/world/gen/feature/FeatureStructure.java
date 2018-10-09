@@ -17,7 +17,9 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
+import lex.util.RandomHelper;
 import lex.util.StructureHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -48,28 +50,45 @@ public class FeatureStructure extends Feature
     private Mirror mirror;
     private Rotation rotation;
     private Block ignoredBlock;
-    private float clearancePercentage;
+    private double clearancePercentage;
 
     public FeatureStructure(Config config)
     {
         super(config);
-        this.structure = config.getResource("structure");
-        this.type = config.getEnum("type", Type.class, Type.GROUNDED);
-        this.mirror = config.getEnum("mirror", Mirror.class, Mirror.NONE);
-        this.rotation = config.getEnum("rotation", Rotation.class, Rotation.NONE);
-        this.ignoredBlock = config.getBlock("ignoredBlock", Blocks.STRUCTURE_VOID.getDefaultState()).getBlock();
-        this.clearancePercentage = config.getFloat("clearancePercentage", 0.875F);
+        this.structure = ConfigHelper.getOrSetResourceLocation(config, "structure", null);
+        this.type = ConfigHelper.getOrSetEnum(config, "type", Type.class, Type.GROUNDED);
+        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
+        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
+        IBlockState ignoredBlockState = ConfigHelper.getOrSetBlockState(config, "ignoredBlock", null);
+
+        if(ignoredBlockState != null)
+        {
+            this.ignoredBlock = ignoredBlockState.getBlock();
+        }
+
+        this.clearancePercentage = ConfigHelper.getOrSet(config, "clearancePercentage", 0.875D);
     }
 
-    public FeatureStructure(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, ResourceLocation structure, Type type, Mirror mirror, Rotation rotation, Block ignoredBlock, float clearancePercentage)
+    public FeatureStructure(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         this.structure = structure;
         this.type = type;
-        this.mirror = mirror;
-        this.rotation = rotation;
+        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
+        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
         this.ignoredBlock = ignoredBlock;
         this.clearancePercentage = clearancePercentage;
+    }
+
+    @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        config.add("clearancePercentage", this.clearancePercentage);
+        ConfigHelper.getOrSetBlockState(config, "ignoredBlock", this.ignoredBlock.getDefaultState());
+        config.add("type", this.type.toString().toLowerCase());
+        ConfigHelper.getOrSetResourceLocation(config, "structure", this.structure);
+        return config;
     }
 
     @Override

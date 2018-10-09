@@ -17,10 +17,10 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockMatcher;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -36,12 +36,12 @@ public class FeatureOre extends Feature
     public FeatureOre(Config config)
     {
         super(config);
-        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        this.blockToReplace = config.getBlock("blockToReplace", Blocks.BARRIER.getDefaultState());
-        this.veinSize = config.getInt("veinSize", 8);
+        this.blockToSpawn = ConfigHelper.getOrSetBlockState(config, "blockToSpawn", null);
+        this.blockToReplace = ConfigHelper.getOrSetBlockState(config, "blockToReplace", null);
+        this.veinSize = ConfigHelper.getOrSet(config, "veinSize", 8);
     }
 
-    public FeatureOre(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
+    public FeatureOre(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         this.blockToSpawn = blockToSpawn;
@@ -50,9 +50,19 @@ public class FeatureOre extends Feature
     }
 
     @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        config.add("veinSize", this.veinSize);
+        ConfigHelper.getOrSetBlockState(config, "blockToReplace", this.blockToReplace);
+        ConfigHelper.getOrSetBlockState(config, "blockToSpawn", this.blockToSpawn);
+        return config;
+    }
+
+    @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToReplace.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn == null || this.blockToReplace == null)
         {
             return false;
         }

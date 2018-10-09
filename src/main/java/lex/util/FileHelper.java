@@ -25,6 +25,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -49,7 +50,14 @@ public class FileHelper
                     {
                         if(getFileExtension(destinationFile).equals(""))
                         {
-                            destinationFile.mkdirs();
+                            try
+                            {
+                                Files.createDirectories(destinationFile.toPath());
+                            }
+                            catch(IOException e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
                         else
                         {
@@ -86,7 +94,7 @@ public class FileHelper
                         {
                             if(zipEntry.isDirectory())
                             {
-                                file.mkdirs();
+                                Files.createDirectories(file.toPath());
                             }
                             else
                             {

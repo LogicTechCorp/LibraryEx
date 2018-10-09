@@ -17,7 +17,8 @@
 
 package lex.world.gen.feature;
 
-import lex.config.Config;
+import com.electronwill.nightconfig.core.Config;
+import lex.util.ConfigHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -34,11 +35,11 @@ public class FeaturePool extends Feature
     public FeaturePool(Config config)
     {
         super(config);
-        this.blockToSpawn = config.getBlock("blockToSpawn", Blocks.BARRIER.getDefaultState());
-        this.blockToSurround = config.getBlock("blockToSurround", Blocks.BARRIER.getDefaultState());
+        this.blockToSpawn = ConfigHelper.getOrSetBlockState(config, "blockToSpawn", null);
+        this.blockToSurround = ConfigHelper.getOrSetBlockState(config, "blockToSurround", null);
     }
 
-    public FeaturePool(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
+    public FeaturePool(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
     {
         super(genAttempts, genProbability, randomizeGenAttempts, minGenHeight, maxGenHeight);
         this.blockToSpawn = blockToSpawn;
@@ -46,9 +47,18 @@ public class FeaturePool extends Feature
     }
 
     @Override
+    public Config serialize()
+    {
+        Config config = super.serialize();
+        ConfigHelper.getOrSetBlockState(config, "blockToSurround", this.blockToSurround);
+        ConfigHelper.getOrSetBlockState(config, "blockToSpawn", this.blockToSpawn);
+        return config;
+    }
+
+    @Override
     public boolean generate(World world, Random rand, BlockPos pos)
     {
-        if(this.blockToSpawn.getBlock() == Blocks.BARRIER || this.blockToSurround.getBlock() == Blocks.BARRIER)
+        if(this.blockToSpawn == null || this.blockToSurround == null)
         {
             return false;
         }

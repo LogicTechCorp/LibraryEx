@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class StructureHelper
 {
-    public static BlockPos getGroundedPos(World world, BlockPos pos, BlockPos structureSize, float clearancePercentage)
+    public static BlockPos getGroundedPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
     {
         if(world.isAreaLoaded(pos, pos.add(structureSize)))
         {
@@ -82,7 +82,7 @@ public class StructureHelper
         return null;
     }
 
-    public static BlockPos getFloatingPos(World world, BlockPos pos, BlockPos structureSize, float clearancePercentage)
+    public static BlockPos getFloatingPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
     {
         if(world.isAreaLoaded(pos, pos.add(structureSize)))
         {
@@ -122,7 +122,7 @@ public class StructureHelper
         return null;
     }
 
-    public static BlockPos getHangingPos(World world, BlockPos pos, BlockPos structureSize, float clearancePercentage)
+    public static BlockPos getHangingPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
     {
         if(world.isAreaLoaded(pos, pos.add(structureSize)))
         {
@@ -173,7 +173,7 @@ public class StructureHelper
         return null;
     }
 
-    public static BlockPos getBuriedPos(World world, BlockPos pos, BlockPos structureSize, float clearancePercentage)
+    public static BlockPos getBuriedPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
     {
         if(world.isAreaLoaded(pos, pos.add(structureSize)))
         {

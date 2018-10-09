@@ -19,8 +19,14 @@ package lex.util;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.passive.AbstractHorse;
+import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -28,6 +34,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class EntityHelper
 {
@@ -40,6 +47,45 @@ public class EntityHelper
             ResourceLocation location = EntityList.getKey(k);
             return location != null ? location.toString() : null;
         });
+    }
+
+    public static Entity getFromUUID(MinecraftServer server, UUID uuid)
+    {
+        if(server != null && uuid != null)
+        {
+            return server.getEntityFromUuid(uuid);
+        }
+
+        return null;
+    }
+
+    public static boolean shouldAttackEntity(EntityLivingBase target, EntityLivingBase owner)
+    {
+        if(!(target instanceof EntityCreeper) && !(target instanceof EntityFlying))
+        {
+            if(target instanceof EntityWolf)
+            {
+                EntityWolf wolf = (EntityWolf) target;
+
+                if(wolf.isTamed() && wolf.getOwner() == owner)
+                {
+                    return false;
+                }
+            }
+
+            if(target instanceof EntityPlayer && owner instanceof EntityPlayer && !((EntityPlayer) owner).canAttackPlayer((EntityPlayer) target))
+            {
+                return false;
+            }
+            else
+            {
+                return !(target instanceof AbstractHorse) || !((AbstractHorse) target).isTame();
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public static boolean isInBlock(Entity entity, IBlockState... states)

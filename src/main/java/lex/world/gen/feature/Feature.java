@@ -17,9 +17,10 @@
 
 package lex.world.gen.feature;
 
-import com.google.gson.JsonPrimitive;
-import lex.config.Config;
-import lex.util.NumberHelper;
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.json.JsonFormat;
+import lex.util.ConfigHelper;
+import lex.util.RandomHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -29,41 +30,41 @@ import java.util.Random;
 public abstract class Feature extends WorldGenerator
 {
     protected int genAttempts;
-    protected float genProbability;
+    protected double genProbability;
     protected boolean randomizeGenAttempts;
     protected int minGenHeight;
     protected int maxGenHeight;
 
     public Feature(Config config)
     {
-        this.genAttempts = config.getInt("genAttempts", 4);
-        this.genProbability = config.getFloat("genProbability", 1.0F);
-        this.randomizeGenAttempts = config.getBoolean("randomizeGenAttempts", false);
+        this.genAttempts = ConfigHelper.getOrSet(config, "genAttempts", 4);
+        this.genProbability = ConfigHelper.getOrSet(config, "genProbability", 1.0D);
+        this.randomizeGenAttempts = ConfigHelper.getOrSet(config, "randomizeGenAttempts", false);
 
-        if(config.hasData("minHeight"))
+        if(config.contains("minHeight"))
         {
-            this.minGenHeight = config.getInt("minHeight");
-            config.removeData("minHeight");
-            config.addData("minGenHeight", new JsonPrimitive(this.minGenHeight));
+            this.minGenHeight = ConfigHelper.getOrSet(config, "minHeight", 0);
+            config.remove("minHeight");
+            ConfigHelper.getOrSet(config, "minGenHeight", this.minGenHeight);
         }
         else
         {
-            this.minGenHeight = config.getInt("minGenHeight", 0);
+            this.minGenHeight = ConfigHelper.getOrSet(config, "minGenHeight", 0);
         }
 
-        if(config.hasData("maxHeight"))
+        if(config.contains("maxHeight"))
         {
-            this.maxGenHeight = config.getInt("maxHeight");
-            config.removeData("maxHeight");
-            config.addData("maxGenHeight", new JsonPrimitive(this.maxGenHeight));
+            this.maxGenHeight = ConfigHelper.getOrSet(config, "maxHeight", 255);
+            config.remove("maxHeight");
+            ConfigHelper.getOrSet(config, "maxGenHeight", this.maxGenHeight);
         }
         else
         {
-            this.maxGenHeight = config.getInt("maxGenHeight", 255);
+            this.maxGenHeight = ConfigHelper.getOrSet(config, "maxGenHeight", 255);
         }
     }
 
-    public Feature(int genAttempts, float genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight)
+    public Feature(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight)
     {
         this.genAttempts = genAttempts;
         this.genProbability = genProbability;
@@ -75,6 +76,18 @@ public abstract class Feature extends WorldGenerator
     @Override
     public abstract boolean generate(World world, Random rand, BlockPos pos);
 
+    public Config serialize()
+    {
+        Config config = JsonFormat.newConcurrentConfig();
+        config.add("maxGenHeight", this.maxGenHeight);
+        config.add("minGenHeight", this.minGenHeight);
+        config.add("randomizeGenAttempts", this.randomizeGenAttempts);
+        config.add("genProbability", this.genProbability);
+        config.add("genAttempts", this.genAttempts);
+        config.add("feature", FeatureRegistry.getFeatureRegistryName(this.getClass()).toString());
+        return config;
+    }
+
     public int getGenAttempts()
     {
         return this.genAttempts;
@@ -84,19 +97,19 @@ public abstract class Feature extends WorldGenerator
     {
         int attempts = this.genAttempts;
 
-        if(this.genProbability > 0.0F && this.genProbability < 1.0F && rand.nextFloat() > this.genProbability)
+        if(this.genProbability > 0.0D && this.genProbability < 1.0D && rand.nextDouble() > this.genProbability)
         {
             attempts = 0;
         }
         if(this.randomizeGenAttempts)
         {
-            attempts = NumberHelper.getNumberInRange(1, attempts, rand);
+            attempts = RandomHelper.getRandomNumberInRange(1, attempts, rand);
         }
 
         return attempts;
     }
 
-    public float getGenProbability()
+    public double getGenProbability()
     {
         return this.genProbability;
     }
