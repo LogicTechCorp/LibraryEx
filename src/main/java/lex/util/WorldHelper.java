@@ -20,10 +20,12 @@ package lex.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 public class WorldHelper
 {
@@ -63,5 +65,11 @@ public class WorldHelper
     {
         long time = world.getWorldTime();
         return time >= 1000 && time < 13000;
+    }
+
+    public static boolean isChunkLoaded(World world, ChunkPos chunkPos)
+    {
+        Chunk chunk = world.getChunkProvider().getLoadedChunk(chunkPos.x, chunkPos.z);
+        return chunk != null && chunk.isLoaded();
     }
 }
