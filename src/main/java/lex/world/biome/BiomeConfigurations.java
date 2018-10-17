@@ -23,7 +23,7 @@ import java.util.*;
 
 public class BiomeConfigurations
 {
-    protected ResourceLocation biomeRegistryName;
+    protected Biome biome;
     protected int weight;
     protected boolean enabled;
     protected boolean genDefaultFeatures;
@@ -33,7 +33,7 @@ public class BiomeConfigurations
 
     public BiomeConfigurations(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures, Map<String, IBlockState> blocks, Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities, Map<GenerationStage, List<Feature>> features)
     {
-        this.biomeRegistryName = biomeRegistryName;
+        this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
         this.weight = weight;
         this.enabled = enabled;
         this.genDefaultFeatures = genDefaultFeatures;
@@ -54,16 +54,16 @@ public class BiomeConfigurations
     {
         if(config != null)
         {
-            Biome biome = ForgeRegistries.BIOMES.getValue(this.biomeRegistryName = ConfigHelper.getOrSetResourceLocation(config, "biome", null));
+            this.biome = ForgeRegistries.BIOMES.getValue(ConfigHelper.getOrSetResourceLocation(config, "biome", null));
 
-            if(biome != null)
+            if(this.biome != null)
             {
                 this.weight = ConfigHelper.getOrSet(config, "weight", 10);
 
-                if(!this.biomeRegistryName.getNamespace().equalsIgnoreCase("biomesoplenty"))
+                if(!this.biome.getRegistryName().getNamespace().equalsIgnoreCase("biomesoplenty"))
                 {
-                    ConfigHelper.getOrSetBlockState(config, "blocks.topBlock", biome.topBlock);
-                    ConfigHelper.getOrSetBlockState(config, "blocks.fillerBlock", biome.fillerBlock);
+                    ConfigHelper.getOrSetBlockState(config, "blocks.topBlock", this.biome.topBlock);
+                    ConfigHelper.getOrSetBlockState(config, "blocks.fillerBlock", this.biome.fillerBlock);
                     Config blocks = ConfigHelper.getOrSet(config, "blocks", null);
 
                     for(Config.Entry entry : blocks.entrySet())
@@ -82,7 +82,7 @@ public class BiomeConfigurations
                 for(EnumCreatureType type : EnumCreatureType.values())
                 {
                     entryLoop:
-                    for(Biome.SpawnListEntry entry : biome.getSpawnableList(type))
+                    for(Biome.SpawnListEntry entry : this.biome.getSpawnableList(type))
                     {
                         ResourceLocation registryName = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
                         boolean containsEntry = false;
@@ -166,7 +166,7 @@ public class BiomeConfigurations
         {
             FileConfig config = FileConfig.of(configFile);
 
-            config.add("biome", this.biomeRegistryName.toString());
+            config.add("biome", this.biome.getRegistryName().toString());
             config.add("weight", this.weight);
             config.add("enabled", this.enabled);
             config.add("genDefaultFeatures", this.genDefaultFeatures);
@@ -227,7 +227,7 @@ public class BiomeConfigurations
 
     public Biome getBiome()
     {
-        return ForgeRegistries.BIOMES.getValue(this.biomeRegistryName);
+        return this.biome;
     }
 
     public int getWeight()
