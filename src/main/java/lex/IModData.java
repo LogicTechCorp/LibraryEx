@@ -17,11 +17,16 @@
 
 package lex;
 
+import lex.client.model.item.IModelContainer;
 import net.minecraft.creativetab.CreativeTabs;
+
+import java.util.List;
 
 public interface IModData
 {
     String getModId();
 
     CreativeTabs getCreativeTab();
+
+    List<IModelContainer> getModelContainers();
 }

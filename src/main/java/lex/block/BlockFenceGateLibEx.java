@@ -19,12 +19,15 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -35,11 +38,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockFenceGateLibEx extends BlockFenceGate
+public class BlockFenceGateLibEx extends BlockFenceGate implements IModelContainer
 {
     public static final PropertyBool OPEN = PropertyBool.create("open");
     public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -61,6 +65,7 @@ public class BlockFenceGateLibEx extends BlockFenceGate
         this.useNeighborBrightness = true;
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
     }
 
     @Override
@@ -178,6 +183,7 @@ public class BlockFenceGateLibEx extends BlockFenceGate
         }
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
@@ -257,5 +263,13 @@ public class BlockFenceGateLibEx extends BlockFenceGate
         }
 
         return state.withProperty(IN_WALL, false);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ModelLoader.setCustomStateMapper(this, new StateMap.Builder().ignore(BlockFenceGate.POWERED).build());
+        ItemModelHandler.registerBlockModel(this, "normal");
     }
 }

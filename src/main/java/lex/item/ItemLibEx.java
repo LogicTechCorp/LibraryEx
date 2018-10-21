@@ -19,14 +19,26 @@ package lex.item;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemLibEx extends Item
+public class ItemLibEx extends Item implements IModelContainer
 {
     public ItemLibEx(IModData data, String name)
     {
         this.setRegistryName(data.getModId() + ":" + name);
         this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerItemModel(this, "normal");
     }
 }

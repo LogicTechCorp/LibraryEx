@@ -19,6 +19,7 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -29,7 +30,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class BlockSlabLibEx extends BlockSlab
+public abstract class BlockSlabLibEx extends BlockSlab implements IModelContainer
 {
     public BlockSlabLibEx(IModData data, String name, Material material)
     {
@@ -43,6 +44,8 @@ public abstract class BlockSlabLibEx extends BlockSlab
             this.useNeighborBrightness = true;
             this.setCreativeTab(data.getCreativeTab());
         }
+
+        data.getModelContainers().add(this);
     }
 
     @Override

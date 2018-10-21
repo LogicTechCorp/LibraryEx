@@ -33,7 +33,7 @@ public class NBTHelper
         {
             stack.setTagCompound(compound);
         }
-        else
+        else if(!compound.isEmpty())
         {
             stack.getTagCompound().merge(compound);
         }

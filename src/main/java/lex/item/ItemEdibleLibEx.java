@@ -19,9 +19,13 @@ package lex.item;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.item.ItemFood;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemEdibleLibEx extends ItemFood
+public class ItemEdibleLibEx extends ItemFood implements IModelContainer
 {
     public ItemEdibleLibEx(IModData data, String name, int amount, float saturation, boolean isWolfFood)
     {
@@ -29,5 +33,13 @@ public class ItemEdibleLibEx extends ItemFood
         this.setRegistryName(data.getModId() + ":" + name);
         this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerItemModel(this, "normal");
     }
 }

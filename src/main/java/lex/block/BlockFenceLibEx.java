@@ -19,14 +19,18 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockFenceLibEx extends BlockFence
+public class BlockFenceLibEx extends BlockFence implements IModelContainer
 {
     public BlockFenceLibEx(IModData data, String name, Material material)
     {
@@ -36,6 +40,7 @@ public class BlockFenceLibEx extends BlockFence
         this.useNeighborBrightness = true;
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
     }
 
     @Override
@@ -44,4 +49,10 @@ public class BlockFenceLibEx extends BlockFence
         return true;
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerBlockModel(this, "normal");
+    }
 }

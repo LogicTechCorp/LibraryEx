@@ -41,5 +41,4 @@ public class ItemBlockSlabLibEx extends ItemSlab
     {
         return metadata;
     }
-
 }

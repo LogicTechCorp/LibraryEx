@@ -19,11 +19,15 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockStairsLibEx extends BlockStairs
+public class BlockStairsLibEx extends BlockStairs implements IModelContainer
 {
     public BlockStairsLibEx(IModData data, String name, IBlockState state)
     {
@@ -33,5 +37,13 @@ public class BlockStairsLibEx extends BlockStairs
         this.useNeighborBrightness = true;
         this.setSoundType(SoundType.STONE);
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerBlockModel(this, "normal");
     }
 }

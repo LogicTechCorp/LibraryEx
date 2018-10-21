@@ -19,17 +19,29 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
-public class BlockFluidLibEx extends BlockFluidClassic
+public class BlockFluidLibEx extends BlockFluidClassic implements IModelContainer
 {
+    private IModData data;
+
     public BlockFluidLibEx(IModData data, String name, Fluid fluid, Material material)
     {
         super(fluid, material);
+        this.data = data;
         this.setRegistryName(data.getModId() + ":" + name);
         this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
+    }
+
+    @Override
+    public void registerModel()
+    {
+        ItemModelHandler.registerModel(this.data, this);
     }
 }

@@ -19,14 +19,18 @@ package lex.block;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockWallLibEx extends BlockWall
+public class BlockWallLibEx extends BlockWall implements IModelContainer
 {
     public BlockWallLibEx(IModData data, String name, Block baseBlock)
     {
@@ -36,11 +40,19 @@ public class BlockWallLibEx extends BlockWall
         this.setSoundType(SoundType.STONE);
         this.useNeighborBrightness = true;
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
     }
 
     @Override
     public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         return true;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerBlockModel(this, "normal");
     }
 }

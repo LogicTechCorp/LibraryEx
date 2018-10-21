@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class ItemHammerLibEx extends ItemPickaxeLibEx
 {
-    protected ItemHammerLibEx(IModData data, String name, ToolMaterial material)
+    public ItemHammerLibEx(IModData data, String name, ToolMaterial material)
     {
         super(data, name, material);
     }

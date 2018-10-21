@@ -19,15 +19,27 @@ package lex.item;
 
 import com.google.common.base.CaseFormat;
 import lex.IModData;
+import lex.client.model.item.IModelContainer;
+import lex.client.model.item.ItemModelHandler;
 import net.minecraft.item.ItemAxe;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemAxeLibEx extends ItemAxe
+public class ItemAxeLibEx extends ItemAxe implements IModelContainer
 {
-    protected ItemAxeLibEx(IModData data, String name, ToolMaterial material, float damage, float speed)
+    public ItemAxeLibEx(IModData data, String name, ToolMaterial material, float damage, float speed)
     {
         super(material, damage, speed);
         this.setRegistryName(data.getModId() + ":" + name);
         this.setTranslationKey(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
         this.setCreativeTab(data.getCreativeTab());
+        data.getModelContainers().add(this);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModel()
+    {
+        ItemModelHandler.registerItemModel(this, "normal");
     }
 }
