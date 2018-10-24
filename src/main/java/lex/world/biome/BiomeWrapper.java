@@ -287,4 +287,12 @@ public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeW
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }
+
+    @Override
+    public void reset()
+    {
+        this.blocks.clear();
+        this.entities.clear();
+        this.features.clear();
+    }
 }
