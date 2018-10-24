@@ -24,6 +24,8 @@ import lex.client.model.item.ItemModelHandler;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockFluidLibEx extends BlockFluidClassic implements IModelContainer
 {
@@ -40,6 +42,7 @@ public class BlockFluidLibEx extends BlockFluidClassic implements IModelContaine
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerModel()
     {
         ItemModelHandler.registerModel(this.data, this);
