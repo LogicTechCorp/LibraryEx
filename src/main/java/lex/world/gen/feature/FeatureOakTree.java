@@ -73,7 +73,7 @@ public class FeatureOakTree extends Feature
             return false;
         }
 
-        int height = RandomHelper.getRandomNumberInRange(this.minGrowthHeight, this.maxGrowthHeight, rand);
+        int height = RandomHelper.getNumberInRange(this.minGrowthHeight, this.maxGrowthHeight, rand);
         boolean flag = true;
 
         if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getHeight())

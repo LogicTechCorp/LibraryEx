@@ -19,9 +19,6 @@ package lex.world.gen;
 
 public enum GenerationStage
 {
-    PRE_POPULATE,
-    POPULATE,
-    POST_POPULATE,
     PRE_DECORATE,
     DECORATE,
     POST_DECORATE,

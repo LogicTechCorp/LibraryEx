@@ -40,18 +40,18 @@ public class Trade extends MerchantRecipe
         ItemStack outputStack = this.getItemToSell().copy();
         ItemStack inputOneStack = this.getItemToBuy().copy();
         ItemStack inputTwoStack = this.getSecondItemToBuy().copy();
-        int tradesAvailable = RandomHelper.getRandomNumberInRange(ConfigHelper.getOrSet(this.config, "minTradesAvailable", 1), ConfigHelper.getOrSet(this.config, "maxTradesAvailable", 7), RandomHelper.getRand());
+        int tradesAvailable = RandomHelper.getNumberInRange(ConfigHelper.getOrSet(this.config, "minTradesAvailable", 1), ConfigHelper.getOrSet(this.config, "maxTradesAvailable", 7), RandomHelper.getRand());
 
         Config outputConfig = ConfigHelper.getOrSet(this.config, "output", null);
         Config inputOneConfig = ConfigHelper.getOrSet(this.config, "inputOne", null);
         Config inputTwoConfig = ConfigHelper.getOrSet(this.config, "inputTwo", null);
 
-        outputStack.setCount(RandomHelper.getRandomNumberInRange(outputConfig.getOrElse("minStackSize", 1), outputConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
-        inputOneStack.setCount(RandomHelper.getRandomNumberInRange(inputOneConfig.getOrElse("minStackSize", 1), inputOneConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
+        outputStack.setCount(RandomHelper.getNumberInRange(outputConfig.getOrElse("minStackSize", 1), outputConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
+        inputOneStack.setCount(RandomHelper.getNumberInRange(inputOneConfig.getOrElse("minStackSize", 1), inputOneConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
 
         if(inputTwoConfig != null)
         {
-            inputTwoStack.setCount(RandomHelper.getRandomNumberInRange(inputTwoConfig.getOrElse("minStackSize", 1), inputTwoConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
+            inputTwoStack.setCount(RandomHelper.getNumberInRange(inputTwoConfig.getOrElse("minStackSize", 1), inputTwoConfig.getOrElse("maxStackSize", 8), RandomHelper.getRand()));
         }
 
         return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);

@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import java.io.File;
 import java.util.*;
 
-public class BiomeConfigurations
+public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeWrapper
 {
     protected Biome biome;
     protected int weight;
@@ -31,34 +32,38 @@ public class BiomeConfigurations
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
     protected Map<GenerationStage, List<Feature>> features;
 
-    public BiomeConfigurations(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures, Map<String, IBlockState> blocks, Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities, Map<GenerationStage, List<Feature>> features)
+    public BiomeWrapper(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures)
     {
         this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
         this.weight = weight;
         this.enabled = enabled;
         this.genDefaultFeatures = genDefaultFeatures;
-        this.blocks = blocks;
-        this.entities = entities;
-        this.features = features;
-    }
-
-    public BiomeConfigurations(FileConfig config)
-    {
         this.blocks = new HashMap<>();
         this.entities = new HashMap<>();
         this.features = new HashMap<>();
-        this.deserialize(config);
     }
 
-    private void deserialize(FileConfig config)
+    public BiomeWrapper()
+    {
+        this.biome = Biomes.PLAINS;
+        this.weight = 10;
+        this.enabled = true;
+        this.genDefaultFeatures = true;
+        this.blocks = new HashMap<>();
+        this.entities = new HashMap<>();
+        this.features = new HashMap<>();
+    }
+
+    @Override
+    public void deserialize(FileConfig config)
     {
         if(config != null)
         {
-            this.biome = ForgeRegistries.BIOMES.getValue(ConfigHelper.getOrSetResourceLocation(config, "biome", null));
+            this.biome = ForgeRegistries.BIOMES.getValue(ConfigHelper.getOrSetResourceLocation(config, "biome", this.biome.getRegistryName()));
 
             if(this.biome != null)
             {
-                this.weight = ConfigHelper.getOrSet(config, "weight", 10);
+                this.weight = ConfigHelper.getOrSet(config, "weight", this.weight);
 
                 if(!this.biome.getRegistryName().getNamespace().equalsIgnoreCase("biomesoplenty"))
                 {
@@ -160,8 +165,11 @@ public class BiomeConfigurations
         }
     }
 
-    public FileConfig serialize(File configFile)
+    @Override
+    public FileConfig serialize()
     {
+        File configFile = this.getSaveFile();
+
         if(!configFile.exists() && configFile.getParentFile().mkdirs() || !configFile.exists())
         {
             FileConfig config = FileConfig.of(configFile);
@@ -182,7 +190,7 @@ public class BiomeConfigurations
 
             for(EnumCreatureType type : EnumCreatureType.values())
             {
-                for(Biome.SpawnListEntry entry : this.getEntities(type))
+                for(Biome.SpawnListEntry entry : this.getEntitySpawnEntries(type))
                 {
                     ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
 
@@ -225,27 +233,32 @@ public class BiomeConfigurations
         }
     }
 
+    @Override
     public Biome getBiome()
     {
         return this.biome;
     }
 
+    @Override
     public int getWeight()
     {
         return this.weight;
     }
 
+    @Override
     public boolean isEnabled()
     {
         return this.enabled;
     }
 
-    public boolean shouldGenDefaultFeatures()
+    @Override
+    public boolean genDefaultFeatures()
     {
         return this.genDefaultFeatures;
     }
 
-    public IBlockState getBlock(String key, IBlockState fallback)
+    @Override
+    public IBlockState getBiomeBlock(String key, IBlockState fallback)
     {
         IBlockState value = this.blocks.get(key);
 
@@ -263,11 +276,13 @@ public class BiomeConfigurations
         return this.blocks;
     }
 
-    public List<Biome.SpawnListEntry> getEntities(EnumCreatureType creatureType)
+    @Override
+    public List<Biome.SpawnListEntry> getEntitySpawnEntries(EnumCreatureType creatureType)
     {
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
+    @Override
     public List<Feature> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());

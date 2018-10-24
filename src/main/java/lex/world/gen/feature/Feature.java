@@ -103,7 +103,7 @@ public abstract class Feature extends WorldGenerator
         }
         if(this.randomizeGenAttempts)
         {
-            attempts = RandomHelper.getRandomNumberInRange(1, attempts, rand);
+            attempts = RandomHelper.getNumberInRange(1, attempts, rand);
         }
 
         return attempts;

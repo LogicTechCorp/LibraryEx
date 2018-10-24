@@ -237,7 +237,7 @@ public class ConfigHelper
 
                 if(config.contains(path + ".minStackSize") || config.contains(path + ".maxStackSize"))
                 {
-                    stackSize = RandomHelper.getRandomNumberInRange(config.getIntOrElse(path + ".minStackSize", 1), config.getIntOrElse(path + ".maxStackSize", stack.getMaxStackSize()), RandomHelper.getRand());
+                    stackSize = RandomHelper.getNumberInRange(config.getIntOrElse(path + ".minStackSize", 1), config.getIntOrElse(path + ".maxStackSize", stack.getMaxStackSize()), RandomHelper.getRand());
                 }
                 else if(config.contains(path + ".stackSize"))
                 {
@@ -295,7 +295,7 @@ public class ConfigHelper
 
                             if(enchantmentConfig.contains("minEnchantmentLevel") || enchantmentConfig.contains("maxEnchantmentLevel"))
                             {
-                                enchantmentLevel = RandomHelper.getRandomNumberInRange(enchantmentConfig.getIntOrElse("minEnchantmentLevel", enchantment.getMinLevel()), enchantmentConfig.getIntOrElse("maxEnchantmentLevel", enchantment.getMaxLevel()), RandomHelper.getRand());
+                                enchantmentLevel = RandomHelper.getNumberInRange(enchantmentConfig.getIntOrElse("minEnchantmentLevel", enchantment.getMinLevel()), enchantmentConfig.getIntOrElse("maxEnchantmentLevel", enchantment.getMaxLevel()), RandomHelper.getRand());
                             }
                             else if(enchantmentConfig.contains("enchantmentLevel"))
                             {

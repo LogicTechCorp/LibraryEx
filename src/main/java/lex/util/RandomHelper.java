@@ -23,7 +23,7 @@ public class RandomHelper
 {
     private static final Random RAND = new Random();
 
-    public static int getRandomNumberInRange(int min, int max, Random rand)
+    public static int getNumberInRange(int min, int max, Random rand)
     {
         return rand.nextInt(max - min + 1) + min;
     }
