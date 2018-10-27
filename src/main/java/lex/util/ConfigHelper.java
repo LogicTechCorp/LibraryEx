@@ -402,4 +402,13 @@ public class ConfigHelper
 
         return fallback;
     }
+
+    public static void rename(Config config, String oldPath, String newPath)
+    {
+        if(config.contains(oldPath))
+        {
+            Object object = config.remove(oldPath);
+            config.add(newPath, object);
+        }
+    }
 }

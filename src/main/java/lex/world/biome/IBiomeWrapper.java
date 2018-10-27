@@ -18,7 +18,7 @@ public interface IBiomeWrapper
 
     boolean genDefaultFeatures();
 
-    IBlockState getBiomeBlock(String key, IBlockState fallback);
+    IBlockState getBiomeBlock(BiomeBlockType type, IBlockState fallback);
 
     List<Biome.SpawnListEntry> getEntitySpawnEntries(EnumCreatureType creatureType);
 

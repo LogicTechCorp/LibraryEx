@@ -59,6 +59,10 @@ public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeW
     {
         if(config != null)
         {
+            this.blocks.clear();
+            this.entities.clear();
+            this.features.clear();
+
             this.biome = ForgeRegistries.BIOMES.getValue(ConfigHelper.getOrSetResourceLocation(config, "biome", this.biome.getRegistryName()));
 
             if(this.biome != null)
@@ -67,8 +71,10 @@ public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeW
 
                 if(!this.biome.getRegistryName().getNamespace().equalsIgnoreCase("biomesoplenty"))
                 {
-                    ConfigHelper.getOrSetBlockState(config, "blocks.topBlock", this.biome.topBlock);
-                    ConfigHelper.getOrSetBlockState(config, "blocks.fillerBlock", this.biome.fillerBlock);
+                    ConfigHelper.rename(config, "blocks.topBlock", "blocks.floorTopBlock");
+                    ConfigHelper.rename(config, "blocks.fillerBlock", "blocks.floorFillerBlock");
+                    ConfigHelper.getOrSetBlockState(config, "blocks.floorTopBlock", this.biome.topBlock);
+                    ConfigHelper.getOrSetBlockState(config, "blocks.floorFillerBlock", this.biome.fillerBlock);
                     Config blocks = ConfigHelper.getOrSet(config, "blocks", null);
 
                     for(Config.Entry entry : blocks.entrySet())
@@ -258,13 +264,13 @@ public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeW
     }
 
     @Override
-    public IBlockState getBiomeBlock(String key, IBlockState fallback)
+    public IBlockState getBiomeBlock(BiomeBlockType type, IBlockState fallback)
     {
-        IBlockState value = this.blocks.get(key);
+        IBlockState value = this.blocks.get(type.getIdentifier());
 
         if(value == null)
         {
-            this.blocks.put(key, fallback);
+            this.blocks.put(type.getIdentifier(), fallback);
             return fallback;
         }
 
@@ -286,13 +292,5 @@ public abstract class BiomeWrapper implements IBiomeWrapper, ISerializableBiomeW
     public List<Feature> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
-    }
-
-    @Override
-    public void reset()
-    {
-        this.blocks.clear();
-        this.entities.clear();
-        this.features.clear();
     }
 }

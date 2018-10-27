@@ -40,28 +40,10 @@ public abstract class Feature extends WorldGenerator
         this.genAttempts = ConfigHelper.getOrSet(config, "genAttempts", 4);
         this.genProbability = ConfigHelper.getOrSet(config, "genProbability", 1.0D);
         this.randomizeGenAttempts = ConfigHelper.getOrSet(config, "randomizeGenAttempts", false);
-
-        if(config.contains("minHeight"))
-        {
-            this.minGenHeight = ConfigHelper.getOrSet(config, "minHeight", 0);
-            config.remove("minHeight");
-            ConfigHelper.getOrSet(config, "minGenHeight", this.minGenHeight);
-        }
-        else
-        {
-            this.minGenHeight = ConfigHelper.getOrSet(config, "minGenHeight", 0);
-        }
-
-        if(config.contains("maxHeight"))
-        {
-            this.maxGenHeight = ConfigHelper.getOrSet(config, "maxHeight", 255);
-            config.remove("maxHeight");
-            ConfigHelper.getOrSet(config, "maxGenHeight", this.maxGenHeight);
-        }
-        else
-        {
-            this.maxGenHeight = ConfigHelper.getOrSet(config, "maxGenHeight", 255);
-        }
+        ConfigHelper.rename(config, "minHeight", "minGenHeight");
+        ConfigHelper.rename(config, "maxHeight", "maxGenHeight");
+        this.minGenHeight = ConfigHelper.getOrSet(config, "minGenHeight", 0);
+        this.maxGenHeight = ConfigHelper.getOrSet(config, "maxGenHeight", 255);
     }
 
     public Feature(int genAttempts, double genProbability, boolean randomizeGenAttempts, int minGenHeight, int maxGenHeight)

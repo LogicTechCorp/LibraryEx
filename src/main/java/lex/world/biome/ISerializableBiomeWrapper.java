@@ -10,7 +10,5 @@ public interface ISerializableBiomeWrapper
 
     void deserialize(FileConfig config);
 
-    void reset();
-
     File getSaveFile();
 }
