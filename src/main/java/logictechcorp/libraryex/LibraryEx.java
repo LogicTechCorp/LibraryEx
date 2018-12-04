@@ -34,19 +34,17 @@ import java.io.File;
 @Mod(modid = LibraryEx.MOD_ID, name = LibraryEx.NAME, version = LibraryEx.VERSION, dependencies = LibraryEx.DEPENDENCIES)
 public class LibraryEx
 {
-    public static final String MOD_ID = "lex";
+    public static final String MOD_ID = "libraryex";
     public static final String NAME = "LibraryEx";
     public static final String VERSION = "1.0.9";
     public static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.4.2768,);";
-    private static final String CLIENT_PROXY = "logictechcorp.lex.proxy.ClientProxy";
-    private static final String SERVER_PROXY = "logictechcorp.lex.proxy.ServerProxy";
     public static final boolean IS_DEV_ENV = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     public static final File CONFIG_DIRECTORY = Loader.instance().getConfigDir();
 
     @Mod.Instance(MOD_ID)
     public static LibraryEx instance;
 
-    @SidedProxy(clientSide = CLIENT_PROXY, serverSide = SERVER_PROXY)
+    @SidedProxy(clientSide = "logictechcorp.libraryex.proxy.ClientProxy", serverSide = "logictechcorp.libraryex.proxy.ServerProxy")
     public static IProxy proxy;
 
     public static final Logger LOGGER = LogManager.getLogger("LibraryEx");

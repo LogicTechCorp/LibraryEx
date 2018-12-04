@@ -76,7 +76,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         return this.careers.get(rand.nextInt(this.careers.size()));
     }
 
-    public abstract class Career
+    public static abstract class Career<P extends TraderProfession<P, C>, C extends TraderProfession.Career<P, C>>
     {
         private ResourceLocation name;
         private P profession;

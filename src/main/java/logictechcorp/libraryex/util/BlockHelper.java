@@ -225,4 +225,19 @@ public class BlockHelper
 
         return false;
     }
+
+    public static boolean oreDictNameContains(IBlockState state, String string)
+    {
+        Block block = state.getBlock();
+
+        for(int id : OreDictionary.getOreIDs(new ItemStack(block, 1, block.getMetaFromState(state))))
+        {
+            if(OreDictionary.getOreName(id).contains(string))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
