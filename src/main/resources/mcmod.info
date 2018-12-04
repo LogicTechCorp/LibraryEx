@@ -1,6 +1,6 @@
 [
     {
-        "modid": "lex",
+        "modid": "logictechcorp.lex",
         "name": "LibEx",
         "description": "A library for mods that add expansions, explorations, and experiences to Minecraft.",
         "version": "${version}",
@@ -8,7 +8,7 @@
         "url": "https://minecraft.curseforge.com/projects/libraryex",
         "authorList": [ "LogicTechCorp" ],
         "credits": "",
-        "logoFile": "assets/lex/logo.png",
+        "logoFile": "assets/logictechcorp.lex/logo.png",
         "screenshots": [ ],
         "dependencies": [ ]
     }
