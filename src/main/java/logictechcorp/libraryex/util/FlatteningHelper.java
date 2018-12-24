@@ -13,17 +13,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package logictechcorp.libraryex.util;
 
-import java.io.File;
+import java.util.function.Consumer;
 
-public class FileHelper
+public class FlatteningHelper
 {
-    public static String getFileExtension(File file)
+    public static <T> T make(final T t, final Consumer<T> consumer)
     {
-        int dotIndex = file.getName().lastIndexOf('.');
-        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
+        consumer.accept(t);
+        return t;
     }
 }

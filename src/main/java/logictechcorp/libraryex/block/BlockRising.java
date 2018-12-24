@@ -17,12 +17,13 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.block.builder.BlockBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -30,13 +31,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-public class BlockRising extends BlockLibEx
+public class BlockRising extends BlockMod
 {
     public static boolean riseInstantly;
 
-    public BlockRising(IModData data, String name, Material material)
+    public BlockRising(ResourceLocation registryName, BlockBuilder builder)
     {
-        super(data, name, material);
+        super(registryName, builder);
     }
 
     @Override

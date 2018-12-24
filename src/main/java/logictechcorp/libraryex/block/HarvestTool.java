@@ -13,17 +13,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-package logictechcorp.libraryex.util;
+package logictechcorp.libraryex.block;
 
-import java.io.File;
-
-public class FileHelper
+public enum HarvestTool
 {
-    public static String getFileExtension(File file)
-    {
-        int dotIndex = file.getName().lastIndexOf('.');
-        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
-    }
+    PICKAXE,
+    SHOVEL,
+    AXE
 }

@@ -17,7 +17,6 @@
 
 package logictechcorp.libraryex.potion;
 
-import com.google.common.base.CaseFormat;
 import logictechcorp.libraryex.IModData;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
@@ -26,7 +25,7 @@ public class PotionTypeLibEx extends PotionType
 {
     public PotionTypeLibEx(IModData data, String name, PotionEffect effect)
     {
-        super(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, data.getModId() + ":" + name), effect);
+        super(data.getModId() + ":" + name, effect);
         this.setRegistryName(data.getModId() + ":" + name);
     }
 }

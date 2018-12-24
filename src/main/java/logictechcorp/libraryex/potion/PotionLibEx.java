@@ -17,7 +17,6 @@
 
 package logictechcorp.libraryex.potion;
 
-import com.google.common.base.CaseFormat;
 import logictechcorp.libraryex.IModData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -37,7 +36,7 @@ public class PotionLibEx extends Potion
     {
         super(isBadEffect, new Color(red, green, blue).getRGB());
         this.setRegistryName(data.getModId() + ":" + name);
-        this.setPotionName("potion.effect." + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.getRegistryName().toString()));
+        this.setPotionName("potion.effect." + this.getRegistryName().toString());
         this.iconTexture = new ResourceLocation(data.getModId() + ":textures/potions/" + name + ".png");
     }
 

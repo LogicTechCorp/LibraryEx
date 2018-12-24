@@ -13,17 +13,29 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-package logictechcorp.libraryex.util;
+package logictechcorp.libraryex.block;
 
-import java.io.File;
-
-public class FileHelper
+public enum HarvestLevel
 {
-    public static String getFileExtension(File file)
+    WOOD(0),
+    STONE(1),
+    IRON(2),
+    GOLD(0),
+    DIAMOND(3),
+    OBSIDIAN(4);
+
+    private int level;
+
+    HarvestLevel(int level)
     {
-        int dotIndex = file.getName().lastIndexOf('.');
-        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
+        this.level = level;
+    }
+
+    public int getLevel()
+    {
+        return this.level;
     }
 }

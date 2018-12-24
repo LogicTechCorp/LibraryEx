@@ -17,9 +17,8 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.block.builder.BlockBuilder;
 import logictechcorp.libraryex.tileentity.TileEntityInventory;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -27,14 +26,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class BlockTileEntity<T extends TileEntity> extends BlockLibEx
+public class BlockTileEntity<T extends TileEntity> extends BlockMod
 {
     private final Class<T> cls;
 
-    public BlockTileEntity(IModData data, String name, Material material, Class<T> cls)
+    public BlockTileEntity(ResourceLocation registryName, Class<T> cls, BlockBuilder builder)
     {
-        super(data, name, material);
-        GameRegistry.registerTileEntity(cls, new ResourceLocation(data.getModId() + ":" + name));
+        super(registryName, builder);
+        GameRegistry.registerTileEntity(cls, registryName);
         this.cls = cls;
     }
 

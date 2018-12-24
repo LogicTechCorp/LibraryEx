@@ -80,7 +80,7 @@ public class ConfigHelper
             {
                 for(E value : cls.getEnumConstants())
                 {
-                    if(value.name().equalsIgnoreCase(enumName))
+                    if(value.toString().equalsIgnoreCase(enumName))
                     {
                         return value;
                     }

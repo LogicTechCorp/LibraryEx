@@ -13,17 +13,45 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-package logictechcorp.libraryex.util;
+package logictechcorp.libraryex.block.properties;
 
-import java.io.File;
+import net.minecraft.util.IStringSerializable;
 
-public class FileHelper
+public enum SlabType implements IStringSerializable
 {
-    public static String getFileExtension(File file)
+    TOP("top"),
+    BOTTOM("bottom"),
+    DOUBLE("double");
+
+    private final String name;
+
+    SlabType(String name)
     {
-        int dotIndex = file.getName().lastIndexOf('.');
-        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
+        this.name = name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.name;
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public static SlabType fromMeta(int meta)
+    {
+        if(meta < 0 || meta >= values().length)
+        {
+            meta = 0;
+        }
+
+        return values()[meta];
     }
 }

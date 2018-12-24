@@ -13,10 +13,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package logictechcorp.libraryex.item;
 
+import logictechcorp.libraryex.item.builder.ItemEdibleBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +33,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public class ItemBlockEdible extends ItemBlockLibEx
+public class ItemBlockEdible extends ItemBlockMod
 {
     private final int healAmount;
     private final float saturation;
@@ -40,12 +42,12 @@ public class ItemBlockEdible extends ItemBlockLibEx
     private PotionEffect potionId;
     private float potionEffectProbability;
 
-    public ItemBlockEdible(Block block, int healAmount, float saturation, boolean isWolfFood)
+    public ItemBlockEdible(Block block, ItemEdibleBuilder builder)
     {
-        super(block);
-        this.healAmount = healAmount;
-        this.saturation = saturation;
-        this.isWolfFood = isWolfFood;
+        super(block, builder);
+        this.healAmount = builder.getHealAmount();
+        this.saturation = builder.getSaturation();
+        this.isWolfFood = builder.isWolfFood();
     }
 
     @Override

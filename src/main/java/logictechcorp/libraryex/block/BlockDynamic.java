@@ -1,26 +1,26 @@
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.block.builder.BlockBuilder;
 import logictechcorp.libraryex.block.properties.UnlistedPropertyDynamic;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
-public abstract class BlockDynamic extends BlockLibEx
+public abstract class BlockDynamic extends BlockMod
 {
     private final TexturePlacement texturePlacement;
     public static final UnlistedPropertyDynamic DYNAMIC = new UnlistedPropertyDynamic();
 
-    public BlockDynamic(IModData data, String name, Material material, TexturePlacement texturePlacement)
+    public BlockDynamic(ResourceLocation registryName, TexturePlacement texturePlacement, BlockBuilder builder)
     {
-        super(data, name, material);
+        super(registryName, builder);
         this.texturePlacement = texturePlacement;
     }
 

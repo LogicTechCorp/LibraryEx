@@ -13,17 +13,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-package logictechcorp.libraryex.util;
+package logictechcorp.libraryex.item.builder;
 
-import java.io.File;
-
-public class FileHelper
+public class ItemEdibleBuilder extends ItemBuilder
 {
-    public static String getFileExtension(File file)
+    private int healAmount;
+    private float saturation;
+    private boolean isWolfFood;
+
+    public ItemEdibleBuilder(int healAmount, float saturation, boolean isWolfFood)
     {
-        int dotIndex = file.getName().lastIndexOf('.');
-        return dotIndex == -1 ? "" : file.getName().substring(dotIndex + 1);
+        this.healAmount = healAmount;
+        this.saturation = saturation;
+        this.isWolfFood = isWolfFood;
+    }
+
+    public int getHealAmount()
+    {
+        return this.healAmount;
+    }
+
+    public float getSaturation()
+    {
+        return this.saturation;
+    }
+
+    public boolean isWolfFood()
+    {
+        return this.isWolfFood;
     }
 }
