@@ -185,10 +185,8 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
     }
 
     @Override
-    public FileConfig serialize()
+    public FileConfig serialize(File configFile)
     {
-        File configFile = this.getSaveFile();
-
         if(!configFile.exists() && configFile.getParentFile().mkdirs() || !configFile.exists())
         {
             FileConfig config = FileConfig.of(configFile);
@@ -305,5 +303,11 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
     public List<Feature> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
+    }
+
+    @Override
+    public String getFileName()
+    {
+        return this.biome.getRegistryName().toString().replace(":", "/") + ".json";
     }
 }

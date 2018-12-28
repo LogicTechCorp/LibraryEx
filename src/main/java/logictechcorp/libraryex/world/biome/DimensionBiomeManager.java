@@ -1,11 +1,12 @@
 package logictechcorp.libraryex.world.biome;
 
+import logictechcorp.libraryex.util.WorldHelper;
 import logictechcorp.libraryex.world.biome.wrapper.IBiomeWrapper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.Map;
 public abstract class DimensionBiomeManager<T extends IBiomeWrapper>
 {
     protected final List<BiomeManager.BiomeEntry> biomeEntries = new ArrayList<>();
-    protected final List<Path> configPaths = new ArrayList<>();
     protected final Map<Integer, T> moddedBiomes = new HashMap<>();
     protected final Map<Integer, T> playerBiomes = new HashMap<>();
 
@@ -36,11 +36,6 @@ public abstract class DimensionBiomeManager<T extends IBiomeWrapper>
     public void removeBiome(Biome biome)
     {
         this.moddedBiomes.remove(Biome.getIdForBiome(biome));
-    }
-
-    public void addConfigPath(String path)
-    {
-        this.configPaths.add(Paths.get(path));
     }
 
     public List<BiomeManager.BiomeEntry> getBiomeEntries()
@@ -70,8 +65,8 @@ public abstract class DimensionBiomeManager<T extends IBiomeWrapper>
         return this.playerBiomes.get(Biome.getIdForBiome(biome));
     }
 
-    public List<Path> getConfigPaths()
+    public File getBiomeWrapperSaveFile(MinecraftServer server, IBiomeWrapper wrapper)
     {
-        return this.configPaths;
+        return new File(WorldHelper.getSaveFile(server.getEntityWorld()), "/config/NetherEx/Biomes/" + wrapper.getFileName());
     }
 }

@@ -10,9 +10,7 @@ import java.io.File;
  */
 public interface IConfigData
 {
-    FileConfig serialize();
+    FileConfig serialize(File configFile);
 
     void deserialize(FileConfig config);
-
-    File getSaveFile();
 }

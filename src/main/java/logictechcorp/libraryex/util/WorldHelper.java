@@ -27,6 +27,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
+import java.io.File;
+
 public class WorldHelper
 {
     public static RayTraceResult rayTraceFromEntity(World world, Entity entity, boolean countNonSolidBlock, double range)
@@ -71,5 +73,10 @@ public class WorldHelper
     {
         Chunk chunk = world.getChunkProvider().getLoadedChunk(chunkPos.x, chunkPos.z);
         return chunk != null && chunk.isLoaded();
+    }
+
+    public static File getSaveFile(World world)
+    {
+        return new File("saves/" + world.getSaveHandler().getWorldDirectory().getName());
     }
 }

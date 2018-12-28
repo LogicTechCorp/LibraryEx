@@ -18,57 +18,52 @@
 package logictechcorp.libraryex.village;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.util.ConfigHelper;
 import logictechcorp.libraryex.util.RandomHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Tuple;
 import net.minecraft.village.MerchantRecipe;
+
+import java.util.Random;
 
 public class Trade extends MerchantRecipe
 {
-    protected Tuple<Integer, Integer> inputOneMinMax;
-    protected Tuple<Integer, Integer> inputTwoMinMax;
-    protected Tuple<Integer, Integer> outputMinMax;
-    protected Tuple<Integer, Integer> tradesAvailableMinMax;
+    protected TradeStack output;
+    protected TradeStack inputOne;
+    protected TradeStack inputTwo;
+    protected int minTradeCount;
+    protected int maxTradeCount;
     protected int tradeLevel;
 
-    public Trade(Config config)
+    public Trade(TradeStack output, TradeStack inputOne, TradeStack inputTwo, int minTradeCount, int maxTradeCount, int tradeLevel)
     {
-        super(ConfigHelper.getItemStack(config, "inputOne"), ConfigHelper.getItemStack(config, "inputTwo"), ConfigHelper.getItemStack(config, "output"), 0, config.getOrElse("maxTradesAvailable", 7));
-
-        this.inputOneMinMax = new Tuple<>(this.getItemToBuy().getCount(), this.getItemToBuy().getMaxStackSize());
-        this.inputTwoMinMax = new Tuple<>(this.getSecondItemToBuy().getCount(), this.getSecondItemToBuy().getMaxStackSize());
-        this.outputMinMax = new Tuple<>(this.getItemToSell().getCount(), this.getItemToSell().getMaxStackSize());
-        this.tradesAvailableMinMax = new Tuple<>(config.getOrElse("minTradesAvailable", 1), config.getOrElse("maxTradesAvailable", 1));
-        this.tradeLevel = config.getOrElse("tradeLevel", 1);
-    }
-
-    public Trade(ItemStack inputOne, ItemStack inputTwo, ItemStack output, Tuple<Integer, Integer> tradesAvailableMinMax, int tradeLevel)
-    {
-        super(inputOne, inputTwo, output, 0, tradesAvailableMinMax.getSecond());
-
-        this.inputOneMinMax = new Tuple<>(this.getItemToBuy().getCount(), this.getItemToBuy().getMaxStackSize());
-        this.inputTwoMinMax = new Tuple<>(this.getSecondItemToBuy().getCount(), this.getSecondItemToBuy().getMaxStackSize());
-        this.outputMinMax = new Tuple<>(this.getItemToSell().getCount(), this.getItemToSell().getMaxStackSize());
-        this.tradesAvailableMinMax = tradesAvailableMinMax;
+        super(inputOne.getItemStack(), inputTwo.getItemStack(), output.getItemStack(), 0, maxTradeCount);
+        this.output = output;
+        this.inputOne = inputOne;
+        this.inputTwo = inputTwo;
+        this.minTradeCount = minTradeCount;
+        this.maxTradeCount = maxTradeCount;
         this.tradeLevel = tradeLevel;
     }
 
-    public MerchantRecipe randomize()
+    public Trade(Config config)
+    {
+        this(new TradeStack(config, "inputOne"), new TradeStack(config, "inputTwo"), new TradeStack(config, "output"), config.getOrElse("minTradeCount", 1), config.getOrElse("maxTradeCount", 8), config.getOrElse("tradeLevel", 1));
+    }
+
+    public MerchantRecipe randomize(Random rand)
     {
         ItemStack inputOneStack = this.getItemToBuy().copy();
         ItemStack inputTwoStack = this.getSecondItemToBuy().copy();
         ItemStack outputStack = this.getItemToSell().copy();
 
-        inputOneStack.setCount(RandomHelper.getNumberInRange(this.inputOneMinMax.getFirst(), this.inputOneMinMax.getSecond(), RandomHelper.getRand()));
+        inputOneStack.setCount(RandomHelper.getNumberInRange(this.inputOne.getMinCount(), this.inputOne.getMaxCount(), rand));
 
         if(this.hasSecondItemToBuy())
         {
-            inputTwoStack.setCount(RandomHelper.getNumberInRange(this.inputTwoMinMax.getFirst(), this.inputTwoMinMax.getSecond(), RandomHelper.getRand()));
+            inputTwoStack.setCount(RandomHelper.getNumberInRange(this.inputTwo.getMinCount(), this.inputTwo.maxCount, rand));
         }
 
-        outputStack.setCount(RandomHelper.getNumberInRange(this.outputMinMax.getFirst(), this.outputMinMax.getSecond(), RandomHelper.getRand()));
-        int tradesAvailable = RandomHelper.getNumberInRange(this.tradesAvailableMinMax.getFirst(), this.tradesAvailableMinMax.getSecond(), RandomHelper.getRand());
+        outputStack.setCount(RandomHelper.getNumberInRange(this.output.getMinCount(), this.output.getMaxCount(), rand));
+        int tradesAvailable = RandomHelper.getNumberInRange(this.minTradeCount, this.maxTradeCount, rand);
 
         return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);
     }

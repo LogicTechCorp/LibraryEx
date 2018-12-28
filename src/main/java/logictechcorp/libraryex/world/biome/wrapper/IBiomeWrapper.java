@@ -23,4 +23,6 @@ public interface IBiomeWrapper
     List<Biome.SpawnListEntry> getEntitySpawnEntries(EnumCreatureType creatureType);
 
     List<Feature> getFeatures(GenerationStage generationStage);
+
+    String getFileName();
 }
