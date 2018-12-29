@@ -68,6 +68,31 @@ public class Trade extends MerchantRecipe
         return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);
     }
 
+    public TradeStack getOutput()
+    {
+        return this.output;
+    }
+
+    public TradeStack getInputOne()
+    {
+        return this.inputOne;
+    }
+
+    public TradeStack getInputTwo()
+    {
+        return this.inputTwo;
+    }
+
+    public int getMinTradeCount()
+    {
+        return this.minTradeCount;
+    }
+
+    public int getMaxTradeCount()
+    {
+        return this.maxTradeCount;
+    }
+
     public int getTradeLevel()
     {
         return this.tradeLevel;

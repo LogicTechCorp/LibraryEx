@@ -2,7 +2,7 @@ package logictechcorp.libraryex.world.biome.wrapper;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
-import com.electronwill.nightconfig.json.JsonFormat;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import logictechcorp.libraryex.config.IConfigData;
 import logictechcorp.libraryex.util.ConfigHelper;
 import logictechcorp.libraryex.world.gen.GenerationStage;
@@ -118,7 +118,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
                                 }
                             }
 
-                            Config entityConfig = JsonFormat.newConcurrentConfig();
+                            Config entityConfig = TomlFormat.newConcurrentConfig();
                             entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
                             entityConfig.add("creatureType", type.toString().toLowerCase());
                             entityConfig.add("weight", entry.itemWeight);
@@ -195,7 +195,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
             config.add("weight", this.weight);
             config.add("enabled", this.enabled);
             config.add("genDefaultFeatures", this.genDefaultFeatures);
-            Config blockConfigs = JsonFormat.newConcurrentConfig();
+            Config blockConfigs = TomlFormat.newConcurrentConfig();
 
             for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
             {
@@ -213,7 +213,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
 
                     if(entityRegistryName != null)
                     {
-                        Config entityConfig = JsonFormat.newConcurrentConfig();
+                        Config entityConfig = TomlFormat.newConcurrentConfig();
                         entityConfig.add("entity", entityRegistryName.toString());
                         entityConfig.add("weight", entry.itemWeight);
                         entityConfig.add("creatureType", type.toString().toLowerCase());
@@ -308,6 +308,6 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
     @Override
     public String getFileName()
     {
-        return this.biome.getRegistryName().toString().replace(":", "/") + ".json";
+        return this.biome.getRegistryName().toString().replace(":", "/") + ".toml";
     }
 }

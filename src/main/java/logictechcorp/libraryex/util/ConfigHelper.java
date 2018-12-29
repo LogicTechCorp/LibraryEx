@@ -20,7 +20,7 @@ package logictechcorp.libraryex.util;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import com.electronwill.nightconfig.core.file.GenericBuilder;
-import com.electronwill.nightconfig.json.JsonFormat;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -187,29 +187,29 @@ public class ConfigHelper
 
             if(!stack.isEmpty())
             {
-                int stackSize = 0;
+                int count = 0;
 
-                if(config.contains(path + ".minStackSize") || config.contains(path + ".maxStackSize"))
+                if(config.contains(path + ".minCount") || config.contains(path + ".maxCount"))
                 {
-                    stackSize = RandomHelper.getNumberInRange(config.getOrElse(path + ".minStackSize", 1), config.getOrElse(path + ".maxStackSize", stack.getMaxStackSize()), RandomHelper.getRand());
+                    count = RandomHelper.getNumberInRange(config.getOrElse(path + ".minCount", 1), config.getOrElse(path + ".maxCount", stack.getMaxStackSize()), RandomHelper.getRand());
                 }
-                else if(config.contains(path + ".stackSize"))
+                else if(config.contains(path + ".count"))
                 {
-                    stackSize = config.get(path + ".stackSize");
-                }
-
-                if(stackSize < 1)
-                {
-                    stackSize = 1;
-                    config.set(path + ".minStackSize", stackSize);
-                }
-                else if(stackSize > stack.getMaxStackSize())
-                {
-                    stackSize = stack.getMaxStackSize();
-                    config.set(path + ".maxStackSize", stackSize);
+                    count = config.get(path + ".count");
                 }
 
-                stack.setCount(stackSize);
+                if(count < 1)
+                {
+                    count = 1;
+                    config.set(path + ".minCount", count);
+                }
+                else if(count > stack.getMaxStackSize())
+                {
+                    count = stack.getMaxStackSize();
+                    config.set(path + ".maxCount", count);
+                }
+
+                stack.setCount(count);
 
                 if(config.contains(path + ".displayName"))
                 {
@@ -303,7 +303,7 @@ public class ConfigHelper
         }
     }
 
-    public static void setItemStack(Config config, String path, ItemStack stack)
+    public static void setItemStackComplex(Config config, String path, ItemStack stack)
     {
         if(stack != null)
         {
@@ -311,7 +311,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = JsonFormat.newConcurrentConfig();
+                Config propertyConfig = TomlFormat.newConcurrentConfig();
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
@@ -328,7 +328,7 @@ public class ConfigHelper
                 config.set(path + ".meta", stack.getMetadata());
             }
 
-            config.set(path + ".stackSize", stack.getCount());
+            config.set(path + ".count", stack.getCount());
 
             NBTTagCompound display = stack.getSubCompound("display");
 
@@ -366,13 +366,40 @@ public class ConfigHelper
 
                 for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
                 {
-                    Config enchantmentConfig = JsonFormat.newConcurrentConfig();
+                    Config enchantmentConfig = TomlFormat.newConcurrentConfig();
                     enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
                     enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
                     enchantmentConfigs.add(enchantmentConfig);
                 }
 
                 config.set(path + ".enchantments", enchantmentConfigs);
+            }
+        }
+    }
+
+    public static void setItemStackSimple(Config config, String path, ItemStack stack)
+    {
+        if(stack != null)
+        {
+            Item item = stack.getItem();
+
+            if(item instanceof ItemBlock)
+            {
+                Config propertyConfig = TomlFormat.newConcurrentConfig();
+                IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
+
+                for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
+                {
+                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+                }
+
+                config.set(path + ".itemBlock", stack.getItem().getRegistryName().toString());
+                config.set(path + ".properties", propertyConfig);
+            }
+            else
+            {
+                config.set(path + ".item", stack.getItem().getRegistryName().toString());
+                config.set(path + ".meta", stack.getMetadata());
             }
         }
     }

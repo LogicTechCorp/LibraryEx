@@ -63,7 +63,12 @@ public class RecipeHelper
         }
 
         IRecipe recipe = new ShapelessRecipes(data.getModId(), output, ingredients).setRegistryName(generateRegistryName(data, output));
-        writeRecipeJson(recipe);
+
+        if(data.writeRecipeJsons())
+        {
+            writeRecipeJson(recipe);
+        }
+
         return recipe;
     }
 
@@ -111,7 +116,12 @@ public class RecipeHelper
 
         NonNullList<Ingredient> ingredients = deserializeIngredients(pattern.toArray(new String[0]), key, width, height);
         IRecipe recipe = new ShapedRecipes(data.getModId(), width, height, ingredients, output).setRegistryName(generateRegistryName(data, output));
-        writeRecipeJson(recipe);
+
+        if(data.writeRecipeJsons())
+        {
+            writeRecipeJson(recipe);
+        }
+
         return recipe;
     }
 

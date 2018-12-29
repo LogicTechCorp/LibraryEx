@@ -41,7 +41,7 @@ public class TradeStack
 
     public TradeStack(Item item, int meta, int minCount, int maxCount)
     {
-        this(new ItemStack(item, 0, meta), minCount, maxCount);
+        this(new ItemStack(item, 1, meta), minCount, maxCount);
     }
 
     public TradeStack(Item item, int minCount, int maxCount)
@@ -63,7 +63,7 @@ public class TradeStack
     {
         this.stack = ConfigHelper.getItemStack(config, path);
         this.minCount = config.getOrElse(path + ".minCount", 1);
-        this.minCount = config.getOrElse(path + ".maxCount", this.stack.getMaxStackSize());
+        this.maxCount = config.getOrElse(path + ".maxCount", this.stack.getMaxStackSize());
     }
 
     public ItemStack getItemStack()

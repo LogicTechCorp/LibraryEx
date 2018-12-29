@@ -24,4 +24,6 @@ public interface IModData
     String getModId();
 
     CreativeTabs getCreativeTab();
+
+    boolean writeRecipeJsons();
 }

@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.gen.feature;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.json.JsonFormat;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import logictechcorp.libraryex.util.ConfigHelper;
 import logictechcorp.libraryex.util.RandomHelper;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +60,7 @@ public abstract class Feature extends WorldGenerator
 
     public Config serialize()
     {
-        Config config = JsonFormat.newConcurrentConfig();
+        Config config = TomlFormat.newConcurrentConfig();
         config.add("maxGenHeight", this.maxGenHeight);
         config.add("minGenHeight", this.minGenHeight);
         config.add("randomizeGenAttempts", this.randomizeGenAttempts);
