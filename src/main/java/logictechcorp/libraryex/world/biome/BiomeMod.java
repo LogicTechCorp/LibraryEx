@@ -20,9 +20,9 @@ package logictechcorp.libraryex.world.biome;
 import logictechcorp.libraryex.IModData;
 import net.minecraft.world.biome.Biome;
 
-public abstract class BiomeLibEx<T extends BiomeInfo> extends Biome
+public abstract class BiomeMod<T extends BiomeInfo> extends Biome
 {
-    public BiomeLibEx(IModData data, BiomeProperties properties, String name)
+    public BiomeMod(IModData data, BiomeProperties properties, String name)
     {
         super(properties);
         this.setRegistryName(data.getModId() + ":" + name);
@@ -32,5 +32,5 @@ public abstract class BiomeLibEx<T extends BiomeInfo> extends Biome
         this.spawnableCaveCreatureList.clear();
     }
 
-    public abstract T getWrapper();
+    public abstract T getInfo();
 }
