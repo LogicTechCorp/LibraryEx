@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -230,11 +231,14 @@ public class BlockHelper
     {
         Block block = state.getBlock();
 
-        for(int id : OreDictionary.getOreIDs(new ItemStack(block, 1, block.getMetaFromState(state))))
+        if(!(block instanceof BlockAir))
         {
-            if(OreDictionary.getOreName(id).contains(string))
+            for(int id : OreDictionary.getOreIDs(new ItemStack(block, 1, block.getMetaFromState(state))))
             {
-                return true;
+                if(OreDictionary.getOreName(id).contains(string))
+                {
+                    return true;
+                }
             }
         }
 

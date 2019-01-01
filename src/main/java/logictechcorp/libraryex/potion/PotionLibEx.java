@@ -36,7 +36,7 @@ public class PotionLibEx extends Potion
     {
         super(isBadEffect, new Color(red, green, blue).getRGB());
         this.setRegistryName(data.getModId() + ":" + name);
-        this.setPotionName("potion.effect." + this.getRegistryName().toString());
+        this.setPotionName("potion.effect." + this.getRegistryName());
         this.iconTexture = new ResourceLocation(data.getModId() + ":textures/potions/" + name + ".png");
     }
 

@@ -13,24 +13,29 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 package logictechcorp.libraryex.world.biome;
 
-import logictechcorp.libraryex.IModData;
-import net.minecraft.world.biome.Biome;
-
-public abstract class BiomeLibEx<T extends BiomeInfo> extends Biome
+public enum BiomeBlockType
 {
-    public BiomeLibEx(IModData data, BiomeProperties properties, String name)
+    FLOOR_TOP_BLOCK("floorTopBlock"),
+    FLOOR_FILLER_BLOCK("floorFillerBlock"),
+    WALL_BLOCK("wallBlock"),
+    CEILING_FILLER_BLOCK("ceilingFillerBlock"),
+    CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
+    OCEAN_BLOCK("oceanBlock");
+
+    private String identifier;
+
+    BiomeBlockType(String identifier)
     {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
+        this.identifier = identifier;
     }
 
-    public abstract T getWrapper();
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }

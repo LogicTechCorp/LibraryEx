@@ -1,9 +1,25 @@
-package logictechcorp.libraryex.world.biome.wrapper;
+/*
+ * LibraryEx
+ * Copyright (c) 2017-2018 by MineEx
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation version 3 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package logictechcorp.libraryex.world.biome;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.file.FileConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
-import logictechcorp.libraryex.config.IConfigData;
 import logictechcorp.libraryex.util.ConfigHelper;
 import logictechcorp.libraryex.world.gen.GenerationStage;
 import logictechcorp.libraryex.world.gen.feature.Feature;
@@ -20,10 +36,9 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.io.File;
 import java.util.*;
 
-public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
+public abstract class BiomeInfo
 {
     protected Biome biome;
     protected int weight;
@@ -33,7 +48,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
     protected Map<GenerationStage, List<Feature>> features;
 
-    public BiomeWrapper(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures)
+    public BiomeInfo(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures)
     {
         this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
         this.weight = weight;
@@ -44,7 +59,7 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
         this.features = new HashMap<>();
     }
 
-    public BiomeWrapper()
+    public BiomeInfo()
     {
         this.biome = Biomes.PLAINS;
         this.weight = 10;
@@ -55,12 +70,11 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
         this.features = new HashMap<>();
     }
 
-    @Override
-    public void deserialize(FileConfig config)
+    public void setupFromConfig(Config config)
     {
         if(config != null)
         {
-            Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation("biome"));
+            Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(config.get("biome")));
 
             if(biome != null)
             {
@@ -184,97 +198,80 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
         }
     }
 
-    @Override
-    public FileConfig serialize(File configFile)
+    public Config getAsConfig()
     {
-        if(!configFile.exists() && configFile.getParentFile().mkdirs() || !configFile.exists())
+        Config config = TomlFormat.newConcurrentConfig();
+        config.add("biome", this.biome.getRegistryName().toString());
+        config.add("weight", this.weight);
+        config.add("enabled", this.enabled);
+        config.add("genDefaultFeatures", this.genDefaultFeatures);
+        Config blockConfigs = TomlFormat.newConcurrentConfig();
+
+        for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
         {
-            FileConfig config = FileConfig.of(configFile);
+            ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
+        }
 
-            config.add("biome", this.biome.getRegistryName().toString());
-            config.add("weight", this.weight);
-            config.add("enabled", this.enabled);
-            config.add("genDefaultFeatures", this.genDefaultFeatures);
-            Config blockConfigs = TomlFormat.newConcurrentConfig();
+        config.add("blocks", blockConfigs);
+        List<Config> entityConfigs = new ArrayList<>();
 
-            for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
+        for(EnumCreatureType type : EnumCreatureType.values())
+        {
+            for(Biome.SpawnListEntry entry : this.getEntitySpawnEntries(type))
             {
-                ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
-            }
+                ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
 
-            config.add("blocks", blockConfigs);
-            List<Config> entityConfigs = new ArrayList<>();
-
-            for(EnumCreatureType type : EnumCreatureType.values())
-            {
-                for(Biome.SpawnListEntry entry : this.getEntitySpawnEntries(type))
+                if(entityRegistryName != null)
                 {
-                    ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
-
-                    if(entityRegistryName != null)
-                    {
-                        Config entityConfig = TomlFormat.newConcurrentConfig();
-                        entityConfig.add("entity", entityRegistryName.toString());
-                        entityConfig.add("weight", entry.itemWeight);
-                        entityConfig.add("creatureType", type.toString().toLowerCase());
-                        entityConfig.add("minGroupCount", entry.minGroupCount);
-                        entityConfig.add("maxGroupCount", entry.maxGroupCount);
-                        entityConfig.add("spawn", true);
-                        entityConfigs.add(entityConfig);
-                    }
+                    Config entityConfig = TomlFormat.newConcurrentConfig();
+                    entityConfig.add("entity", entityRegistryName.toString());
+                    entityConfig.add("weight", entry.itemWeight);
+                    entityConfig.add("creatureType", type.toString().toLowerCase());
+                    entityConfig.add("minGroupCount", entry.minGroupCount);
+                    entityConfig.add("maxGroupCount", entry.maxGroupCount);
+                    entityConfig.add("spawn", true);
+                    entityConfigs.add(entityConfig);
                 }
             }
-
-            config.add("entities", entityConfigs);
-            List<Config> featureConfigs = new ArrayList<>();
-
-            for(GenerationStage stage : GenerationStage.values())
-            {
-                for(Feature feature : this.getFeatures(stage))
-                {
-                    Config featureConfig = feature.serialize();
-                    featureConfig.add("genStage", stage.toString().toLowerCase());
-                    featureConfigs.add(featureConfig);
-                }
-            }
-
-            config.add("features", featureConfigs);
-            return config;
         }
-        else
+
+        config.add("entities", entityConfigs);
+        List<Config> featureConfigs = new ArrayList<>();
+
+        for(GenerationStage stage : GenerationStage.values())
         {
-            FileConfig config = FileConfig.of(configFile);
-            config.load();
-            this.deserialize(config);
-            return config;
+            for(Feature feature : this.getFeatures(stage))
+            {
+                Config featureConfig = feature.serialize();
+                featureConfig.add("genStage", stage.toString().toLowerCase());
+                featureConfigs.add(featureConfig);
+            }
         }
+
+        config.add("features", featureConfigs);
+        return config;
     }
 
-    @Override
     public Biome getBiome()
     {
         return this.biome;
     }
 
-    @Override
     public int getWeight()
     {
         return this.weight;
     }
 
-    @Override
     public boolean isEnabled()
     {
         return this.enabled;
     }
 
-    @Override
     public boolean genDefaultFeatures()
     {
         return this.genDefaultFeatures;
     }
 
-    @Override
     public IBlockState getBiomeBlock(BiomeBlockType type, IBlockState fallback)
     {
         IBlockState value = this.blocks.get(type.getIdentifier());
@@ -293,19 +290,16 @@ public abstract class BiomeWrapper implements IBiomeWrapper, IConfigData
         return this.blocks;
     }
 
-    @Override
     public List<Biome.SpawnListEntry> getEntitySpawnEntries(EnumCreatureType creatureType)
     {
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
-    @Override
     public List<Feature> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }
 
-    @Override
     public String getFileName()
     {
         return this.biome.getRegistryName().toString().replace(":", "/") + ".toml";

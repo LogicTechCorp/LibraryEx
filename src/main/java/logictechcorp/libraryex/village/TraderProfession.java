@@ -1,11 +1,13 @@
 package logictechcorp.libraryex.village;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public abstract class TraderProfession<P extends TraderProfession<P, C>, C extends TraderProfession.Career> extends IForgeRegistryEntry.Impl<P>
 {
@@ -58,17 +60,9 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         return this.careers.get(id);
     }
 
-    public C getCareer(ResourceLocation id)
+    public C getCareer(ResourceLocation careerName)
     {
-        for(C career : this.careers)
-        {
-            if(career.getName().equals(id))
-            {
-                return career;
-            }
-        }
-
-        return null;
+        return this.careers.stream().filter(career -> careerName.equals(career.getName())).findFirst().orElse(null);
     }
 
     public C getRandomCareer(Random rand)
@@ -84,7 +78,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         private ResourceLocation texture;
         private ResourceLocation alternateTexture;
         private int id;
-        private final Map<Integer, List<Trade>> trades;
+        private final List<Trade> trades;
 
         protected Career(ResourceLocation name, P profession, ResourceLocation lootTable, ResourceLocation texture, ResourceLocation alternateTexture)
         {
@@ -93,12 +87,20 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             this.lootTable = lootTable;
             this.texture = texture;
             this.alternateTexture = alternateTexture;
-            this.trades = new HashMap<>();
+            this.trades = new ArrayList<>();
         }
 
         public void addTrade(Trade trade)
         {
-            this.trades.computeIfAbsent(trade.getTradeLevel(), k -> new ArrayList<>()).add(trade);
+            if(this.trades.stream().noneMatch(trade::equals))
+            {
+                this.trades.add(trade);
+            }
+        }
+
+        public void removeTrade(Trade trade)
+        {
+            this.trades.remove(trade);
         }
 
         public ResourceLocation getName()
@@ -131,14 +133,14 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             return this.id;
         }
 
-        public Map<Integer, List<Trade>> getTrades()
+        public List<Trade> getTrades()
         {
-            return ImmutableMap.copyOf(this.trades);
+            return ImmutableList.copyOf(this.trades);
         }
 
-        public List<Trade> getTrades(int level)
+        public List<Trade> getTradesForLevel(int tradeLevel)
         {
-            return ImmutableList.copyOf(this.trades.computeIfAbsent(level, k -> new ArrayList<>()));
+            return this.trades.stream().filter(k -> tradeLevel == k.getTradeLevel()).collect(Collectors.toList());
         }
 
         void setId(int id)

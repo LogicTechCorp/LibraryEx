@@ -1,71 +1,65 @@
 package logictechcorp.libraryex.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import logictechcorp.libraryex.util.WorldHelper;
-import logictechcorp.libraryex.world.biome.wrapper.IBiomeWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public abstract class DimensionBiomeManager<T extends IBiomeWrapper>
+public abstract class DimensionBiomeManager
 {
-    protected final List<BiomeManager.BiomeEntry> biomeEntries = new ArrayList<>();
-    protected final Map<Integer, T> moddedBiomes = new HashMap<>();
-    protected final Map<Integer, T> playerBiomes = new HashMap<>();
+    private final List<BiomeInfo> biomeInfo = new ArrayList<>();
+    private final List<BiomeManager.BiomeEntry> biomeEntries = new ArrayList<>();
 
-    public void addBiome(T wrapper)
+    public abstract void readBiomeInfoFromConfigs(MinecraftServer server);
+
+    public abstract void writeBiomeInfoToConfigs(MinecraftServer server);
+
+    public void addBiome(BiomeInfo wrapper)
     {
         if(wrapper == null)
         {
             return;
         }
 
-        int biomeId = Biome.getIdForBiome(wrapper.getBiome());
+        BiomeManager.BiomeEntry entry = new BiomeManager.BiomeEntry(wrapper.getBiome(), wrapper.getWeight());
 
-        if(!this.moddedBiomes.containsKey(biomeId))
+        if(this.biomeInfo.stream().noneMatch(k -> wrapper.getBiome() == k.getBiome()))
         {
-            this.moddedBiomes.put(biomeId, wrapper);
+            this.biomeInfo.add(wrapper);
+        }
+
+        if(this.biomeEntries.stream().noneMatch(k -> entry.biome == k.biome))
+        {
+            this.biomeEntries.add(entry);
         }
     }
 
-    public void removeBiome(Biome biome)
+    public void removeBiome(BiomeInfo wrapper)
     {
-        this.moddedBiomes.remove(Biome.getIdForBiome(biome));
+        this.biomeEntries.removeIf(entry -> entry.biome == wrapper.getBiome());
+    }
+
+    public List<BiomeInfo> getAllBiomeInfo()
+    {
+        return ImmutableList.copyOf(this.biomeInfo);
     }
 
     public List<BiomeManager.BiomeEntry> getBiomeEntries()
     {
-        return this.biomeEntries;
+        return ImmutableList.copyOf(this.biomeEntries);
     }
 
-    public T getBiomeWrapper(Biome biome)
+    public BiomeInfo getAllBiomeInfo(Biome biome)
     {
-        int biomeId = Biome.getIdForBiome(biome);
-
-        if(this.moddedBiomes.containsKey(biomeId))
-        {
-            return this.moddedBiomes.get(biomeId);
-        }
-
-        return this.playerBiomes.get(biomeId);
+        return this.biomeInfo.stream().filter(wrapper -> biome == wrapper.getBiome()).findFirst().orElse(null);
     }
 
-    public T getModdedBiomeWrapper(Biome biome)
-    {
-        return this.moddedBiomes.get(Biome.getIdForBiome(biome));
-    }
-
-    public T getPlayerBiomeWrapper(Biome biome)
-    {
-        return this.playerBiomes.get(Biome.getIdForBiome(biome));
-    }
-
-    public File getBiomeWrapperSaveFile(MinecraftServer server, IBiomeWrapper wrapper)
+    public File getBiomeInfoSaveFile(MinecraftServer server, BiomeInfo wrapper)
     {
         return new File(WorldHelper.getSaveFile(server.getEntityWorld()), "/config/NetherEx/Biomes/" + wrapper.getFileName());
     }
