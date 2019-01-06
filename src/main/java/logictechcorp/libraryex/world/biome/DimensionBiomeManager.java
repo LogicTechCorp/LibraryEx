@@ -1,7 +1,6 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.google.common.collect.ImmutableList;
-import logictechcorp.libraryex.util.WorldHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
@@ -9,39 +8,35 @@ import net.minecraftforge.common.BiomeManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class DimensionBiomeManager
 {
     private final List<BiomeInfo> biomeInfo = new ArrayList<>();
-    private final List<BiomeManager.BiomeEntry> biomeEntries = new ArrayList<>();
+    private final Map<BiomeInfo, BiomeManager.BiomeEntry> biomeEntries = new ConcurrentHashMap<>();
 
     public abstract void readBiomeInfoFromConfigs(MinecraftServer server);
 
     public abstract void writeBiomeInfoToConfigs(MinecraftServer server);
 
-    public void addBiome(BiomeInfo wrapper)
+    public void addBiome(BiomeInfo info)
     {
-        if(wrapper == null)
+        if(info == null)
         {
             return;
         }
 
-        BiomeManager.BiomeEntry entry = new BiomeManager.BiomeEntry(wrapper.getBiome(), wrapper.getWeight());
-
-        if(this.biomeInfo.stream().noneMatch(k -> wrapper.getBiome() == k.getBiome()))
+        if(!this.biomeInfo.contains(info))
         {
-            this.biomeInfo.add(wrapper);
-        }
-
-        if(this.biomeEntries.stream().noneMatch(k -> entry.biome == k.biome))
-        {
-            this.biomeEntries.add(entry);
+            this.biomeInfo.add(info);
+            this.biomeEntries.put(info, new BiomeManager.BiomeEntry(info.getBiome(), info.getWeight()));
         }
     }
 
-    public void removeBiome(BiomeInfo wrapper)
+    public void removeBiome(BiomeInfo info)
     {
-        this.biomeEntries.removeIf(entry -> entry.biome == wrapper.getBiome());
+        this.biomeEntries.remove(info);
     }
 
     public List<BiomeInfo> getAllBiomeInfo()
@@ -51,16 +46,21 @@ public abstract class DimensionBiomeManager
 
     public List<BiomeManager.BiomeEntry> getBiomeEntries()
     {
-        return ImmutableList.copyOf(this.biomeEntries);
+        return ImmutableList.copyOf(this.biomeEntries.values());
     }
 
-    public BiomeInfo getAllBiomeInfo(Biome biome)
+    public BiomeInfo getBiomeInfo(Biome biome)
     {
-        return this.biomeInfo.stream().filter(wrapper -> biome == wrapper.getBiome()).findFirst().orElse(null);
+        for(BiomeInfo info : this.biomeInfo)
+        {
+            if(biome == info.getBiome())
+            {
+                return info;
+            }
+        }
+
+        return null;
     }
 
-    public File getBiomeInfoSaveFile(MinecraftServer server, BiomeInfo wrapper)
-    {
-        return new File(WorldHelper.getSaveFile(server.getEntityWorld()), "/config/NetherEx/Biomes/" + wrapper.getFileName());
-    }
+    public abstract File getBiomeInfoSaveFile(MinecraftServer server, BiomeInfo wrapper);
 }
