@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 
 package logictechcorp.libraryex.util;
 
+import logictechcorp.libraryex.LibraryEx;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -77,6 +78,11 @@ public class WorldHelper
 
     public static File getSaveFile(World world)
     {
+        if(LibraryEx.CONFIG_DIRECTORY.getPath().length() == 1)
+        {
+            return new File(world.getSaveHandler().getWorldDirectory().getName());
+        }
+
         return new File("saves/" + world.getSaveHandler().getWorldDirectory().getName());
     }
 }

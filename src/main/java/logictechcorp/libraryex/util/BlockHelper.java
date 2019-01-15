@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 package logictechcorp.libraryex.util;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.DimensionType;
@@ -36,8 +36,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BlockHelper
 {
+    private static final Set<ResourceLocation> ORE_DICT_BLOCKS = new HashSet<>();
+
     public static boolean mine3x3(World world, ItemStack stack, BlockPos pos, EntityPlayer player)
     {
         RayTraceResult traceResult = WorldHelper.rayTraceFromEntity(world, player, false, 4.5D);
@@ -211,37 +216,27 @@ public class BlockHelper
         return true;
     }
 
-    public static boolean isOreDict(String id, Block block)
+    public static boolean isOreDict(String ore, Block block)
     {
-        for(ItemStack stack : OreDictionary.getOres(id))
+        if(!ORE_DICT_BLOCKS.contains(block.getRegistryName()))
         {
-            if(stack.getItem() instanceof ItemBlock)
+            for(ItemStack stack : OreDictionary.getOres(ore))
             {
-                if(((ItemBlock) stack.getItem()).getBlock() == block)
+                if(stack.getItem() instanceof ItemBlock)
                 {
-                    return true;
+                    if(((ItemBlock) stack.getItem()).getBlock() == block)
+                    {
+                        ORE_DICT_BLOCKS.add(block.getRegistryName());
+                        return true;
+                    }
                 }
             }
+
+            return false;
         }
-
-        return false;
-    }
-
-    public static boolean oreDictNameContains(IBlockState state, String string)
-    {
-        Block block = state.getBlock();
-
-        if(!(block instanceof BlockAir))
+        else
         {
-            for(int id : OreDictionary.getOreIDs(new ItemStack(block, 1, block.getMetaFromState(state))))
-            {
-                if(OreDictionary.getOreName(id).contains(string))
-                {
-                    return true;
-                }
-            }
+            return true;
         }
-
-        return false;
     }
 }

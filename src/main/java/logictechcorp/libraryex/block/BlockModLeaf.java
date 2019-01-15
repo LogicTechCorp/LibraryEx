@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,16 @@ package logictechcorp.libraryex.block;
 import logictechcorp.libraryex.block.builder.BlockBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -32,17 +38,18 @@ import net.minecraftforge.common.IShearable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
 import java.util.Random;
 
-public abstract class BlockModLeaves extends BlockMod implements IShearable
+public abstract class BlockModLeaf extends BlockMod implements IShearable
 {
-    public static final PropertyBool DECAYABLE = PropertyBool.create("decayable");
-    public static final PropertyBool CHECK_DECAY = PropertyBool.create("check_decay");
+    public static final PropertyBool DECAY = PropertyBool.create("decay");
     private int[] surroundings;
 
-    public BlockModLeaves(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModLeaf(ResourceLocation registryName, BlockBuilder builder)
     {
         super(registryName, builder);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(DECAY, true));
     }
 
     @Override
@@ -63,7 +70,7 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random rand)
     {
-        if(world.isRainingAt(pos.up()) && !world.getBlockState(pos.down()).isTopSolid() && rand.nextInt(15) == 1)
+        if(world.isRainingAt(pos.up()) && !world.getBlockState(pos.down()).isSideSolid(world, pos.down(), EnumFacing.UP) && rand.nextInt(15) == 1)
         {
             world.spawnParticle(EnumParticleTypes.DRIP_WATER, pos.getX() + rand.nextFloat(), pos.getY() - 0.05D, pos.getZ() + rand.nextFloat(), 0.0D, 0.0D, 0.0D);
         }
@@ -80,7 +87,7 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
     {
         if(!world.isRemote)
         {
-            if((state.getValue(CHECK_DECAY) && state.getValue(DECAYABLE)))
+            if((state.getValue(DECAY)))
             {
                 int posX = pos.getX();
                 int posY = pos.getY();
@@ -171,7 +178,7 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
 
                 if(this.surroundings[16912] >= 0)
                 {
-                    world.setBlockState(pos, state.withProperty(CHECK_DECAY, false), 4);
+                    world.setBlockState(pos, state.withProperty(DECAY, false), 4);
                 }
                 else
                 {
@@ -196,11 +203,11 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
 
         if(world.isAreaLoaded(new BlockPos(posX - 2, posY - 2, posZ - 2), new BlockPos(posX + 2, posY + 2, posZ + 2)))
         {
-            for(int offsetX = -1; offsetX <= 1; ++offsetX)
+            for(int offsetX = -1; offsetX <= 1; offsetX++)
             {
-                for(int offsetY = -1; offsetY <= 1; ++offsetY)
+                for(int offsetY = -1; offsetY <= 1; offsetY++)
                 {
-                    for(int offsetZ = -1; offsetZ <= 1; ++offsetZ)
+                    for(int offsetZ = -1; offsetZ <= 1; offsetZ++)
                     {
                         BlockPos newPos = pos.add(offsetX, offsetY, offsetZ);
                         IBlockState checkState = world.getBlockState(newPos);
@@ -222,9 +229,35 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
     }
 
     @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity tileEntity, ItemStack stack)
+    {
+        if (!world.isRemote && stack.getItem() == Items.SHEARS)
+        {
+            StatBase statBase = StatList.getBlockStats(this);
+            
+            if(statBase != null)
+            {
+                player.addStat(statBase);
+            }
+            
+            spawnAsEntity(world, pos, new ItemStack(Item.getItemFromBlock(this)));
+        }
+        else
+        {
+            super.harvestBlock(world, player, pos, state, tileEntity, stack);
+        }
+    }
+
+    @Override
     public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos)
     {
         return true;
+    }
+
+    @Override
+    public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune)
+    {
+        return NonNullList.withSize(1, new ItemStack(this));
     }
 
     @Override
@@ -236,9 +269,9 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
     @Override
     public void beginLeavesDecay(IBlockState state, World world, BlockPos pos)
     {
-        if(!state.getValue(CHECK_DECAY))
+        if(!state.getValue(DECAY))
         {
-            world.setBlockState(pos, state.withProperty(CHECK_DECAY, true), 4);
+            world.setBlockState(pos, state.withProperty(DECAY, true), 4);
         }
     }
 
@@ -246,7 +279,7 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
         Random rand = world instanceof World ? ((World) world).rand : new Random();
-        int chance = this.getSaplingDropChance(state);
+        int chance = this.getRareDropChance();
 
         if(fortune > 0)
         {
@@ -259,7 +292,6 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
         }
         if(rand.nextInt(chance) == 0)
         {
-
             ItemStack drop = new ItemStack(this.getItemDropped(state, rand, fortune), 1, this.damageDropped(state));
 
             if(!drop.isEmpty())
@@ -284,22 +316,40 @@ public abstract class BlockModLeaves extends BlockMod implements IShearable
 
         if(world instanceof World)
         {
-            this.dropRareItem((World) world, pos, state, chance);
+            this.dropRareItem((World) world, pos, chance);
         }
 
         drops.addAll(this.captureDrops(false));
     }
 
     @Override
-    public abstract Item getItemDropped(IBlockState state, Random rand, int fortune);
+    public IBlockState getStateFromMeta(int meta)
+    {
+        return this.getDefaultState().withProperty(DECAY, meta != 0);
+    }
 
-    protected abstract void dropRareItem(World world, BlockPos pos, IBlockState state, int chance);
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        return state.getValue(DECAY) ? 1 : 0;
+    }
 
-    protected abstract int getSaplingDropChance(IBlockState state);
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, DECAY);
+    }
 
-    private void destroy(World world, BlockPos pos)
+    protected void destroy(World world, BlockPos pos)
     {
         this.dropBlockAsItem(world, pos, world.getBlockState(pos), 0);
         world.setBlockToAir(pos);
     }
+
+    @Override
+    public abstract Item getItemDropped(IBlockState state, Random rand, int fortune);
+
+    protected abstract void dropRareItem(World world, BlockPos pos, int chance);
+
+    protected abstract int getRareDropChance();
 }

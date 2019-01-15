@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package logictechcorp.libraryex.block.builder;
@@ -38,7 +37,6 @@ public class BlockBuilder
     private float hardness;
     private float resistance;
     private boolean tickRandomly;
-    private Item drop = null;
 
     public BlockBuilder(Material material, MapColor mapColor)
     {
@@ -86,12 +84,6 @@ public class BlockBuilder
     public BlockBuilder tickRandomly()
     {
         this.tickRandomly = true;
-        return this;
-    }
-
-    public BlockBuilder drop(Item drop)
-    {
-        this.drop = drop;
         return this;
     }
 
@@ -143,10 +135,5 @@ public class BlockBuilder
     public boolean needsRandomTick()
     {
         return this.tickRandomly;
-    }
-
-    public Item getDrop()
-    {
-        return this.drop;
     }
 }

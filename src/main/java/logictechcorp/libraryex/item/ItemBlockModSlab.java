@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,13 +13,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 package logictechcorp.libraryex.item;
 
 import logictechcorp.libraryex.block.BlockModSlab;
-import logictechcorp.libraryex.block.properties.SlabType;
 import logictechcorp.libraryex.item.builder.ItemBuilder;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
@@ -54,7 +52,7 @@ public class ItemBlockModSlab extends ItemBlockMod
 
         if(((BlockModSlab) this.block).isSingle(state))
         {
-            boolean flag = state.getValue(BlockModSlab.TYPE) == SlabType.TOP;
+            boolean flag = state.getValue(BlockModSlab.TYPE) == BlockModSlab.SlabType.TOP;
 
             if((side == EnumFacing.UP && !flag || side == EnumFacing.DOWN && flag))
             {
@@ -76,11 +74,11 @@ public class ItemBlockModSlab extends ItemBlockMod
 
             if(((BlockModSlab) this.block).isSingle(state))
             {
-                SlabType type = state.getValue(BlockModSlab.TYPE);
+                BlockModSlab.SlabType type = state.getValue(BlockModSlab.TYPE);
 
-                if((facing == EnumFacing.UP && type == SlabType.BOTTOM || facing == EnumFacing.DOWN && type == SlabType.TOP))
+                if((facing == EnumFacing.UP && type == BlockModSlab.SlabType.BOTTOM || facing == EnumFacing.DOWN && type == BlockModSlab.SlabType.TOP))
                 {
-                    IBlockState newState = this.block.getDefaultState().withProperty(BlockModSlab.TYPE, SlabType.DOUBLE);
+                    IBlockState newState = this.block.getDefaultState().withProperty(BlockModSlab.TYPE, BlockModSlab.SlabType.DOUBLE);
                     AxisAlignedBB boundingBox = newState.getCollisionBoundingBox(world, pos);
 
                     if(boundingBox != Block.NULL_AABB && world.checkNoEntityCollision(boundingBox.offset(pos)) && world.setBlockState(pos, newState, 11))
@@ -111,7 +109,7 @@ public class ItemBlockModSlab extends ItemBlockMod
     {
         if(((BlockModSlab) this.block).isSingle(world.getBlockState(pos)))
         {
-            IBlockState placeState = this.block.getDefaultState().withProperty(BlockModSlab.TYPE, SlabType.DOUBLE);
+            IBlockState placeState = this.block.getDefaultState().withProperty(BlockModSlab.TYPE, BlockModSlab.SlabType.DOUBLE);
             AxisAlignedBB boundingBox = placeState.getCollisionBoundingBox(world, pos);
 
             if(boundingBox != Block.NULL_AABB && world.checkNoEntityCollision(boundingBox.offset(pos)) && world.setBlockState(pos, placeState, 11))

@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
-import logictechcorp.libraryex.block.properties.SlabType;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -29,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -193,5 +193,41 @@ public class BlockModSlab extends BlockMod
     public boolean isDouble(IBlockState state)
     {
         return state.getBlock() == this && state == this.getDefaultState().withProperty(BlockModSlab.TYPE, SlabType.DOUBLE);
+    }
+
+    public enum SlabType implements IStringSerializable
+    {
+        TOP("top"),
+        BOTTOM("bottom"),
+        DOUBLE("double");
+
+        private final String name;
+
+        SlabType(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.name;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        public static SlabType fromMeta(int meta)
+        {
+            if(meta < 0 || meta >= values().length)
+            {
+                meta = 0;
+            }
+
+            return values()[meta];
+        }
     }
 }

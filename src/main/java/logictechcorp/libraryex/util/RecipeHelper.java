@@ -1,12 +1,18 @@
 /*
- * Copyright 2014-2017, the Biomes O' Plenty Team
+ * LibraryEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
- * This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation version 3 of the License.
  *
- * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Original: https://github.com/Glitchfiend/BiomesOPlenty/blob/1852e82d28e88b836720eadac1f55b497a1fd206/src/main/java/biomesoplenty/common/util/inventory/CraftingUtil.java
- * (edited to work with multiple mods)
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package logictechcorp.libraryex.util;

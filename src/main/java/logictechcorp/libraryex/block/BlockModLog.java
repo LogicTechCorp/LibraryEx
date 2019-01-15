@@ -1,6 +1,6 @@
 /*
  * LibraryEx
- * Copyright (c) 2017-2018 by MineEx
+ * Copyright (c) 2017-2019 by LogicTechCorp
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@ package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
@@ -26,13 +27,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public abstract class BlockModLog extends BlockMod
+public class BlockModLog extends BlockMod
 {
     public static final PropertyEnum<EnumAxis> AXIS = PropertyEnum.create("axis", EnumAxis.class);
 
     public BlockModLog(ResourceLocation registryName, BlockBuilder builder)
     {
         super(registryName, builder);
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AXIS, EnumAxis.Y));
     }
 
     @Override
@@ -54,20 +56,38 @@ public abstract class BlockModLog extends BlockMod
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    public void breakBlock(World world, BlockPos pos, IBlockState state)
     {
-        if(worldIn.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5)))
+        if(world.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5)))
         {
-            for(BlockPos blockpos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4)))
+            for(BlockPos blockPos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4)))
             {
-                IBlockState iblockstate = worldIn.getBlockState(blockpos);
+                IBlockState testState = world.getBlockState(blockPos);
 
-                if(iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos))
+                if(testState.getBlock().isLeaves(testState, world, blockPos))
                 {
-                    iblockstate.getBlock().beginLeavesDecay(iblockstate, worldIn, blockpos);
+                    testState.getBlock().beginLeavesDecay(testState, world, blockPos);
                 }
             }
         }
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state)
+    {
+        return state.getValue(AXIS).ordinal();
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta)
+    {
+        return this.getDefaultState().withProperty(AXIS, EnumAxis.fromMeta(0));
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, AXIS);
     }
 
     @Override
@@ -97,13 +117,22 @@ public abstract class BlockModLog extends BlockMod
     {
         X,
         Y,
-        Z,
-        NONE;
+        Z;
 
         @Override
         public String getName()
         {
             return this.toString().toLowerCase();
+        }
+
+        public static EnumAxis fromMeta(int meta)
+        {
+            if(meta < 0 || meta >= values().length)
+            {
+                meta = 0;
+            }
+
+            return values()[meta];
         }
 
         public static EnumAxis fromAxis(EnumFacing.Axis axis)
@@ -117,7 +146,7 @@ public abstract class BlockModLog extends BlockMod
                 case Z:
                     return Z;
                 default:
-                    return NONE;
+                    return Y;
             }
         }
     }
