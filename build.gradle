@@ -53,7 +53,6 @@ processResources {
 jar {
     manifest {
         attributes([
-                'FMLAT': "lex_at.cfg",
                 'ContainedDeps': "night-config-core-${night_config_version}.jar night-config-toml-${night_config_version}.jar"
         ])
     }
