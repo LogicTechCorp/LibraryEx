@@ -38,7 +38,7 @@ public class ItemBlockEdible extends ItemBlockMod
     private final float saturation;
     private final boolean isWolfFood;
     private boolean alwaysEdible;
-    private PotionEffect potionId;
+    private PotionEffect potionEffect;
     private float potionEffectProbability;
 
     public ItemBlockEdible(Block block, ItemEdibleBuilder builder)
@@ -47,6 +47,9 @@ public class ItemBlockEdible extends ItemBlockMod
         this.healAmount = builder.getHealAmount();
         this.saturation = builder.getSaturation();
         this.isWolfFood = builder.isWolfFood();
+        this.alwaysEdible = builder.isAlwaysEdible();
+        this.potionEffect = builder.getPotionEffect();
+        this.potionEffectProbability = builder.getPotionEffectProbability();
     }
 
     @Override
@@ -95,9 +98,9 @@ public class ItemBlockEdible extends ItemBlockMod
 
     protected void onFoodEaten(ItemStack stack, World world, EntityPlayer player)
     {
-        if(!world.isRemote && this.potionId != null && world.rand.nextFloat() < this.potionEffectProbability)
+        if(!world.isRemote && this.potionEffect != null && world.rand.nextFloat() < this.potionEffectProbability)
         {
-            player.addPotionEffect(new PotionEffect(this.potionId));
+            player.addPotionEffect(new PotionEffect(this.potionEffect));
         }
     }
 
@@ -116,16 +119,13 @@ public class ItemBlockEdible extends ItemBlockMod
         return this.isWolfFood;
     }
 
-    public ItemBlockEdible setPotionEffect(PotionEffect effect, float probability)
+    public PotionEffect getPotionEffect()
     {
-        this.potionId = effect;
-        this.potionEffectProbability = probability;
-        return this;
+        return this.potionEffect;
     }
 
-    public ItemBlockEdible setAlwaysEdible()
+    public float getPotionEffectProbability()
     {
-        this.alwaysEdible = true;
-        return this;
+        return this.potionEffectProbability;
     }
 }

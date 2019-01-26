@@ -47,10 +47,10 @@ public class BakedModelDynamic implements IBakedModel
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand)
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long random)
     {
-        List<BakedQuad> originalQuads = new ArrayList<>(this.originalModel.getQuads(state, side, rand));
-        List<BakedQuad> dynamicQuads = new ArrayList<>(this.getDynamicModel(state).getQuads(state, side, rand));
+        List<BakedQuad> originalQuads = new ArrayList<>(this.originalModel.getQuads(state, side, random));
+        List<BakedQuad> dynamicQuads = new ArrayList<>(this.getDynamicModel(state).getQuads(state, side, random));
         List<BakedQuad> quads;
 
         if(this.texturePlacement == BlockDynamic.TexturePlacement.OVER)

@@ -42,17 +42,17 @@ public class BlockRising extends BlockMod
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand)
+    public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random random)
     {
-        if(rand.nextInt(16) == 0)
+        if(random.nextInt(16) == 0)
         {
             BlockPos newPos = pos.up();
 
             if(canRiseThrough(world.getBlockState(newPos)))
             {
-                double posX = (double) ((float) pos.getX() + rand.nextFloat());
+                double posX = (double) ((float) pos.getX() + random.nextFloat());
                 double posY = (double) pos.getY() - 0.05D;
-                double posZ = (double) ((float) pos.getZ() + rand.nextFloat());
+                double posZ = (double) ((float) pos.getZ() + random.nextFloat());
                 world.spawnParticle(EnumParticleTypes.FALLING_DUST, posX, posY, posZ, 0.0D, 0.5D, 0.0D, Block.getStateId(state));
             }
         }
@@ -77,7 +77,7 @@ public class BlockRising extends BlockMod
     }
 
     @Override
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random)
     {
         if(!worldIn.isRemote)
         {

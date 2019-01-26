@@ -78,7 +78,7 @@ public abstract class BlockModBush extends BlockMod implements IPlantable
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random random)
     {
         this.checkAndDropBlock(world, pos, state);
     }

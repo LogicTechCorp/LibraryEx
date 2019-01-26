@@ -23,7 +23,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 
 public class BlockBuilder
 {
@@ -85,6 +84,20 @@ public class BlockBuilder
     {
         this.tickRandomly = true;
         return this;
+    }
+
+    public BlockBuilder copy()
+    {
+        BlockBuilder builder = new BlockBuilder(this.material, this.mapColor);
+        builder.soundType = this.soundType;
+        builder.creativeTab = this.creativeTab;
+        builder.lightLevel = this.lightLevel;
+        builder.harvestTool = this.harvestTool;
+        builder.harvestLevel = this.harvestLevel;
+        builder.hardness = this.hardness;
+        builder.resistance = this.resistance;
+        builder.tickRandomly = this.tickRandomly;
+        return builder;
     }
 
     public Material getMaterial()

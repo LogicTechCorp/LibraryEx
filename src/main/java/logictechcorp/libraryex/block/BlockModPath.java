@@ -93,7 +93,7 @@ public class BlockModPath extends BlockMod
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    public Item getItemDropped(IBlockState state, Random random, int fortune)
     {
         return Item.getItemFromBlock(this.original);
     }

@@ -74,6 +74,18 @@ public class ItemBuilder
         return this;
     }
 
+    public ItemBuilder copy()
+    {
+        ItemBuilder builder = new ItemBuilder();
+        builder.maxDamage = this.maxDamage;
+        builder.maxStackSize = this.maxStackSize;
+        builder.containerItem = this.containerItem;
+        builder.creativeTab = this.creativeTab;
+        builder.rarity = this.rarity;
+        builder.repairable = this.repairable;
+        return builder;
+    }
+
     public int getMaxDamage()
     {
         return this.maxDamage;

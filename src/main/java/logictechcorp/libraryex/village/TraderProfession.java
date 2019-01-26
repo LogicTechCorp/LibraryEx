@@ -82,9 +82,9 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         return this.careers.stream().filter(career -> careerName.equals(career.getName())).findFirst().orElse(null);
     }
 
-    public C getRandomCareer(Random rand)
+    public C getRandomCareer(Random random)
     {
-        return this.careers.get(rand.nextInt(this.careers.size()));
+        return this.careers.get(random.nextInt(this.careers.size()));
     }
 
     public static abstract class Career<P extends TraderProfession<P, C>, C extends TraderProfession.Career<P, C>>
@@ -95,7 +95,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         private ResourceLocation texture;
         private ResourceLocation alternateTexture;
         private int id;
-        private final List<Trade> trades;
+        private final List<ConfigurableTrade> trades;
 
         protected Career(ResourceLocation name, P profession, ResourceLocation lootTable, ResourceLocation texture, ResourceLocation alternateTexture)
         {
@@ -107,7 +107,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             this.trades = new ArrayList<>();
         }
 
-        public void addTrade(Trade trade)
+        public void addTrade(ConfigurableTrade trade)
         {
             if(this.trades.stream().noneMatch(trade::equals))
             {
@@ -115,7 +115,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             }
         }
 
-        public void removeTrade(Trade trade)
+        public void removeTrade(ConfigurableTrade trade)
         {
             this.trades.remove(trade);
         }
@@ -150,12 +150,12 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             return this.id;
         }
 
-        public List<Trade> getTrades()
+        public List<ConfigurableTrade> getTrades()
         {
             return ImmutableList.copyOf(this.trades);
         }
 
-        public List<Trade> getTradesForLevel(int tradeLevel)
+        public List<ConfigurableTrade> getTradesForLevel(int tradeLevel)
         {
             return this.trades.stream().filter(k -> tradeLevel == k.getTradeLevel()).collect(Collectors.toList());
         }

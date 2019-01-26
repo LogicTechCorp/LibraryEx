@@ -19,10 +19,10 @@ package logictechcorp.libraryex.world.biome;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
-import logictechcorp.libraryex.util.ConfigHelper;
-import logictechcorp.libraryex.world.gen.GenerationStage;
-import logictechcorp.libraryex.world.gen.feature.Feature;
-import logictechcorp.libraryex.world.gen.feature.FeatureRegistry;
+import logictechcorp.libraryex.utility.ConfigHelper;
+import logictechcorp.libraryex.world.generation.GenerationStage;
+import logictechcorp.libraryex.world.generation.feature.ConfigurableFeature;
+import logictechcorp.libraryex.world.generation.feature.FeatureRegistry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -42,17 +42,17 @@ public abstract class BiomeInfo
     protected Biome biome;
     protected int weight;
     protected boolean enabled;
-    protected boolean genDefaultFeatures;
+    protected boolean generateDefaultFeatures;
     protected Map<String, IBlockState> blocks;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
-    protected Map<GenerationStage, List<Feature>> features;
+    protected Map<GenerationStage, List<ConfigurableFeature>> features;
 
-    public BiomeInfo(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean genDefaultFeatures)
+    public BiomeInfo(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean generateDefaultFeatures)
     {
         this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
         this.weight = weight;
         this.enabled = enabled;
-        this.genDefaultFeatures = genDefaultFeatures;
+        this.generateDefaultFeatures = generateDefaultFeatures;
         this.blocks = new HashMap<>();
         this.entities = new HashMap<>();
         this.features = new HashMap<>();
@@ -63,7 +63,7 @@ public abstract class BiomeInfo
         this.biome = Biomes.PLAINS;
         this.weight = 10;
         this.enabled = true;
-        this.genDefaultFeatures = true;
+        this.generateDefaultFeatures = true;
         this.blocks = new HashMap<>();
         this.entities = new HashMap<>();
         this.features = new HashMap<>();
@@ -101,8 +101,7 @@ public abstract class BiomeInfo
                 if(config.get("entities") instanceof List)
                 {
                     List<Config> entities = new ArrayList<>();
-                    List<Config> entityConfigs = config.get("entities");
-                    Iterator<Config> entityConfigIter = entityConfigs.iterator();
+                    Iterator entityConfigIter = ((List) config.get("entities")).iterator();
                     this.entities.clear();
 
                     for(EnumCreatureType type : EnumCreatureType.values())
@@ -115,9 +114,9 @@ public abstract class BiomeInfo
 
                             while(entityConfigIter.hasNext())
                             {
-                                Config entityConfig = entityConfigIter.next();
+                                Config entityConfig = (Config) entityConfigIter.next();
 
-                                if(registryKey != null && entityConfig.contains("entity") && entityConfig.get("entity") instanceof String && ((String) entityConfig.get("entity")).equalsIgnoreCase(registryKey.toString()))
+                                if(registryKey != null && entityConfig.get("entity") instanceof String && ((String) entityConfig.get("entity")).equalsIgnoreCase(registryKey.toString()))
                                 {
                                     containsEntry = true;
                                 }
@@ -133,7 +132,6 @@ public abstract class BiomeInfo
 
                             Config entityConfig = TomlFormat.newConcurrentConfig();
                             entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
-                            entityConfig.add("creatureType", type.toString().toLowerCase());
                             entityConfig.add("weight", entry.itemWeight);
                             entityConfig.add("minGroupCount", entry.minGroupCount);
                             entityConfig.add("maxGroupCount", entry.maxGroupCount);
@@ -146,12 +144,21 @@ public abstract class BiomeInfo
 
                     for(Config entityConfig : entities)
                     {
-                        EntityEntry entityEntry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation("entity"));
+                        EntityEntry entityEntry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityConfig.get("entity")));
 
                         if(entityEntry != null && config.getOrElse("spawn", true))
                         {
                             Class<? extends Entity> cls = entityEntry.getEntityClass();
-                            EnumCreatureType creatureType = ConfigHelper.getEnum(entityConfig, "creatureType", EnumCreatureType.class);
+                            EnumCreatureType creatureType = null;
+
+                            for(EnumCreatureType type : EnumCreatureType.values())
+                            {
+                                if(type.getCreatureClass().isAssignableFrom(cls))
+                                {
+                                    creatureType = type;
+                                    break;
+                                }
+                            }
 
                             if(creatureType != null && EntityLiving.class.isAssignableFrom(cls))
                             {
@@ -169,11 +176,11 @@ public abstract class BiomeInfo
 
                     for(Config featureConfig : featureConfigs)
                     {
-                        Feature feature = FeatureRegistry.createFeature(new ResourceLocation("feature"), featureConfig);
+                        ConfigurableFeature feature = FeatureRegistry.createFeature(new ResourceLocation(featureConfig.get("feature")), featureConfig);
 
                         if(feature != null && config.getOrElse("generate", true))
                         {
-                            GenerationStage generationStage = ConfigHelper.getEnum(featureConfig, "genStage", GenerationStage.class);
+                            GenerationStage generationStage = ConfigHelper.getEnum(featureConfig, "generationStage", GenerationStage.class);
 
                             if(generationStage != null)
                             {
@@ -192,7 +199,7 @@ public abstract class BiomeInfo
                 }
 
                 this.enabled = config.getOrElse("enabled", true);
-                this.genDefaultFeatures = config.getOrElse("genDefaultFeatures", true);
+                this.generateDefaultFeatures = config.getOrElse("generateDefaultFeatures", true);
             }
         }
     }
@@ -203,7 +210,7 @@ public abstract class BiomeInfo
         config.add("biome", this.biome.getRegistryName().toString());
         config.add("weight", this.weight);
         config.add("enabled", this.enabled);
-        config.add("genDefaultFeatures", this.genDefaultFeatures);
+        config.add("generateDefaultFeatures", this.generateDefaultFeatures);
         Config blockConfigs = TomlFormat.newConcurrentConfig();
 
         for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
@@ -216,7 +223,7 @@ public abstract class BiomeInfo
 
         for(EnumCreatureType type : EnumCreatureType.values())
         {
-            for(Biome.SpawnListEntry entry : this.getEntitySpawnEntries(type))
+            for(Biome.SpawnListEntry entry : this.getEntities(type))
             {
                 ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
 
@@ -225,7 +232,6 @@ public abstract class BiomeInfo
                     Config entityConfig = TomlFormat.newConcurrentConfig();
                     entityConfig.add("entity", entityRegistryName.toString());
                     entityConfig.add("weight", entry.itemWeight);
-                    entityConfig.add("creatureType", type.toString().toLowerCase());
                     entityConfig.add("minGroupCount", entry.minGroupCount);
                     entityConfig.add("maxGroupCount", entry.maxGroupCount);
                     entityConfig.add("spawn", true);
@@ -239,10 +245,10 @@ public abstract class BiomeInfo
 
         for(GenerationStage stage : GenerationStage.values())
         {
-            for(Feature feature : this.getFeatures(stage))
+            for(ConfigurableFeature configurableFeature : this.getFeatures(stage))
             {
-                Config featureConfig = feature.serialize();
-                featureConfig.add("genStage", stage.toString().toLowerCase());
+                Config featureConfig = configurableFeature.serialize();
+                featureConfig.add("generationStage", stage.toString().toLowerCase());
                 featureConfigs.add(featureConfig);
             }
         }
@@ -266,9 +272,9 @@ public abstract class BiomeInfo
         return this.enabled;
     }
 
-    public boolean genDefaultFeatures()
+    public boolean generateDefaultFeatures()
     {
-        return this.genDefaultFeatures;
+        return this.generateDefaultFeatures;
     }
 
     public IBlockState getBiomeBlock(BiomeBlockType type, IBlockState fallback)
@@ -289,12 +295,12 @@ public abstract class BiomeInfo
         return this.blocks;
     }
 
-    public List<Biome.SpawnListEntry> getEntitySpawnEntries(EnumCreatureType creatureType)
+    public List<Biome.SpawnListEntry> getEntities(EnumCreatureType creatureType)
     {
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
-    public List<Feature> getFeatures(GenerationStage generationStage)
+    public List<ConfigurableFeature> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }

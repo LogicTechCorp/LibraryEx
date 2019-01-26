@@ -15,25 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.item;
+package logictechcorp.libraryex.utility;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
-import logictechcorp.libraryex.utility.BlockHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import java.util.Random;
 
-public class ItemModHammer extends ItemModPickaxe
+public class RandomHelper
 {
-    public ItemModHammer(ResourceLocation registryName, ItemToolBuilder builder)
+    private static final Random RANDOM = new Random();
+
+    public static int getNumberInRange(int min, int max, Random random)
     {
-        super(registryName, builder);
+        return random.nextInt(max - min + 1) + min;
     }
 
-    @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player)
+    public static <E extends Enum> E getRandomEnum(Class<? extends E> cls)
     {
-        return BlockHelper.mine3x3(player.getEntityWorld(), stack, pos, player);
+        return cls.getEnumConstants()[RANDOM.nextInt(cls.getEnumConstants().length)];
+    }
+
+    public static Random getRandom()
+    {
+        return RANDOM;
     }
 }

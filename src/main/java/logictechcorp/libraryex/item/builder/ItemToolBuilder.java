@@ -42,6 +42,16 @@ public class ItemToolBuilder extends ItemBuilder
         return this;
     }
 
+    @Override
+    public ItemToolBuilder copy()
+    {
+        ItemToolBuilder builder = (ItemToolBuilder) super.copy();
+        builder.toolMaterial = this.toolMaterial;
+        builder.attackDamage = this.attackDamage;
+        builder.attackSpeed = this.attackSpeed;
+        return builder;
+    }
+
     public Item.ToolMaterial getToolMaterial()
     {
         return this.toolMaterial;
