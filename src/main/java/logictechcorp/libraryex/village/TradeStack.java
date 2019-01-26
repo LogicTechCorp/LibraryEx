@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.village;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.util.ConfigHelper;
+import logictechcorp.libraryex.utility.ConfigHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

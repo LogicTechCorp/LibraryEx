@@ -38,41 +38,41 @@ public class LibExEventFactory
         MinecraftForge.EVENT_BUS.post(event);
     }
 
-    public static void onPreDecorateBiome(World world, Random rand, ChunkPos chunkPos)
+    public static void onPreDecorateBiome(World world, Random random, ChunkPos chunkPos)
     {
-        DecorateBiomeEvent.Pre event = new DecorateBiomeEvent.Pre(world, rand, chunkPos);
-        MinecraftForge.TERRAIN_GEN_BUS.post(event);
+        DecorateBiomeEvent.Pre event = new DecorateBiomeEvent.Pre(world, random, chunkPos);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onDecorateBiome(World world, Random rand, ChunkPos chunkPos, BlockPos blockPos, DecorateBiomeEvent.Decorate.EventType type)
+    public static boolean onDecorateBiome(World world, Random random, ChunkPos chunkPos, BlockPos blockPos, DecorateBiomeEvent.Decorate.EventType type)
     {
-        DecorateBiomeEvent.Decorate event = new DecorateBiomeEvent.Decorate(world, rand, chunkPos, blockPos, type);
-        MinecraftForge.TERRAIN_GEN_BUS.post(event);
+        DecorateBiomeEvent.Decorate event = new DecorateBiomeEvent.Decorate(world, random, chunkPos, blockPos, type);
+        MinecraftForge.EVENT_BUS.post(event);
         return event.getResult() != Event.Result.DENY;
     }
 
-    public static void onPostDecorateBiome(World world, Random rand, ChunkPos chunkPos)
+    public static void onPostDecorateBiome(World world, Random random, ChunkPos chunkPos)
     {
-        DecorateBiomeEvent.Post event = new DecorateBiomeEvent.Post(world, rand, chunkPos);
-        MinecraftForge.TERRAIN_GEN_BUS.post(event);
+        DecorateBiomeEvent.Post event = new DecorateBiomeEvent.Post(world, random, chunkPos);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 
-    public static void onPreOreGen(World world, Random rand, BlockPos blockPos)
+    public static void onPreOreGen(World world, Random random, BlockPos blockPos)
     {
-        OreGenEvent.Pre event = new OreGenEvent.Pre(world, rand, blockPos);
-        MinecraftForge.ORE_GEN_BUS.post(event);
+        OreGenEvent.Pre event = new OreGenEvent.Pre(world, random, blockPos);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 
-    public static boolean onOreGen(World world, Random rand, WorldGenerator generator, BlockPos blockPos, OreGenEvent.GenerateMinable.EventType type)
+    public static boolean onOreGen(World world, Random random, WorldGenerator generator, BlockPos blockPos, OreGenEvent.GenerateMinable.EventType type)
     {
-        OreGenEvent.GenerateMinable event = new OreGenEvent.GenerateMinable(world, rand, generator, blockPos, type);
-        MinecraftForge.ORE_GEN_BUS.post(event);
+        OreGenEvent.GenerateMinable event = new OreGenEvent.GenerateMinable(world, random, generator, blockPos, type);
+        MinecraftForge.EVENT_BUS.post(event);
         return event.getResult() != Event.Result.DENY;
     }
 
-    public static void onPostOreGen(World world, Random rand, BlockPos blockPos)
+    public static void onPostOreGen(World world, Random random, BlockPos blockPos)
     {
-        OreGenEvent.Post event = new OreGenEvent.Post(world, rand, blockPos);
-        MinecraftForge.ORE_GEN_BUS.post(event);
+        OreGenEvent.Post event = new OreGenEvent.Post(world, random, blockPos);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 }

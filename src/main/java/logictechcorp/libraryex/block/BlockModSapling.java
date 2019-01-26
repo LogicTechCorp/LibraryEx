@@ -18,13 +18,11 @@
 package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
-import logictechcorp.libraryex.util.BlockHelper;
-import logictechcorp.libraryex.world.gen.feature.FeatureOakTree;
+import logictechcorp.libraryex.utility.BlockHelper;
+import logictechcorp.libraryex.world.generation.feature.ConfigurableFeatureOakTree;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -57,19 +55,19 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random random)
     {
         if(!world.isRemote)
         {
-            super.updateTick(world, pos, state, rand);
+            super.updateTick(world, pos, state, random);
 
             if(!world.isAreaLoaded(pos, 1))
             {
                 return;
             }
-            if(world.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0)
+            if(world.getLightFromNeighbors(pos.up()) >= 9 && random.nextInt(7) == 0)
             {
-                this.grow(world, rand, pos, state);
+                this.grow(world, random, pos, state);
             }
         }
     }
@@ -94,13 +92,13 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
     }
 
     @Override
-    public boolean canUseBonemeal(World world, Random rand, BlockPos pos, IBlockState state)
+    public boolean canUseBonemeal(World world, Random random, BlockPos pos, IBlockState state)
     {
         return true;
     }
 
     @Override
-    public void grow(World world, Random rand, BlockPos pos, IBlockState state)
+    public void grow(World world, Random random, BlockPos pos, IBlockState state)
     {
         if(!state.getValue(GROW))
         {
@@ -108,7 +106,7 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
         }
         else
         {
-            this.generateTree(world, rand, pos, state);
+            this.generateTree(world, random, pos, state);
         }
     }
 
@@ -130,18 +128,18 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
         return new BlockStateContainer(this, GROW);
     }
 
-    protected void generateTree(World world, Random rand, BlockPos pos, IBlockState state)
+    protected void generateTree(World world, Random random, BlockPos pos, IBlockState state)
     {
-        if(!TerrainGen.saplingGrowTree(world, rand, pos))
+        if(!TerrainGen.saplingGrowTree(world, random, pos))
         {
             return;
         }
 
-        WorldGenerator treeGenerator = new FeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
+        WorldGenerator treeGenerator = new ConfigurableFeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 
-        if(!treeGenerator.generate(world, rand, pos))
+        if(!treeGenerator.generate(world, random, pos))
         {
             world.setBlockState(pos, state, 4);
         }

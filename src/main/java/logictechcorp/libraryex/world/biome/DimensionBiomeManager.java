@@ -18,7 +18,6 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
 
@@ -33,27 +32,27 @@ public abstract class DimensionBiomeManager
     private final List<BiomeInfo> biomeInfo = new ArrayList<>();
     private final Map<BiomeInfo, BiomeManager.BiomeEntry> biomeEntries = new ConcurrentHashMap<>();
 
-    public abstract void readBiomeInfoFromConfigs(MinecraftServer server);
+    public abstract void readBiomeInfoFromConfigs();
 
-    public abstract void writeBiomeInfoToConfigs(MinecraftServer server);
+    public abstract void writeBiomeInfoToConfigs();
 
-    public void addBiome(BiomeInfo info)
+    public void addBiome(BiomeInfo biomeInfo)
     {
-        if(info == null)
+        if(biomeInfo == null)
         {
             return;
         }
 
-        if(!this.biomeInfo.contains(info))
+        if(!this.biomeInfo.contains(biomeInfo))
         {
-            this.biomeInfo.add(info);
-            this.biomeEntries.put(info, new BiomeManager.BiomeEntry(info.getBiome(), info.getWeight()));
+            this.biomeInfo.add(biomeInfo);
+            this.biomeEntries.put(biomeInfo, new BiomeManager.BiomeEntry(biomeInfo.getBiome(), biomeInfo.getWeight()));
         }
     }
 
-    public void removeBiome(BiomeInfo info)
+    public void removeBiome(BiomeInfo biomeInfo)
     {
-        this.biomeEntries.remove(info);
+        this.biomeEntries.remove(biomeInfo);
     }
 
     public List<BiomeInfo> getAllBiomeInfo()
@@ -68,16 +67,16 @@ public abstract class DimensionBiomeManager
 
     public BiomeInfo getBiomeInfo(Biome biome)
     {
-        for(BiomeInfo info : this.biomeInfo)
+        for(BiomeInfo biomeInfo : this.biomeInfo)
         {
-            if(biome == info.getBiome())
+            if(biome == biomeInfo.getBiome())
             {
-                return info;
+                return biomeInfo;
             }
         }
 
         return null;
     }
 
-    public abstract File getBiomeInfoSaveFile(MinecraftServer server, BiomeInfo wrapper);
+    public abstract File getBiomeInfoSaveFile(BiomeInfo biomeInfo);
 }

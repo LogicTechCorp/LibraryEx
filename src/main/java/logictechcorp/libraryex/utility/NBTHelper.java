@@ -15,25 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.item;
+package logictechcorp.libraryex.utility;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
-import logictechcorp.libraryex.utility.BlockHelper;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.NBTTagCompound;
 
-public class ItemModHammer extends ItemModPickaxe
+public class NBTHelper
 {
-    public ItemModHammer(ResourceLocation registryName, ItemToolBuilder builder)
+    public static NBTTagCompound ensureTagExists(ItemStack stack)
     {
-        super(registryName, builder);
+        return setTagIfNotExistent(stack, new NBTTagCompound());
     }
 
-    @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player)
+    public static NBTTagCompound setTagIfNotExistent(ItemStack stack, NBTTagCompound compound)
     {
-        return BlockHelper.mine3x3(player.getEntityWorld(), stack, pos, player);
+        if(stack.getTagCompound() == null)
+        {
+            stack.setTagCompound(compound);
+        }
+        else if(!compound.isEmpty())
+        {
+            stack.getTagCompound().merge(compound);
+        }
+
+        return stack.getTagCompound();
     }
 }

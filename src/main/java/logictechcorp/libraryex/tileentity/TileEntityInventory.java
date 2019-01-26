@@ -36,12 +36,12 @@ import java.util.Random;
 public class TileEntityInventory extends TileEntity
 {
     private ItemStackHandler inventory;
-    private Random rand;
+    private Random random;
 
     public TileEntityInventory(int size)
     {
         this.inventory = new ItemStackHandler(size);
-        this.rand = new Random();
+        this.random = new Random();
     }
 
     @Override
@@ -106,16 +106,16 @@ public class TileEntityInventory extends TileEntity
 
     public void spawnItemStack(World world, BlockPos pos, ItemStack stack)
     {
-        double offsetX = this.rand.nextFloat() * 0.8F + 0.1F;
-        double offsetY = this.rand.nextFloat() * 0.8F + 0.1F;
-        double offsetZ = this.rand.nextFloat() * 0.8F + 0.1F;
+        double offsetX = this.random.nextFloat() * 0.8F + 0.1F;
+        double offsetY = this.random.nextFloat() * 0.8F + 0.1F;
+        double offsetZ = this.random.nextFloat() * 0.8F + 0.1F;
 
         while(!stack.isEmpty())
         {
-            EntityItem entityItem = new EntityItem(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.splitStack(this.rand.nextInt(21) + 10));
-            entityItem.motionX = this.rand.nextGaussian() * 0.05000000074505806D;
-            entityItem.motionY = this.rand.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-            entityItem.motionZ = this.rand.nextGaussian() * 0.05000000074505806D;
+            EntityItem entityItem = new EntityItem(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.splitStack(this.random.nextInt(21) + 10));
+            entityItem.motionX = this.random.nextGaussian() * 0.05000000074505806D;
+            entityItem.motionY = this.random.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
+            entityItem.motionZ = this.random.nextGaussian() * 0.05000000074505806D;
             world.spawnEntity(entityItem);
         }
     }
@@ -127,6 +127,6 @@ public class TileEntityInventory extends TileEntity
 
     public Random getRand()
     {
-        return this.rand;
+        return this.random;
     }
 }

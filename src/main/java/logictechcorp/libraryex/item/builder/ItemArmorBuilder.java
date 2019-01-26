@@ -31,6 +31,15 @@ public class ItemArmorBuilder extends ItemBuilder
         this.equipmentSlot = equipmentSlot;
     }
 
+    @Override
+    public ItemArmorBuilder copy()
+    {
+        ItemArmorBuilder builder = (ItemArmorBuilder) super.copy();
+        builder.armorMaterial = this.armorMaterial;
+        builder.equipmentSlot = this.equipmentSlot;
+        return builder;
+    }
+
     public ItemArmor.ArmorMaterial getArmorMaterial()
     {
         return this.armorMaterial;

@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -68,11 +69,11 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random random)
     {
-        if(world.isRainingAt(pos.up()) && !world.getBlockState(pos.down()).isSideSolid(world, pos.down(), EnumFacing.UP) && rand.nextInt(15) == 1)
+        if(world.isRainingAt(pos.up()) && !world.getBlockState(pos.down()).isSideSolid(world, pos.down(), EnumFacing.UP) && random.nextInt(15) == 1)
         {
-            world.spawnParticle(EnumParticleTypes.DRIP_WATER, pos.getX() + rand.nextFloat(), pos.getY() - 0.05D, pos.getZ() + rand.nextFloat(), 0.0D, 0.0D, 0.0D);
+            world.spawnParticle(EnumParticleTypes.DRIP_WATER, pos.getX() + random.nextFloat(), pos.getY() - 0.05D, pos.getZ() + random.nextFloat(), 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -83,7 +84,7 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random random)
     {
         if(!world.isRemote)
         {
@@ -231,15 +232,15 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
     @Override
     public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity tileEntity, ItemStack stack)
     {
-        if (!world.isRemote && stack.getItem() == Items.SHEARS)
+        if(!world.isRemote && stack.getItem() == Items.SHEARS)
         {
             StatBase statBase = StatList.getBlockStats(this);
-            
+
             if(statBase != null)
             {
                 player.addStat(statBase);
             }
-            
+
             spawnAsEntity(world, pos, new ItemStack(Item.getItemFromBlock(this)));
         }
         else
@@ -278,7 +279,7 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-        Random rand = world instanceof World ? ((World) world).rand : new Random();
+        Random random = world instanceof World ? ((World) world).rand : RandomHelper.getRandom();
         int chance = this.getRareDropChance();
 
         if(fortune > 0)
@@ -290,9 +291,9 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
                 chance = 10;
             }
         }
-        if(rand.nextInt(chance) == 0)
+        if(random.nextInt(chance) == 0)
         {
-            ItemStack drop = new ItemStack(this.getItemDropped(state, rand, fortune), 1, this.damageDropped(state));
+            ItemStack drop = new ItemStack(this.getItemDropped(state, random, fortune), 1, this.damageDropped(state));
 
             if(!drop.isEmpty())
             {
@@ -347,7 +348,7 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
     }
 
     @Override
-    public abstract Item getItemDropped(IBlockState state, Random rand, int fortune);
+    public abstract Item getItemDropped(IBlockState state, Random random, int fortune);
 
     protected abstract void dropRareItem(World world, BlockPos pos, int chance);
 

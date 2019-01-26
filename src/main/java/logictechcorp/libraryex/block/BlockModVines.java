@@ -132,7 +132,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random random)
     {
         if(!world.isRemote)
         {
@@ -162,7 +162,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
                     }
                 }
 
-                EnumFacing facing = EnumFacing.random(rand);
+                EnumFacing facing = EnumFacing.random(random);
                 BlockPos upPos = pos.up();
 
                 if(facing == EnumFacing.UP && pos.getY() < 255 && world.isAirBlock(upPos))
@@ -171,7 +171,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
 
                     for(EnumFacing horizontalFacing : EnumFacing.Plane.HORIZONTAL)
                     {
-                        if(rand.nextBoolean() && this.canAttachTo(world, upPos, horizontalFacing.getOpposite()))
+                        if(random.nextBoolean() && this.canAttachTo(world, upPos, horizontalFacing.getOpposite()))
                         {
                             originalState = originalState.withProperty(getPropertyFor(horizontalFacing), true);
                         }
@@ -239,7 +239,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
 
                             for(EnumFacing horizontalFacing : EnumFacing.Plane.HORIZONTAL)
                             {
-                                if(rand.nextBoolean())
+                                if(random.nextBoolean())
                                 {
                                     originalState = originalState.withProperty(getPropertyFor(horizontalFacing), false);
                                 }
@@ -258,7 +258,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
                             {
                                 PropertyBool bool = getPropertyFor(horizontalFacing);
 
-                                if(rand.nextBoolean() && state.getValue(bool))
+                                if(random.nextBoolean() && state.getValue(bool))
                                 {
                                     originalCheckState = originalCheckState.withProperty(bool, true);
                                 }
@@ -305,7 +305,7 @@ public abstract class BlockModVines extends BlockMod implements IShearable
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    public Item getItemDropped(IBlockState state, Random random, int fortune)
     {
         return Items.AIR;
     }

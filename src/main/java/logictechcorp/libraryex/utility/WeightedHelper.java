@@ -15,25 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.item;
+package logictechcorp.libraryex.utility;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
-import logictechcorp.libraryex.utility.BlockHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.WeightedRandom;
 
-public class ItemModHammer extends ItemModPickaxe
+import java.util.List;
+import java.util.Random;
+
+public class WeightedHelper
 {
-    public ItemModHammer(ResourceLocation registryName, ItemToolBuilder builder)
+    public static NamedItem getRandomNamedItem(Random random, List<NamedItem> variants)
     {
-        super(registryName, builder);
+        return WeightedRandom.getRandomItem(random, variants);
     }
 
-    @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player)
+    public static class NamedItem extends WeightedRandom.Item
     {
-        return BlockHelper.mine3x3(player.getEntityWorld(), stack, pos, player);
+        private String name;
+
+        public NamedItem(String name, int weight)
+        {
+            super(weight);
+            this.name = name;
+        }
+
+        public String getName()
+        {
+            return this.name;
+        }
     }
 }
