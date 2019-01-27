@@ -33,7 +33,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.Random;
 
-public class TileEntityInventory extends TileEntity
+public abstract class TileEntityInventory extends TileEntity
 {
     private ItemStackHandler inventory;
     private Random random;
@@ -68,9 +68,7 @@ public class TileEntityInventory extends TileEntity
     @Override
     public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound compound = new NBTTagCompound();
-        this.writeToNBT(compound);
-        return new SPacketUpdateTileEntity(this.pos, 0, compound);
+        return new SPacketUpdateTileEntity(this.pos, 0, this.writeToNBT(new NBTTagCompound()));
     }
 
     @Override
@@ -120,12 +118,14 @@ public class TileEntityInventory extends TileEntity
         }
     }
 
+    public abstract boolean acceptsItemStack(ItemStack stack);
+
     public ItemStackHandler getInventory()
     {
         return this.inventory;
     }
 
-    public Random getRand()
+    public Random getRandom()
     {
         return this.random;
     }
