@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.village;
+package logictechcorp.libraryex.entity.trader;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
@@ -95,7 +95,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
         private ResourceLocation texture;
         private ResourceLocation alternateTexture;
         private int id;
-        private final List<ConfigurableTrade> trades;
+        private final List<Trade> trades;
 
         protected Career(ResourceLocation name, P profession, ResourceLocation lootTable, ResourceLocation texture, ResourceLocation alternateTexture)
         {
@@ -107,7 +107,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             this.trades = new ArrayList<>();
         }
 
-        public void addTrade(ConfigurableTrade trade)
+        public void addTrade(Trade trade)
         {
             if(this.trades.stream().noneMatch(trade::equals))
             {
@@ -115,7 +115,7 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             }
         }
 
-        public void removeTrade(ConfigurableTrade trade)
+        public void removeTrade(Trade trade)
         {
             this.trades.remove(trade);
         }
@@ -150,12 +150,12 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
             return this.id;
         }
 
-        public List<ConfigurableTrade> getTrades()
+        public List<Trade> getTrades()
         {
             return ImmutableList.copyOf(this.trades);
         }
 
-        public List<ConfigurableTrade> getTradesForLevel(int tradeLevel)
+        public List<Trade> getTradesForLevel(int tradeLevel)
         {
             return this.trades.stream().filter(k -> tradeLevel == k.getTradeLevel()).collect(Collectors.toList());
         }

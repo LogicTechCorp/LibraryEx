@@ -21,7 +21,7 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
-import logictechcorp.libraryex.world.generation.feature.ConfigurableFeature;
+import logictechcorp.libraryex.world.generation.feature.FeatureMod;
 import logictechcorp.libraryex.world.generation.feature.FeatureRegistry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -45,7 +45,7 @@ public abstract class BiomeInfo
     protected boolean generateDefaultFeatures;
     protected Map<String, IBlockState> blocks;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
-    protected Map<GenerationStage, List<ConfigurableFeature>> features;
+    protected Map<GenerationStage, List<FeatureMod>> features;
 
     public BiomeInfo(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean generateDefaultFeatures)
     {
@@ -82,8 +82,6 @@ public abstract class BiomeInfo
 
                 if(config.get("blocks") instanceof Config)
                 {
-                    ConfigHelper.rename(config, "blocks.topBlock", "blocks.floorTopBlock");
-                    ConfigHelper.rename(config, "blocks.fillerBlock", "blocks.floorFillerBlock");
                     Config blocks = config.get("blocks");
                     this.blocks.clear();
 
@@ -176,7 +174,7 @@ public abstract class BiomeInfo
 
                     for(Config featureConfig : featureConfigs)
                     {
-                        ConfigurableFeature feature = FeatureRegistry.createFeature(new ResourceLocation(featureConfig.get("feature")), featureConfig);
+                        FeatureMod feature = FeatureRegistry.createFeature(new ResourceLocation(featureConfig.get("feature")), featureConfig);
 
                         if(feature != null && config.getOrElse("generate", true))
                         {
@@ -245,9 +243,9 @@ public abstract class BiomeInfo
 
         for(GenerationStage stage : GenerationStage.values())
         {
-            for(ConfigurableFeature configurableFeature : this.getFeatures(stage))
+            for(FeatureMod featureInfo : this.getFeatures(stage))
             {
-                Config featureConfig = configurableFeature.serialize();
+                Config featureConfig = featureInfo.serialize();
                 featureConfig.add("generationStage", stage.toString().toLowerCase());
                 featureConfigs.add(featureConfig);
             }
@@ -300,7 +298,7 @@ public abstract class BiomeInfo
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
-    public List<ConfigurableFeature> getFeatures(GenerationStage generationStage)
+    public List<FeatureMod> getFeatures(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }

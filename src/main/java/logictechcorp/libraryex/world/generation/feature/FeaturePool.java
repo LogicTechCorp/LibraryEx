@@ -27,19 +27,19 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeaturePool extends ConfigurableFeature
+public class FeaturePool extends FeatureMod
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToSurround;
 
-    public ConfigurableFeaturePool(Config config)
+    public FeaturePool(Config config)
     {
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToSurround = ConfigHelper.getBlockState(config, "blockToSurround");
     }
 
-    public ConfigurableFeaturePool(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
+    public FeaturePool(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.blockToSpawn = blockToSpawn;

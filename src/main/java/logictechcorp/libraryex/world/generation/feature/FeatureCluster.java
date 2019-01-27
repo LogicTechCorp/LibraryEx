@@ -26,13 +26,13 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureCluster extends ConfigurableFeature
+public class FeatureCluster extends FeatureMod
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToAttachTo;
     private EnumFacing direction;
 
-    public ConfigurableFeatureCluster(Config config)
+    public FeatureCluster(Config config)
     {
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
@@ -50,7 +50,7 @@ public class ConfigurableFeatureCluster extends ConfigurableFeature
         return config;
     }
 
-    public ConfigurableFeatureCluster(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
+    public FeatureCluster(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.blockToSpawn = blockToSpawn;

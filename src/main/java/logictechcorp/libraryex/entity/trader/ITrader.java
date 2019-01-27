@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.village;
+package logictechcorp.libraryex.entity.trader;
 
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.INpc;

@@ -27,13 +27,13 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureOre extends ConfigurableFeature
+public class FeatureOre extends FeatureMod
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToReplace;
     private int veinSize;
 
-    public ConfigurableFeatureOre(Config config)
+    public FeatureOre(Config config)
     {
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
@@ -41,7 +41,7 @@ public class ConfigurableFeatureOre extends ConfigurableFeature
         this.veinSize = config.getOrElse("veinSize", 8);
     }
 
-    public ConfigurableFeatureOre(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
+    public FeatureOre(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.blockToSpawn = blockToSpawn;

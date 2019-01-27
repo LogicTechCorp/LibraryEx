@@ -19,7 +19,7 @@ package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
 import logictechcorp.libraryex.utility.BlockHelper;
-import logictechcorp.libraryex.world.generation.feature.ConfigurableFeatureOakTree;
+import logictechcorp.libraryex.world.generation.feature.FeatureOakTree;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.PropertyBool;
@@ -135,7 +135,7 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
             return;
         }
 
-        WorldGenerator treeGenerator = new ConfigurableFeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
+        WorldGenerator treeGenerator = new FeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 

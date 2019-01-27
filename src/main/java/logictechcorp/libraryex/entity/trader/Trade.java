@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.village;
+package logictechcorp.libraryex.entity.trader;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
@@ -26,7 +26,7 @@ import net.minecraft.village.MerchantRecipe;
 
 import java.util.Random;
 
-public class ConfigurableTrade extends MerchantRecipe
+public class Trade extends MerchantRecipe
 {
     protected TradeStack output;
     protected TradeStack inputOne;
@@ -36,7 +36,7 @@ public class ConfigurableTrade extends MerchantRecipe
     protected int tradeLevel;
     private String identifier;
 
-    public ConfigurableTrade(TradeStack output, TradeStack inputOne, TradeStack inputTwo, int minTradeCount, int maxTradeCount, int tradeLevel)
+    public Trade(TradeStack output, TradeStack inputOne, TradeStack inputTwo, int minTradeCount, int maxTradeCount, int tradeLevel)
     {
         super(inputOne.getItemStack(), inputTwo.getItemStack(), output.getItemStack(), 0, maxTradeCount);
         this.output = output;
@@ -58,7 +58,7 @@ public class ConfigurableTrade extends MerchantRecipe
         }
     }
 
-    public ConfigurableTrade(Config config)
+    public Trade(Config config)
     {
         this(new TradeStack(config, "output"), new TradeStack(config, "inputOne"), new TradeStack(config, "inputTwo"), config.getOrElse("minTradeCount", 1), config.getOrElse("maxTradeCount", 8), config.getOrElse("tradeLevel", 1));
     }
@@ -171,9 +171,9 @@ public class ConfigurableTrade extends MerchantRecipe
     @Override
     public boolean equals(Object object)
     {
-        if(object instanceof ConfigurableTrade)
+        if(object instanceof Trade)
         {
-            return object == this || ((ConfigurableTrade) object).getIdentifier().equals(this.getIdentifier());
+            return object == this || ((Trade) object).getIdentifier().equals(this.getIdentifier());
         }
 
         return false;

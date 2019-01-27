@@ -25,13 +25,13 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureFluid extends ConfigurableFeature
+public class FeatureFluid extends FeatureMod
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
     private boolean hidden;
 
-    public ConfigurableFeatureFluid(Config config)
+    public FeatureFluid(Config config)
     {
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
@@ -39,7 +39,7 @@ public class ConfigurableFeatureFluid extends ConfigurableFeature
         this.hidden = config.getOrElse("hidden", true);
     }
 
-    public ConfigurableFeatureFluid(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
+    public FeatureFluid(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.blockToSpawn = blockToSpawn;

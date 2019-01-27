@@ -43,7 +43,7 @@ import net.minecraft.world.gen.structure.template.TemplateManager;
 import java.util.Map;
 import java.util.Random;
 
-public class ConfigurableFeatureStructure extends ConfigurableFeature
+public class FeatureStructure extends FeatureMod
 {
     private ResourceLocation structure;
     private Type type;
@@ -52,7 +52,7 @@ public class ConfigurableFeatureStructure extends ConfigurableFeature
     private Block ignoredBlock;
     private double clearancePercentage;
 
-    public ConfigurableFeatureStructure(Config config)
+    public FeatureStructure(Config config)
     {
         super(config);
         this.structure = new ResourceLocation(config.get("structure"));
@@ -69,7 +69,7 @@ public class ConfigurableFeatureStructure extends ConfigurableFeature
         this.clearancePercentage = config.getOrElse("clearancePercentage", 0.875D);
     }
 
-    public ConfigurableFeatureStructure(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
+    public FeatureStructure(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.structure = structure;

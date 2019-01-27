@@ -19,7 +19,6 @@ package logictechcorp.libraryex.world.generation.feature;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.toml.TomlFormat;
-import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +26,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 
 import java.util.Random;
 
-public abstract class ConfigurableFeature extends WorldGenerator
+public abstract class FeatureMod extends WorldGenerator
 {
     protected int generationAttempts;
     protected double generationProbability;
@@ -35,18 +34,16 @@ public abstract class ConfigurableFeature extends WorldGenerator
     protected int minGenerationHeight;
     protected int maxGenerationHeight;
 
-    public ConfigurableFeature(Config config)
+    public FeatureMod(Config config)
     {
         this.generationAttempts = config.getOrElse("generationAttempts", 4);
         this.generationProbability = config.getOrElse("generationProbability", 1.0D);
         this.randomizeGenerationAttempts = config.getOrElse("randomizeGenerationAttempts", false);
-        ConfigHelper.rename(config, "minHeight", "minGenerationHeight");
-        ConfigHelper.rename(config, "maxHeight", "maxGenerationHeight");
         this.minGenerationHeight = config.getOrElse("minGenerationHeight", 0);
         this.maxGenerationHeight = config.getOrElse("maxGenerationHeight", 255);
     }
 
-    public ConfigurableFeature(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight)
+    public FeatureMod(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight)
     {
         this.generationAttempts = generationAttempts;
         this.generationProbability = generationProbability;

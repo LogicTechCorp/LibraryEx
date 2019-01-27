@@ -30,7 +30,7 @@ public class BlockBuilder
     private MapColor mapColor;
     private SoundType soundType = SoundType.STONE;
     private CreativeTabs creativeTab = CreativeTabs.DECORATIONS;
-    private int lightLevel;
+    private float lightLevel;
     private String harvestTool;
     private int harvestLevel;
     private float hardness;
@@ -57,7 +57,7 @@ public class BlockBuilder
 
     public BlockBuilder lightLevel(float lightLevel)
     {
-        this.lightLevel = (int) (15.0F * lightLevel);
+        this.lightLevel = lightLevel;
         return this;
     }
 
@@ -120,7 +120,7 @@ public class BlockBuilder
         return this.creativeTab;
     }
 
-    public int getLightLevel()
+    public float getLightLevel()
     {
         return this.lightLevel;
     }

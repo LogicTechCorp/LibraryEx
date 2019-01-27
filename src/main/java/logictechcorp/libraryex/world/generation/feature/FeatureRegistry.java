@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 
 public class FeatureRegistry
 {
-    private static final Map<ResourceLocation, Class<? extends ConfigurableFeature>> FEATURES = new HashMap<>();
+    private static final Map<ResourceLocation, Class<? extends FeatureMod>> FEATURES = new HashMap<>();
 
-    public static void registerFeature(ResourceLocation name, Class<? extends ConfigurableFeature> cls)
+    public static void registerFeature(ResourceLocation name, Class<? extends FeatureMod> cls)
     {
         if(!FEATURES.containsKey(name))
         {
@@ -43,7 +43,7 @@ public class FeatureRegistry
         }
     }
 
-    public static ConfigurableFeature createFeature(ResourceLocation name, Config config)
+    public static FeatureMod createFeature(ResourceLocation name, Config config)
     {
         if(FEATURES.containsKey(name))
         {
@@ -60,20 +60,20 @@ public class FeatureRegistry
         return null;
     }
 
-    public static ResourceLocation getFeatureRegistryName(Class<? extends ConfigurableFeature> cls)
+    public static ResourceLocation getFeatureRegistryName(Class<? extends FeatureMod> cls)
     {
         return FEATURES.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), cls)).map(Map.Entry::getKey).collect(Collectors.toList()).get(0);
     }
 
     static
     {
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":scatter"), ConfigurableFeatureScatter.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":cluster"), ConfigurableFeatureCluster.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":fluid"), ConfigurableFeatureFluid.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":ore"), ConfigurableFeatureOre.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":pool"), ConfigurableFeaturePool.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":big_mushroom"), ConfigurableFeatureBigMushroom.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":oak_tree"), ConfigurableFeatureOakTree.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":structure"), ConfigurableFeatureStructure.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":scatter"), FeatureScatter.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":cluster"), FeatureCluster.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":fluid"), FeatureFluid.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":ore"), FeatureOre.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":pool"), FeaturePool.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":big_mushroom"), FeatureBigMushroom.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":oak_tree"), FeatureOakTree.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":structure"), FeatureStructure.class);
     }
 }

@@ -27,13 +27,13 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureScatter extends ConfigurableFeature
+public class FeatureScatter extends FeatureMod
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
     private Placement placement;
 
-    public ConfigurableFeatureScatter(Config config)
+    public FeatureScatter(Config config)
     {
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
@@ -41,7 +41,7 @@ public class ConfigurableFeatureScatter extends ConfigurableFeature
         this.placement = ConfigHelper.getEnum(config, "placement", Placement.class);
     }
 
-    public ConfigurableFeatureScatter(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
+    public FeatureScatter(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.blockToSpawn = blockToSpawn;

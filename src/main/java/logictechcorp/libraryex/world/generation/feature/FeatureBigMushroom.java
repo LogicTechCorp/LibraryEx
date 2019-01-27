@@ -26,14 +26,14 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureBigMushroom extends ConfigurableFeature
+public class FeatureBigMushroom extends FeatureMod
 {
     private IBlockState mushroomCap;
     private IBlockState mushroomStem;
     private IBlockState blockToPlaceOn;
     private Shape shape;
 
-    public ConfigurableFeatureBigMushroom(Config config)
+    public FeatureBigMushroom(Config config)
     {
         super(config);
         this.mushroomCap = ConfigHelper.getBlockState(config, "mushroomCap");
@@ -42,7 +42,7 @@ public class ConfigurableFeatureBigMushroom extends ConfigurableFeature
         this.shape = ConfigHelper.getEnum(config, "shape", Shape.class);
     }
 
-    public ConfigurableFeatureBigMushroom(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
+    public FeatureBigMushroom(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.mushroomCap = mushroomCap;

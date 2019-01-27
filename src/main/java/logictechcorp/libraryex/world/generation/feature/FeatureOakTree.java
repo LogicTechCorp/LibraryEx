@@ -29,14 +29,14 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class ConfigurableFeatureOakTree extends ConfigurableFeature
+public class FeatureOakTree extends FeatureMod
 {
     private IBlockState logBlock;
     private IBlockState leafBlock;
     private int minGrowthHeight;
     private int maxGrowthHeight;
 
-    public ConfigurableFeatureOakTree(Config config)
+    public FeatureOakTree(Config config)
     {
         super(config);
         this.logBlock = ConfigHelper.getBlockState(config, "logBlock");
@@ -45,7 +45,7 @@ public class ConfigurableFeatureOakTree extends ConfigurableFeature
         this.maxGrowthHeight = config.getOrElse("maxGrowthHeight", 32);
     }
 
-    public ConfigurableFeatureOakTree(int generationAttempts, float generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
+    public FeatureOakTree(int generationAttempts, float generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
         this.logBlock = logBlock;
