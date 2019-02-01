@@ -35,8 +35,8 @@ import java.util.Random;
 
 public abstract class TileEntityInventory extends TileEntity
 {
-    private ItemStackHandler inventory;
-    private Random random;
+    protected ItemStackHandler inventory;
+    protected Random random;
 
     public TileEntityInventory(int size)
     {

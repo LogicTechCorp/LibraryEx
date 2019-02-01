@@ -82,7 +82,7 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
     protected boolean canSustainBush(IBlockState state)
     {
         Block block = state.getBlock();
-        return BlockHelper.isOreDict("grass", block) || BlockHelper.isOreDict("dirt", block);
+        return BlockHelper.isOreDict(block, "grass") || BlockHelper.isOreDict(block, "dirt");
     }
 
     @Override
@@ -135,7 +135,7 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
             return;
         }
 
-        WorldGenerator treeGenerator = new FeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
+        WorldGenerator treeGenerator = new FeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this, this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 

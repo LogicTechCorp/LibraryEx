@@ -18,19 +18,21 @@
 package logictechcorp.libraryex.world.generation.feature;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.utility.BlockHelper;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
 
 import java.util.Random;
 
 public class FeatureOakTree extends FeatureMod
 {
+    private IPlantable sapling;
     private IBlockState logBlock;
     private IBlockState leafBlock;
     private int minGrowthHeight;
@@ -45,9 +47,10 @@ public class FeatureOakTree extends FeatureMod
         this.maxGrowthHeight = config.getOrElse("maxGrowthHeight", 32);
     }
 
-    public FeatureOakTree(int generationAttempts, float generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
+    public FeatureOakTree(int generationAttempts, float generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IPlantable sapling, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
     {
         super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        this.sapling = sapling;
         this.logBlock = logBlock;
         this.leafBlock = leafBlock;
         this.minGrowthHeight = minGrowthHeight;
@@ -121,7 +124,7 @@ public class FeatureOakTree extends FeatureMod
             {
                 IBlockState checkState = world.getBlockState(pos.down());
 
-                if(BlockHelper.isOreDict("endstone", checkState.getBlock()) && pos.getY() < world.getHeight() - height - 1)
+                if(checkState.getBlock().canSustainPlant(checkState, world, pos.down(), EnumFacing.UP, this.sapling) && pos.getY() < world.getHeight() - height - 1)
                 {
                     checkState.getBlock().onPlantGrow(checkState, world, pos.down(), pos);
 

@@ -28,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.DimensionType;
@@ -36,13 +35,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class BlockHelper
 {
-    private static final Set<ResourceLocation> ORE_DICT_BLOCKS = new HashSet<>();
-
     public static boolean mine3x3(World world, ItemStack stack, BlockPos pos, EntityPlayer player)
     {
         RayTraceResult traceResult = WorldHelper.rayTraceFromEntity(world, player, false, 4.5D);
@@ -143,7 +137,7 @@ public class BlockHelper
 
         ItemStack stack = player.getHeldItemMainhand();
 
-        if(stack == null || stack.getItem() == null)
+        if(stack.isEmpty())
         {
             return false;
         }
@@ -181,7 +175,7 @@ public class BlockHelper
             {
                 block.onPlayerDestroy(world, pos, state);
             }
-            if(!world.isRemote)
+            if(!world.isRemote && playerMP != null)
             {
                 playerMP.connection.sendPacket(new SPacketBlockChange(world, pos));
             }
@@ -191,7 +185,7 @@ public class BlockHelper
             }
             return true;
         }
-        if(!world.isRemote)
+        if(!world.isRemote && playerMP != null)
         {
             block.onBlockHarvested(world, pos, state, player);
 
@@ -216,27 +210,19 @@ public class BlockHelper
         return true;
     }
 
-    public static boolean isOreDict(String ore, Block block)
+    public static boolean isOreDict(Block block, String ore)
     {
-        if(!ORE_DICT_BLOCKS.contains(block.getRegistryName()))
+        for(ItemStack stack : OreDictionary.getOres(ore))
         {
-            for(ItemStack stack : OreDictionary.getOres(ore))
+            if(stack.getItem() instanceof ItemBlock)
             {
-                if(stack.getItem() instanceof ItemBlock)
+                if(((ItemBlock) stack.getItem()).getBlock() == block)
                 {
-                    if(((ItemBlock) stack.getItem()).getBlock() == block)
-                    {
-                        ORE_DICT_BLOCKS.add(block.getRegistryName());
-                        return true;
-                    }
+                    return true;
                 }
             }
+        }
 
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return false;
     }
 }
