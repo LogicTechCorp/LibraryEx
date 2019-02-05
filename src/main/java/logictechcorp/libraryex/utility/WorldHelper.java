@@ -25,6 +25,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
@@ -79,7 +80,7 @@ public class WorldHelper
 
     public static File getSaveFile()
     {
-        World world = DimensionManager.getWorld(0);
+        World world = DimensionManager.getWorld(DimensionType.OVERWORLD.getId());
 
         if(LibraryEx.CONFIG_DIRECTORY.getPath().length() == 1)
         {
