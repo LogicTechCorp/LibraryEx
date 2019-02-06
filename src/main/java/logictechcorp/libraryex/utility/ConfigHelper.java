@@ -18,9 +18,7 @@
 package logictechcorp.libraryex.utility;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.file.FileConfig;
-import com.electronwill.nightconfig.core.file.GenericBuilder;
-import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -39,40 +37,19 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ConfigHelper
 {
-    public static FileConfig newConfig(File configFile, boolean autoreload, boolean autosave, boolean sync)
-    {
-        GenericBuilder builder = FileConfig.builder(configFile);
-
-        if(autoreload)
-        {
-            builder.autoreload();
-        }
-        if(autosave)
-        {
-            builder.autosave();
-        }
-        if(sync)
-        {
-            builder.sync();
-        }
-
-        return builder.build();
-    }
-
     public static <E extends Enum> E getEnum(Config config, String path, Class<? extends E> cls)
     {
         if(config.get(path) instanceof String)
         {
             String enumName = config.get(path);
 
-            if(enumName.equalsIgnoreCase("random") || enumName.equalsIgnoreCase("random"))
+            if(enumName.equalsIgnoreCase("random") || enumName.equalsIgnoreCase("rand"))
             {
                 return cls.getEnumConstants()[RandomHelper.getRandom().nextInt(cls.getEnumConstants().length)];
             }
@@ -311,7 +288,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = TomlFormat.newConcurrentConfig();
+                Config propertyConfig = JsonFormat.newConcurrentConfig();
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
@@ -366,7 +343,7 @@ public class ConfigHelper
 
                 for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
                 {
-                    Config enchantmentConfig = TomlFormat.newConcurrentConfig();
+                    Config enchantmentConfig = JsonFormat.newConcurrentConfig();
                     enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
                     enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
                     enchantmentConfigs.add(enchantmentConfig);
@@ -385,7 +362,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = TomlFormat.newConcurrentConfig();
+                Config propertyConfig = JsonFormat.newConcurrentConfig();
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())

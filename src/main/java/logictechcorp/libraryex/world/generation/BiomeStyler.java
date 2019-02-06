@@ -11,7 +11,6 @@
 
 package logictechcorp.libraryex.world.generation;
 
-import logictechcorp.libraryex.world.biome.BiomeBlockType;
 import logictechcorp.libraryex.world.biome.BiomeInfo;
 import logictechcorp.libraryex.world.biome.DimensionBiomeManager;
 import net.minecraft.block.state.IBlockState;
@@ -50,12 +49,12 @@ public class BiomeStyler
 
                     if(!biomeName.getNamespace().equalsIgnoreCase("biomesoplenty"))
                     {
-                        IBlockState surfaceBlock = biomeInfo.getBiomeBlock(BiomeBlockType.FLOOR_TOP_BLOCK, biome.topBlock);
-                        IBlockState fillerBlock = biomeInfo.getBiomeBlock(BiomeBlockType.FLOOR_FILLER_BLOCK, biome.fillerBlock);
-                        IBlockState wallBlock = biomeInfo.getBiomeBlock(BiomeBlockType.WALL_BLOCK, biome.fillerBlock);
-                        IBlockState ceilingFillerBlock = biomeInfo.getBiomeBlock(BiomeBlockType.CEILING_FILLER_BLOCK, biome.fillerBlock);
-                        IBlockState ceilingBottomBlock = biomeInfo.getBiomeBlock(BiomeBlockType.CEILING_BOTTOM_BLOCK, biome.fillerBlock);
-                        IBlockState oceanBlock = biomeInfo.getBiomeBlock(BiomeBlockType.OCEAN_BLOCK, Blocks.LAVA.getDefaultState());
+                        IBlockState surfaceBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.FLOOR_TOP_BLOCK, biome.topBlock);
+                        IBlockState fillerBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.FLOOR_FILLER_BLOCK, biome.fillerBlock);
+                        IBlockState wallBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.WALL_BLOCK, biome.fillerBlock);
+                        IBlockState ceilingFillerBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.CEILING_FILLER_BLOCK, biome.fillerBlock);
+                        IBlockState ceilingBottomBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.CEILING_BOTTOM_BLOCK, biome.fillerBlock);
+                        IBlockState oceanBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.OCEAN_BLOCK, Blocks.LAVA.getDefaultState());
 
                         int localX = ((chunkX * 16) + x) & 15;
                         int localZ = ((chunkZ * 16) + z) & 15;

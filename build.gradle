@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.electronwill.night-config:toml:${night_config_version}"
+    compile "com.electronwill.night-config:json:${night_config_version}"
 }
 
 processResources {

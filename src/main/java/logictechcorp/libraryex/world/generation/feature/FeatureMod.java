@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.generation.feature;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -57,7 +57,7 @@ public abstract class FeatureMod extends WorldGenerator
 
     public Config serialize()
     {
-        Config config = TomlFormat.newConcurrentConfig();
+        Config config = JsonFormat.newConcurrentConfig();
         config.add("feature", FeatureRegistry.getFeatureRegistryName(this.getClass()).toString());
         config.add("generationAttempts", this.generationAttempts);
         config.add("generationProbability", this.generationProbability);

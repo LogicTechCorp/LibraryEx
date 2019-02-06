@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.entity.trader;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.item.ItemStack;
@@ -119,7 +119,7 @@ public class Trade extends MerchantRecipe
 
     public Config getAsConfig()
     {
-        Config tradeConfig = TomlFormat.newConcurrentConfig();
+        Config tradeConfig = JsonFormat.newConcurrentConfig();
         ConfigHelper.setItemStackSimple(tradeConfig, "output", this.output.getItemStack());
 
         if(!tradeConfig.contains("output.minCount"))

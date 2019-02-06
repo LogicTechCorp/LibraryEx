@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.toml.TomlFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
 import logictechcorp.libraryex.world.generation.feature.FeatureMod;
@@ -128,7 +128,7 @@ public abstract class BiomeInfo
                                 }
                             }
 
-                            Config entityConfig = TomlFormat.newConcurrentConfig();
+                            Config entityConfig = JsonFormat.newConcurrentConfig();
                             entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
                             entityConfig.add("weight", entry.itemWeight);
                             entityConfig.add("minGroupCount", entry.minGroupCount);
@@ -204,12 +204,12 @@ public abstract class BiomeInfo
 
     public Config getAsConfig()
     {
-        Config config = TomlFormat.newConcurrentConfig();
+        Config config = JsonFormat.newConcurrentConfig();
         config.add("biome", this.biome.getRegistryName().toString());
         config.add("weight", this.weight);
         config.add("enabled", this.enabled);
         config.add("generateDefaultFeatures", this.generateDefaultFeatures);
-        Config blockConfigs = TomlFormat.newConcurrentConfig();
+        Config blockConfigs = JsonFormat.newConcurrentConfig();
 
         for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
         {
@@ -227,7 +227,7 @@ public abstract class BiomeInfo
 
                 if(entityRegistryName != null)
                 {
-                    Config entityConfig = TomlFormat.newConcurrentConfig();
+                    Config entityConfig = JsonFormat.newConcurrentConfig();
                     entityConfig.add("entity", entityRegistryName.toString());
                     entityConfig.add("weight", entry.itemWeight);
                     entityConfig.add("minGroupCount", entry.minGroupCount);
@@ -275,7 +275,7 @@ public abstract class BiomeInfo
         return this.generateDefaultFeatures;
     }
 
-    public IBlockState getBiomeBlock(BiomeBlockType type, IBlockState fallback)
+    public IBlockState getBiomeBlock(BlockType type, IBlockState fallback)
     {
         IBlockState value = this.blocks.get(type.getIdentifier());
 
@@ -305,6 +305,28 @@ public abstract class BiomeInfo
 
     public String getFileName()
     {
-        return this.biome.getRegistryName().toString().replace(":", "/") + ".toml";
+        return this.biome.getRegistryName().toString().replace(":", "/") + ".json";
+    }
+
+    public enum BlockType
+    {
+        FLOOR_TOP_BLOCK("floorTopBlock"),
+        FLOOR_FILLER_BLOCK("floorFillerBlock"),
+        WALL_BLOCK("wallBlock"),
+        CEILING_FILLER_BLOCK("ceilingFillerBlock"),
+        CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
+        OCEAN_BLOCK("oceanBlock");
+
+        private String identifier;
+
+        BlockType(String identifier)
+        {
+            this.identifier = identifier;
+        }
+
+        public String getIdentifier()
+        {
+            return this.identifier;
+        }
     }
 }
