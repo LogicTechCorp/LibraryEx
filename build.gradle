@@ -53,7 +53,7 @@ processResources {
 jar {
     manifest {
         attributes([
-                'ContainedDeps': "night-config-core-${night_config_version}.jar night-config-toml-${night_config_version}.jar"
+                'ContainedDeps': "night-config-core-${night_config_version}.jar night-config-json-${night_config_version}.jar"
         ])
     }
 }
