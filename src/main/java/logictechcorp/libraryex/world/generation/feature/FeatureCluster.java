@@ -37,7 +37,7 @@ public class FeatureCluster extends FeatureMod
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToAttachTo = ConfigHelper.getBlockState(config, "blockToAttachTo");
-        this.direction = ConfigHelper.getEnum(config, "direction", EnumFacing.class);
+        this.direction = config.getEnumOrElse("direction", EnumFacing.DOWN);
     }
 
     @Override

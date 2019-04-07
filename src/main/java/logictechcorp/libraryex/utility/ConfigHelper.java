@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.utility;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.json.JsonFormat;
+import logictechcorp.libraryex.config.ModJsonConfigFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -43,31 +43,6 @@ import java.util.Map;
 
 public class ConfigHelper
 {
-    public static <E extends Enum> E getEnum(Config config, String path, Class<? extends E> cls)
-    {
-        if(config.get(path) instanceof String)
-        {
-            String enumName = config.get(path);
-
-            if(enumName.equalsIgnoreCase("random") || enumName.equalsIgnoreCase("rand"))
-            {
-                return cls.getEnumConstants()[RandomHelper.getRandom().nextInt(cls.getEnumConstants().length)];
-            }
-            else
-            {
-                for(E value : cls.getEnumConstants())
-                {
-                    if(value.toString().equalsIgnoreCase(enumName))
-                    {
-                        return value;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
     public static IBlockState getBlockState(Config config, String path)
     {
         if(config.contains(path))
@@ -288,7 +263,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = JsonFormat.newConcurrentConfig();
+                Config propertyConfig = ModJsonConfigFormat.newConfig();
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
@@ -343,7 +318,7 @@ public class ConfigHelper
 
                 for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
                 {
-                    Config enchantmentConfig = JsonFormat.newConcurrentConfig();
+                    Config enchantmentConfig = ModJsonConfigFormat.newConfig();
                     enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
                     enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
                     enchantmentConfigs.add(enchantmentConfig);
@@ -362,7 +337,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = JsonFormat.newConcurrentConfig();
+                Config propertyConfig = ModJsonConfigFormat.newConfig();
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())

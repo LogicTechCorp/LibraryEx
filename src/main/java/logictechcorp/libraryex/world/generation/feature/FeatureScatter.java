@@ -38,7 +38,7 @@ public class FeatureScatter extends FeatureMod
         super(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.placement = ConfigHelper.getEnum(config, "placement", Placement.class);
+        this.placement = config.getEnumOrElse("placement", Placement.ON_GROUND);
     }
 
     public FeatureScatter(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)

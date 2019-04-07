@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.json.JsonFormat;
+import logictechcorp.libraryex.config.ModJsonConfigFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
 import logictechcorp.libraryex.world.generation.feature.FeatureMod;
@@ -128,7 +128,7 @@ public abstract class BiomeInfo
                                 }
                             }
 
-                            Config entityConfig = JsonFormat.newConcurrentConfig();
+                            Config entityConfig = ModJsonConfigFormat.newConfig();
                             entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
                             entityConfig.add("weight", entry.itemWeight);
                             entityConfig.add("minGroupCount", entry.minGroupCount);
@@ -178,7 +178,7 @@ public abstract class BiomeInfo
 
                         if(feature != null && config.getOrElse("generate", true))
                         {
-                            GenerationStage generationStage = ConfigHelper.getEnum(featureConfig, "generationStage", GenerationStage.class);
+                            GenerationStage generationStage = featureConfig.getEnumOrElse("generationStage", GenerationStage.DECORATE);
 
                             if(generationStage != null)
                             {
@@ -204,12 +204,12 @@ public abstract class BiomeInfo
 
     public Config getAsConfig()
     {
-        Config config = JsonFormat.newConcurrentConfig();
+        Config config = ModJsonConfigFormat.newConfig();
         config.add("biome", this.biome.getRegistryName().toString());
         config.add("weight", this.weight);
         config.add("enabled", this.enabled);
         config.add("generateDefaultFeatures", this.generateDefaultFeatures);
-        Config blockConfigs = JsonFormat.newConcurrentConfig();
+        Config blockConfigs = ModJsonConfigFormat.newConfig();
 
         for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
         {
@@ -227,7 +227,7 @@ public abstract class BiomeInfo
 
                 if(entityRegistryName != null)
                 {
-                    Config entityConfig = JsonFormat.newConcurrentConfig();
+                    Config entityConfig = ModJsonConfigFormat.newConfig();
                     entityConfig.add("entity", entityRegistryName.toString());
                     entityConfig.add("weight", entry.itemWeight);
                     entityConfig.add("minGroupCount", entry.minGroupCount);

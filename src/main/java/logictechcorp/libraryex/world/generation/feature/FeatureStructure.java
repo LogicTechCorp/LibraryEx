@@ -56,7 +56,7 @@ public class FeatureStructure extends FeatureMod
     {
         super(config);
         this.structure = new ResourceLocation(config.get("structure"));
-        this.type = ConfigHelper.getEnum(config, "type", Type.class);
+        this.type = config.getEnumOrElse("type", Type.GROUNDED);
         this.mirror = RandomHelper.getRandomEnum(Mirror.class);
         this.rotation = RandomHelper.getRandomEnum(Rotation.class);
         IBlockState ignoredBlockState = ConfigHelper.getBlockState(config, "ignoredBlock");

@@ -39,7 +39,7 @@ public class FeatureBigMushroom extends FeatureMod
         this.mushroomCap = ConfigHelper.getBlockState(config, "mushroomCap");
         this.mushroomStem = ConfigHelper.getBlockState(config, "mushroomStem");
         this.blockToPlaceOn = ConfigHelper.getBlockState(config, "blockToPlaceOn");
-        this.shape = ConfigHelper.getEnum(config, "shape", Shape.class);
+        this.shape = config.getEnumOrElse("shape", Shape.BULB);
     }
 
     public FeatureBigMushroom(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
