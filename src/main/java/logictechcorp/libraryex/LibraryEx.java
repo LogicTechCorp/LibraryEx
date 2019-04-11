@@ -19,7 +19,6 @@ package logictechcorp.libraryex;
 
 import logictechcorp.libraryex.proxy.IProxy;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -48,11 +47,6 @@ public class LibraryEx
     public static IProxy proxy;
 
     public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    static
-    {
-        FluidRegistry.enableUniversalBucket();
-    }
 
     @Mod.EventHandler
     public void onFMLPreInitialization(FMLPreInitializationEvent event)
