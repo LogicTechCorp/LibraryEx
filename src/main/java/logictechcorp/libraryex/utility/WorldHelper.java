@@ -25,12 +25,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.DimensionManager;
-
-import java.io.File;
 
 public class WorldHelper
 {
@@ -78,15 +74,13 @@ public class WorldHelper
         return chunk != null && chunk.isLoaded();
     }
 
-    public static File getSaveFile()
+    public static String getSaveDirectory(World world)
     {
-        World world = DimensionManager.getWorld(DimensionType.OVERWORLD.getId());
-
         if(LibraryEx.CONFIG_DIRECTORY.getPath().length() == 1)
         {
-            return new File(world.getSaveHandler().getWorldDirectory().getName());
+            return world.getSaveHandler().getWorldDirectory().getName();
         }
 
-        return new File("saves/" + world.getSaveHandler().getWorldDirectory().getName());
+        return "saves/" + world.getSaveHandler().getWorldDirectory().getName();
     }
 }
