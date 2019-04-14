@@ -17,11 +17,9 @@
 
 package logictechcorp.libraryex;
 
-import logictechcorp.libraryex.proxy.IProxy;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -43,26 +41,20 @@ public class LibraryEx
     @Mod.Instance(MOD_ID)
     public static LibraryEx instance;
 
-    @SidedProxy(clientSide = "logictechcorp.libraryex.proxy.ClientProxy", serverSide = "logictechcorp.libraryex.proxy.ServerProxy")
-    public static IProxy proxy;
-
     public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
 
     @Mod.EventHandler
     public void onFMLPreInitialization(FMLPreInitializationEvent event)
     {
-        proxy.preInit();
     }
 
     @Mod.EventHandler
     public void onFMLInitialization(FMLInitializationEvent event)
     {
-        proxy.init();
     }
 
     @Mod.EventHandler
     public void onFMLPostInitialization(FMLPostInitializationEvent event)
     {
-        proxy.postInit();
     }
 }

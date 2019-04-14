@@ -17,20 +17,28 @@
 
 package logictechcorp.libraryex.world.biome;
 
-import logictechcorp.libraryex.IModData;
-import net.minecraft.world.biome.Biome;
+import com.electronwill.nightconfig.core.Config;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public interface IBiomeDataConfigurable extends IBiomeData
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
-    {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
-    }
+    /**
+     * Called when the server is starting to configure this biome data.
+     *
+     * @param config The config that belongs to the biome data.
+     */
+    void readFromConfig(Config config);
 
-    public abstract T getBiomeData();
+    /**
+     * Called when the server is stopping to save this biome data.
+     *
+     * @param config The config that belongs to the biome data.
+     */
+    void writeToConfig(Config config);
+
+    /**
+     * Called to get the biome data config's relative save file.
+     *
+     * @return The biome data config's relative save file.
+     */
+    String getRelativeSaveFile();
 }

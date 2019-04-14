@@ -15,33 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.proxy;
+package logictechcorp.libraryex.world.biome;
 
-import net.minecraft.world.World;
+import net.minecraftforge.event.world.WorldEvent;
 
-public class ServerProxy implements IProxy
+public interface IBiomeDataManager
 {
-    @Override
-    public void preInit()
-    {
+    /**
+     * Reads biome data configs from disk and then configures them.
+     *
+     * @param event To ensure that this is only called after the server has started.
+     */
 
-    }
+    void readBiomeDataConfigs(WorldEvent.Load event);
 
-    @Override
-    public void init()
-    {
-
-    }
-
-    @Override
-    public void postInit()
-    {
-
-    }
-
-    @Override
-    public void spawnParticle(World world, int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ)
-    {
-
-    }
+    /**
+     * Writes biome data configs to disk.
+     *
+     * @param event To ensure that this is only called before the server has stopped.
+     */
+    void writeBiomeDataConfigs(WorldEvent.Unload event);
 }

@@ -11,8 +11,8 @@
 
 package logictechcorp.libraryex.world.generation;
 
-import logictechcorp.libraryex.world.biome.BiomeInfo;
-import logictechcorp.libraryex.world.biome.DimensionBiomeManager;
+import logictechcorp.libraryex.world.biome.IBiomeData;
+import logictechcorp.libraryex.world.biome.IBiomeDataRegistry;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -27,7 +27,7 @@ import java.util.Random;
 
 public class BiomeStyler
 {
-    public static void styleBiome(World world, IChunkGenerator generator, ChunkPrimer primer, int chunkX, int chunkZ, NoiseGeneratorPerlin terrainNoiseGen, double[] terrainNoise, DimensionBiomeManager biomeManager, Biome[] biomes, Random random)
+    public static void styleBiome(World world, IChunkGenerator generator, ChunkPrimer primer, int chunkX, int chunkZ, NoiseGeneratorPerlin terrainNoiseGen, double[] terrainNoise, IBiomeDataRegistry biomeDataRegistry, Biome[] biomes, Random random)
     {
         if(!ForgeEventFactory.onReplaceBiomeBlocks(generator, chunkX, chunkZ, primer, world))
         {
@@ -40,21 +40,21 @@ public class BiomeStyler
         {
             for(int z = 0; z < 16; z++)
             {
-                BiomeInfo biomeInfo = biomeManager.getBiomeInfo(biomes[x + z * 16]);
+                IBiomeData biomeData = biomeDataRegistry.getBiomeData(biomes[x + z * 16]);
 
-                if(biomeInfo != null)
+                if(biomeData != null)
                 {
-                    Biome biome = biomeInfo.getBiome();
-                    ResourceLocation biomeName = biome.getRegistryName();
+                    Biome biome = biomeData.getBiome();
+                    ResourceLocation biomeRegistryName = biome.getRegistryName();
 
-                    if(!biomeName.getNamespace().equalsIgnoreCase("biomesoplenty"))
+                    if(!biomeRegistryName.getNamespace().equalsIgnoreCase("biomesoplenty"))
                     {
-                        IBlockState surfaceBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.FLOOR_TOP_BLOCK, biome.topBlock);
-                        IBlockState fillerBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.FLOOR_FILLER_BLOCK, biome.fillerBlock);
-                        IBlockState wallBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.WALL_BLOCK, biome.fillerBlock);
-                        IBlockState ceilingFillerBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.CEILING_FILLER_BLOCK, biome.fillerBlock);
-                        IBlockState ceilingBottomBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.CEILING_BOTTOM_BLOCK, biome.fillerBlock);
-                        IBlockState oceanBlock = biomeInfo.getBiomeBlock(BiomeInfo.BlockType.OCEAN_BLOCK, Blocks.LAVA.getDefaultState());
+                        IBlockState surfaceBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.FLOOR_TOP_BLOCK, biome.topBlock);
+                        IBlockState fillerBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.FLOOR_FILLER_BLOCK, biome.fillerBlock);
+                        IBlockState wallBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.WALL_BLOCK, biome.fillerBlock);
+                        IBlockState ceilingFillerBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.CEILING_FILLER_BLOCK, biome.fillerBlock);
+                        IBlockState ceilingBottomBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.CEILING_BOTTOM_BLOCK, biome.fillerBlock);
+                        IBlockState oceanBlock = biomeData.getBiomeBlock(IBiomeData.BlockType.OCEAN_BLOCK, Blocks.LAVA.getDefaultState());
 
                         int localX = ((chunkX * 16) + x) & 15;
                         int localZ = ((chunkZ * 16) + z) & 15;
