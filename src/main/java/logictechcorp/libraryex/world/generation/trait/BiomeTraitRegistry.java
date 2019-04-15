@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.LibraryEx;
@@ -27,11 +27,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class FeatureRegistry
+public class BiomeTraitRegistry
 {
-    private static final Map<ResourceLocation, Class<? extends FeatureMod>> FEATURES = new HashMap<>();
+    private static final Map<ResourceLocation, Class<? extends IBiomeTraitConfigurable>> FEATURES = new HashMap<>();
 
-    public static void registerFeature(ResourceLocation name, Class<? extends FeatureMod> cls)
+    public static void registerFeature(ResourceLocation name, Class<? extends IBiomeTraitConfigurable> cls)
     {
         if(!FEATURES.containsKey(name))
         {
@@ -43,7 +43,7 @@ public class FeatureRegistry
         }
     }
 
-    public static FeatureMod createFeature(ResourceLocation name, Config config)
+    public static IBiomeTraitConfigurable createFeature(ResourceLocation name, Config config)
     {
         if(FEATURES.containsKey(name))
         {
@@ -60,20 +60,20 @@ public class FeatureRegistry
         return null;
     }
 
-    public static ResourceLocation getFeatureRegistryName(Class<? extends FeatureMod> cls)
+    public static ResourceLocation getTraitRegistryName(Class<? extends IBiomeTraitConfigurable> cls)
     {
         return FEATURES.entrySet().stream().filter(entry -> Objects.equals(entry.getValue(), cls)).map(Map.Entry::getKey).collect(Collectors.toList()).get(0);
     }
 
     static
     {
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":scatter"), FeatureScatter.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":cluster"), FeatureCluster.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":fluid"), FeatureFluid.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":ore"), FeatureOre.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":pool"), FeaturePool.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":big_mushroom"), FeatureBigMushroom.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":oak_tree"), FeatureOakTree.class);
-        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":structure"), FeatureStructure.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":scatter"), BiomeTraitScatter.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":cluster"), BiomeTraitCluster.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":fluid"), BiomeTraitFluid.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":ore"), BiomeTraitOre.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":pool"), BiomeTraitPool.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":big_mushroom"), BiomeTraitBigMushroom.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":oak_tree"), BiomeTraitOakTree.class);
+        registerFeature(new ResourceLocation(LibraryEx.MOD_ID + ":structure"), BiomeTraitStructure.class);
     }
 }

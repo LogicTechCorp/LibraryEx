@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -43,7 +43,7 @@ import net.minecraft.world.gen.structure.template.TemplateManager;
 import java.util.Map;
 import java.util.Random;
 
-public class FeatureStructure extends FeatureMod
+public class BiomeTraitStructure extends BiomeTraitConfigurable
 {
     private ResourceLocation structure;
     private Type type;
@@ -52,9 +52,21 @@ public class FeatureStructure extends FeatureMod
     private Block ignoredBlock;
     private double clearancePercentage;
 
-    public FeatureStructure(Config config)
+    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
     {
-        super(config);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
+        this.structure = structure;
+        this.type = type;
+        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
+        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
+        this.ignoredBlock = ignoredBlock;
+        this.clearancePercentage = clearancePercentage;
+    }
+
+    @Override
+    public void readFromConfig(Config config)
+    {
+        super.readFromConfig(config);
         this.structure = new ResourceLocation(config.get("structure"));
         this.type = config.getEnumOrElse("type", Type.GROUNDED);
         this.mirror = RandomHelper.getRandomEnum(Mirror.class);
@@ -69,30 +81,18 @@ public class FeatureStructure extends FeatureMod
         this.clearancePercentage = config.getOrElse("clearancePercentage", 0.875D);
     }
 
-    public FeatureStructure(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
-        this.structure = structure;
-        this.type = type;
-        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
-        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
-        this.ignoredBlock = ignoredBlock;
-        this.clearancePercentage = clearancePercentage;
-    }
-
     @Override
-    public Config serialize()
+    public void writeToConfig(Config config)
     {
-        Config config = super.serialize();
+        super.writeToConfig(config);
         config.add("clearancePercentage", this.clearancePercentage);
         ConfigHelper.setBlockState(config, "ignoredBlock", this.ignoredBlock.getDefaultState());
         config.add("type", this.type == null ? null : this.type.toString().toLowerCase());
         config.add("structure", this.structure == null ? null : this.structure.toString().toLowerCase());
-        return config;
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.structure == null || this.type == null || this.ignoredBlock == null)
         {
@@ -123,7 +123,7 @@ public class FeatureStructure extends FeatureMod
             spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, this.clearancePercentage);
         }
 
-        if(spawnPos != null && spawnPos.getY() >= this.minGenerationHeight && spawnPos.getY() <= this.maxGenerationHeight)
+        if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
         {
             template.addBlocksToWorld(world, spawnPos, placementSettings);
             this.handleDataBlocks(world, spawnPos, template, placementSettings, random);
@@ -185,6 +185,12 @@ public class FeatureStructure extends FeatureMod
                 world.setBlockToAir(dataPos);
             }
         }
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 
     public enum Type

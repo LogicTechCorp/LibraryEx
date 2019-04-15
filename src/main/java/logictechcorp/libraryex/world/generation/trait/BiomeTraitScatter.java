@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -27,40 +27,40 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureScatter extends FeatureMod
+public class BiomeTraitScatter extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
     private Placement placement;
 
-    public FeatureScatter(Config config)
+    public BiomeTraitScatter(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
     {
-        super(config);
-        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
-        this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.placement = config.getEnumOrElse("placement", Placement.ON_GROUND);
-    }
-
-    public FeatureScatter(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToTarget = blockToTarget;
         this.placement = placement;
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
-        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase());
-        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
-        ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        return config;
+        super.readFromConfig(config);
+        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
+        this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
+        this.placement = config.getEnumOrElse("placement", Placement.ON_GROUND);
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
+        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase());
+        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+        ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
+    }
+
+    @Override
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.blockToSpawn == null || this.blockToTarget == null || this.placement == null)
         {
@@ -88,6 +88,12 @@ public class FeatureScatter extends FeatureMod
         }
 
         return true;
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 
     public enum Placement

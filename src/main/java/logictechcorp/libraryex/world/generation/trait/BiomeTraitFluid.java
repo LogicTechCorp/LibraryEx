@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -25,40 +25,40 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureFluid extends FeatureMod
+public class BiomeTraitFluid extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
     private boolean hidden;
 
-    public FeatureFluid(Config config)
+    public BiomeTraitFluid(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
     {
-        super(config);
-        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
-        this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.hidden = config.getOrElse("hidden", true);
-    }
-
-    public FeatureFluid(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToTarget = blockToTarget;
         this.hidden = hidden;
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
-        config.add("hidden", this.hidden);
-        ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
-        return config;
+        super.readFromConfig(config);
+        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
+        this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
+        this.hidden = config.getOrElse("hidden", true);
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
+        config.add("hidden", this.hidden);
+        ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
+        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+    }
+
+    @Override
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.blockToSpawn == null || this.blockToTarget == null)
         {
@@ -137,5 +137,11 @@ public class FeatureFluid extends FeatureMod
 
             return true;
         }
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 }

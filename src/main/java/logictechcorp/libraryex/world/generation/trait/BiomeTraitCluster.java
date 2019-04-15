@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -26,40 +26,40 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureCluster extends FeatureMod
+public class BiomeTraitCluster extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToAttachTo;
     private EnumFacing direction;
 
-    public FeatureCluster(Config config)
+    public BiomeTraitCluster(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
     {
-        super(config);
-        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
-        this.blockToAttachTo = ConfigHelper.getBlockState(config, "blockToAttachTo");
-        this.direction = config.getEnumOrElse("direction", EnumFacing.DOWN);
-    }
-
-    @Override
-    public Config serialize()
-    {
-        Config config = super.serialize();
-        config.add("direction", this.direction == null ? null : this.direction.toString().toLowerCase());
-        ConfigHelper.setBlockState(config, "blockToAttachTo", this.blockToAttachTo);
-        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
-        return config;
-    }
-
-    public FeatureCluster(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToAttachTo = blockToAttachTo;
         this.direction = direction;
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public void readFromConfig(Config config)
+    {
+        super.readFromConfig(config);
+        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
+        this.blockToAttachTo = ConfigHelper.getBlockState(config, "blockToAttachTo");
+        this.direction = config.getEnumOrElse("direction", EnumFacing.DOWN);
+    }
+
+    @Override
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
+        config.add("direction", this.direction == null ? null : this.direction.toString().toLowerCase());
+        ConfigHelper.setBlockState(config, "blockToAttachTo", this.blockToAttachTo);
+        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+    }
+
+    @Override
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.blockToSpawn == null || this.blockToAttachTo == null || this.direction == null)
         {
@@ -131,5 +131,11 @@ public class FeatureCluster extends FeatureMod
 
             return true;
         }
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 }

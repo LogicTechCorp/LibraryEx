@@ -19,7 +19,8 @@ package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
 import logictechcorp.libraryex.utility.BlockHelper;
-import logictechcorp.libraryex.world.generation.feature.FeatureOakTree;
+import logictechcorp.libraryex.world.generation.trait.BiomeTraitOakTree;
+import logictechcorp.libraryex.world.generation.trait.IBiomeTrait;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.PropertyBool;
@@ -31,7 +32,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.event.terraingen.TerrainGen;
 
@@ -135,11 +135,11 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
             return;
         }
 
-        WorldGenerator treeGenerator = new FeatureOakTree(1, 1.0F, false, pos.getY(), pos.up(8).getY(), this, this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
+        IBiomeTrait treeTrait = new BiomeTraitOakTree(1, false, 1.0F, pos.getY(), pos.up(8).getY(), this, this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 
-        if(!treeGenerator.generate(world, random, pos))
+        if(!treeTrait.generate(world, pos, random))
         {
             world.setBlockState(pos, state, 4);
         }

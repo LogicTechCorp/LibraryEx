@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.biome;
 
 import logictechcorp.libraryex.world.generation.GenerationStage;
-import logictechcorp.libraryex.world.generation.feature.FeatureMod;
+import logictechcorp.libraryex.world.generation.trait.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
@@ -36,27 +36,37 @@ import java.util.Map;
 public class BiomeData implements IBiomeData
 {
     protected Biome biome;
-    protected int weight;
-    protected boolean enabled;
-    protected boolean generateDefaultFeatures;
+    protected int biomeGenerationWeight;
+    protected boolean generateBiome;
+    protected boolean generateDefaultBiomeFeatures;
     protected Map<String, IBlockState> blocks;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
-    protected Map<GenerationStage, List<FeatureMod>> features;
+    protected Map<GenerationStage, List<IBiomeTrait>> features;
 
-    public BiomeData(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean generateDefaultFeatures)
+    public BiomeData(Biome biome, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
     {
-        this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
-        this.weight = weight;
-        this.enabled = enabled;
-        this.generateDefaultFeatures = generateDefaultFeatures;
+        this.biome = biome;
+        this.biomeGenerationWeight = biomeGenerationWeight;
+        this.generateBiome = generateBiome;
+        this.generateDefaultBiomeFeatures = generateDefaultBiomeFeatures;
         this.blocks = new HashMap<>();
         this.entities = new HashMap<>();
         this.features = new HashMap<>();
     }
 
+    public BiomeData(ResourceLocation biomeRegistryName, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
+    {
+        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), biomeGenerationWeight, generateBiome, generateDefaultBiomeFeatures);
+    }
+
     public BiomeData(ResourceLocation biomeRegistryName)
     {
         this(biomeRegistryName, 10, true, true);
+    }
+
+    public BiomeData(Biome biome)
+    {
+        this(biome.getRegistryName());
     }
 
     @Override
@@ -66,25 +76,25 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public int getWeight()
+    public int getBiomeGenerationWeight()
     {
-        return this.weight;
+        return this.biomeGenerationWeight;
     }
 
     @Override
-    public boolean isEnabled()
+    public boolean generateBiome()
     {
-        return this.enabled;
+        return this.generateBiome;
     }
 
     @Override
-    public boolean generateDefaultFeatures()
+    public boolean generateDefaultBiomeFeatures()
     {
-        return this.generateDefaultFeatures;
+        return this.generateDefaultBiomeFeatures;
     }
 
     @Override
-    public IBlockState getBiomeBlock(IBiomeData.BlockType type, IBlockState fallback)
+    public IBlockState getBiomeBlock(IBiomeBlock type, IBlockState fallback)
     {
         IBlockState value = this.blocks.get(type.getIdentifier());
 
@@ -98,19 +108,19 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public Map<String, IBlockState> getBlocks()
+    public Map<String, IBlockState> getBiomeBlocks()
     {
         return this.blocks;
     }
 
     @Override
-    public List<Biome.SpawnListEntry> getEntities(EnumCreatureType creatureType)
+    public List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType)
     {
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
     @Override
-    public List<FeatureMod> getFeatures(GenerationStage generationStage)
+    public List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage)
     {
         return this.features.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }

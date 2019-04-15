@@ -21,8 +21,9 @@ import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.config.ModJsonConfigFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
-import logictechcorp.libraryex.world.generation.feature.FeatureMod;
-import logictechcorp.libraryex.world.generation.feature.FeatureRegistry;
+import logictechcorp.libraryex.world.generation.trait.BiomeTraitRegistry;
+import logictechcorp.libraryex.world.generation.trait.IBiomeTrait;
+import logictechcorp.libraryex.world.generation.trait.IBiomeTraitConfigurable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -44,20 +45,30 @@ import java.util.Map;
  */
 public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfigurable
 {
-    public BiomeDataConfigurable(ResourceLocation biomeRegistryName, int weight, boolean enabled, boolean generateDefaultFeatures)
+    public BiomeDataConfigurable(Biome biome, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
     {
-        super(biomeRegistryName, weight, enabled, generateDefaultFeatures);
+        super(biome, biomeGenerationWeight, generateBiome, generateDefaultBiomeFeatures);
+    }
+
+    public BiomeDataConfigurable(ResourceLocation biomeRegistryName, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
+    {
+        super(ForgeRegistries.BIOMES.getValue(biomeRegistryName), biomeGenerationWeight, generateBiome, generateDefaultBiomeFeatures);
     }
 
     public BiomeDataConfigurable(ResourceLocation biomeRegistryName)
     {
-        super(biomeRegistryName, 10, true, true);
+        super(biomeRegistryName);
+    }
+
+    public BiomeDataConfigurable(Biome biome)
+    {
+        super(biome);
     }
 
     @Override
     public void readFromConfig(Config config)
     {
-        this.weight = config.getOrElse("weight", this.weight);
+        this.biomeGenerationWeight = config.getOrElse("biomeGenerationWeight", this.biomeGenerationWeight);
 
         if(config.get("blocks") instanceof Config)
         {
@@ -109,7 +120,7 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
 
                     Config entityConfig = ModJsonConfigFormat.newConfig();
                     entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
-                    entityConfig.add("weight", entry.itemWeight);
+                    entityConfig.add("biomeGenerationWeight", entry.itemWeight);
                     entityConfig.add("minGroupCount", entry.minGroupCount);
                     entityConfig.add("maxGroupCount", entry.maxGroupCount);
                     entityConfig.add("spawn", true);
@@ -139,21 +150,21 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
 
                     if(creatureType != null && EntityLiving.class.isAssignableFrom(cls))
                     {
-                        this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, config.getOrElse("weight", 10), config.getOrElse("minGroupCount", 1), config.getOrElse("maxGroupCount", 4)));
+                        this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, config.getOrElse("biomeGenerationWeight", 10), config.getOrElse("minGroupCount", 1), config.getOrElse("maxGroupCount", 4)));
                     }
                 }
             }
         }
 
-        if(config.get("features") instanceof List)
+        if(config.get("traits") instanceof List)
         {
             List<Config> features = new ArrayList<>();
-            List<Config> featureConfigs = config.get("features");
+            List<Config> featureConfigs = config.get("traits");
             this.features.clear();
 
             for(Config featureConfig : featureConfigs)
             {
-                FeatureMod feature = FeatureRegistry.createFeature(new ResourceLocation(featureConfig.get("feature")), featureConfig);
+                IBiomeTraitConfigurable feature = BiomeTraitRegistry.createFeature(new ResourceLocation(featureConfig.get("trait")), featureConfig);
 
                 if(feature != null && config.getOrElse("generate", true))
                 {
@@ -172,23 +183,23 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
                 features.add(featureConfig);
             }
 
-            config.set("features", features);
+            config.set("traits", features);
         }
 
-        this.enabled = config.getOrElse("enabled", true);
-        this.generateDefaultFeatures = config.getOrElse("generateDefaultFeatures", true);
+        this.generateBiome = config.getOrElse("generateBiome", true);
+        this.generateDefaultBiomeFeatures = config.getOrElse("generateDefaultBiomeFeatures", true);
     }
 
     @Override
     public void writeToConfig(Config config)
     {
         config.add("biome", this.biome.getRegistryName().toString());
-        config.add("weight", this.weight);
-        config.add("enabled", this.enabled);
-        config.add("generateDefaultFeatures", this.generateDefaultFeatures);
+        config.add("biomeGenerationWeight", this.biomeGenerationWeight);
+        config.add("generateBiome", this.generateBiome);
+        config.add("generateDefaultBiomeFeatures", this.generateDefaultBiomeFeatures);
         Config blockConfigs = ModJsonConfigFormat.newConfig();
 
-        for(Map.Entry<String, IBlockState> entry : this.getBlocks().entrySet())
+        for(Map.Entry<String, IBlockState> entry : this.getBiomeBlocks().entrySet())
         {
             ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
         }
@@ -198,7 +209,7 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
 
         for(EnumCreatureType type : EnumCreatureType.values())
         {
-            for(Biome.SpawnListEntry entry : this.getEntities(type))
+            for(Biome.SpawnListEntry entry : this.getBiomeEntities(type))
             {
                 ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
 
@@ -206,9 +217,9 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
                 {
                     Config entityConfig = ModJsonConfigFormat.newConfig();
                     entityConfig.add("entity", entityRegistryName.toString());
-                    entityConfig.add("weight", entry.itemWeight);
-                    entityConfig.add("minGroupCount", entry.minGroupCount);
-                    entityConfig.add("maxGroupCount", entry.maxGroupCount);
+                    entityConfig.add("entitySpawnWeight", entry.itemWeight);
+                    entityConfig.add("minimumGroupCount", entry.minGroupCount);
+                    entityConfig.add("maximumGroupCount", entry.maxGroupCount);
                     entityConfig.add("spawn", true);
                     entityConfigs.add(entityConfig);
                 }
@@ -216,19 +227,25 @@ public class BiomeDataConfigurable extends BiomeData implements IBiomeDataConfig
         }
 
         config.add("entities", entityConfigs);
-        List<Config> featureConfigs = new ArrayList<>();
+        List<Config> biomeTraitConfigs = new ArrayList<>();
 
         for(GenerationStage stage : GenerationStage.values())
         {
-            for(FeatureMod featureInfo : this.getFeatures(stage))
+            for(IBiomeTrait biomeTrait : this.getBiomeTraits(stage))
             {
-                Config featureConfig = featureInfo.serialize();
-                featureConfig.add("generationStage", stage.toString().toLowerCase());
-                featureConfigs.add(featureConfig);
+                if(!(biomeTrait instanceof IBiomeTraitConfigurable))
+                {
+                    continue;
+                }
+
+                Config biomeTraitConfig = ModJsonConfigFormat.newConfig();
+                ((IBiomeTraitConfigurable) biomeTrait).writeToConfig(biomeTraitConfig);
+                biomeTraitConfig.add("generationStage", stage.toString().toLowerCase());
+                biomeTraitConfigs.add(biomeTraitConfig);
             }
         }
 
-        config.add("features", featureConfigs);
+        config.add("traits", biomeTraitConfigs);
     }
 
     @Override

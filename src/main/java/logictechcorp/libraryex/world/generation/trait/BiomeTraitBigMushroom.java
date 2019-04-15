@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -26,25 +26,16 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureBigMushroom extends FeatureMod
+public class BiomeTraitBigMushroom extends BiomeTraitConfigurable
 {
     private IBlockState mushroomCap;
     private IBlockState mushroomStem;
     private IBlockState blockToPlaceOn;
     private Shape shape;
 
-    public FeatureBigMushroom(Config config)
+    public BiomeTraitBigMushroom(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
     {
-        super(config);
-        this.mushroomCap = ConfigHelper.getBlockState(config, "mushroomCap");
-        this.mushroomStem = ConfigHelper.getBlockState(config, "mushroomStem");
-        this.blockToPlaceOn = ConfigHelper.getBlockState(config, "blockToPlaceOn");
-        this.shape = config.getEnumOrElse("shape", Shape.BULB);
-    }
-
-    public FeatureBigMushroom(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.mushroomCap = mushroomCap;
         this.mushroomStem = mushroomStem;
         this.blockToPlaceOn = blockToPlaceOn;
@@ -52,18 +43,27 @@ public class FeatureBigMushroom extends FeatureMod
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
+        super.readFromConfig(config);
+        this.mushroomCap = ConfigHelper.getBlockState(config, "mushroomCap");
+        this.mushroomStem = ConfigHelper.getBlockState(config, "mushroomStem");
+        this.blockToPlaceOn = ConfigHelper.getBlockState(config, "blockToPlaceOn");
+        this.shape = config.getEnumOrElse("shape", Shape.BULB);
+    }
+
+    @Override
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
         config.add("shape", this.shape == null ? null : this.shape.toString().toLowerCase());
         ConfigHelper.setBlockState(config, "blockToPlaceOn", this.blockToPlaceOn);
         ConfigHelper.setBlockState(config, "mushroomStem", this.mushroomStem);
         ConfigHelper.setBlockState(config, "mushroomCap", this.mushroomCap);
-        return config;
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.mushroomCap == null || this.mushroomStem == null || this.blockToPlaceOn == null || this.shape == null)
         {
@@ -237,7 +237,7 @@ public class FeatureBigMushroom extends FeatureMod
 
                                     if(state.getBlock().canBeReplacedByLeaves(state, world, blockpos))
                                     {
-                                        this.setBlockAndNotifyAdequately(world, blockpos, this.mushroomCap);
+                                        world.setBlockState(blockpos, this.mushroomCap);
                                     }
                                 }
                             }
@@ -250,7 +250,7 @@ public class FeatureBigMushroom extends FeatureMod
 
                         if(iblockstate.getBlock().canBeReplacedByLeaves(iblockstate, world, pos.up(i3)))
                         {
-                            this.setBlockAndNotifyAdequately(world, pos.up(i3), this.mushroomStem);
+                            world.setBlockState(pos.up(i3), this.mushroomStem);
                         }
                     }
 
@@ -262,6 +262,12 @@ public class FeatureBigMushroom extends FeatureMod
         {
             return false;
         }
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 
     public enum Shape

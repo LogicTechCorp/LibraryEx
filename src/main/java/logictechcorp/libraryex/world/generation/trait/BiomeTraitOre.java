@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -27,40 +27,40 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeatureOre extends FeatureMod
+public class BiomeTraitOre extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToReplace;
     private int veinSize;
 
-    public FeatureOre(Config config)
+    public BiomeTraitOre(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
     {
-        super(config);
-        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
-        this.blockToReplace = ConfigHelper.getBlockState(config, "blockToReplace");
-        this.veinSize = config.getOrElse("veinSize", 8);
-    }
-
-    public FeatureOre(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToReplace = blockToReplace;
         this.veinSize = veinSize;
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
-        config.add("veinSize", this.veinSize);
-        ConfigHelper.setBlockState(config, "blockToReplace", this.blockToReplace);
-        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
-        return config;
+        super.readFromConfig(config);
+        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
+        this.blockToReplace = ConfigHelper.getBlockState(config, "blockToReplace");
+        this.veinSize = config.getOrElse("veinSize", 8);
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
+        config.add("veinSize", this.veinSize);
+        ConfigHelper.setBlockState(config, "blockToReplace", this.blockToReplace);
+        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+    }
+
+    @Override
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.blockToSpawn == null || this.blockToReplace == null)
         {
@@ -125,5 +125,11 @@ public class FeatureOre extends FeatureMod
         }
 
         return true;
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 }

@@ -15,9 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.biome;
 
-public interface IFeature
+public enum BiomeBlock implements IBiomeBlock
 {
+    FLOOR_TOP_BLOCK("floorTopBlock"),
+    FLOOR_FILLER_BLOCK("floorFillerBlock"),
+    WALL_BLOCK("wallBlock"),
+    CEILING_FILLER_BLOCK("ceilingFillerBlock"),
+    CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
+    OCEAN_BLOCK("oceanBlock");
 
+    private String identifier;
+
+    BiomeBlock(String identifier)
+    {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }

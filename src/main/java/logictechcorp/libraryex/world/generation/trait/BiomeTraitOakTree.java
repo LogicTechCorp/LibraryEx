@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -30,7 +30,7 @@ import net.minecraftforge.common.IPlantable;
 
 import java.util.Random;
 
-public class FeatureOakTree extends FeatureMod
+public class BiomeTraitOakTree extends BiomeTraitConfigurable
 {
     private IPlantable sapling;
     private IBlockState logBlock;
@@ -38,18 +38,9 @@ public class FeatureOakTree extends FeatureMod
     private int minGrowthHeight;
     private int maxGrowthHeight;
 
-    public FeatureOakTree(Config config)
+    public BiomeTraitOakTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IPlantable sapling, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
     {
-        super(config);
-        this.logBlock = ConfigHelper.getBlockState(config, "logBlock");
-        this.leafBlock = ConfigHelper.getBlockState(config, "leafBlock");
-        this.minGrowthHeight = config.getOrElse("minGrowthHeight", 2);
-        this.maxGrowthHeight = config.getOrElse("maxGrowthHeight", 32);
-    }
-
-    public FeatureOakTree(int generationAttempts, float generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IPlantable sapling, IBlockState logBlock, IBlockState leafBlock, int minGrowthHeight, int maxGrowthHeight)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.sapling = sapling;
         this.logBlock = logBlock;
         this.leafBlock = leafBlock;
@@ -58,18 +49,27 @@ public class FeatureOakTree extends FeatureMod
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
+        super.readFromConfig(config);
+        this.logBlock = ConfigHelper.getBlockState(config, "logBlock");
+        this.leafBlock = ConfigHelper.getBlockState(config, "leafBlock");
+        this.minGrowthHeight = config.getOrElse("minGrowthHeight", 2);
+        this.maxGrowthHeight = config.getOrElse("maxGrowthHeight", 32);
+    }
+
+    @Override
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
         config.add("maxGrowthHeight", this.maxGrowthHeight);
         config.add("minGrowthHeight", this.minGrowthHeight);
         ConfigHelper.setBlockState(config, "leafBlock", this.leafBlock);
         ConfigHelper.setBlockState(config, "logBlock", this.logBlock);
-        return config;
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.logBlock == null || this.leafBlock == null)
         {
@@ -148,7 +148,7 @@ public class FeatureOakTree extends FeatureMod
 
                                     if(checkState.getBlock().isAir(checkState, world, checkPos) || checkState.getBlock().isLeaves(checkState, world, checkPos) || checkState.getMaterial() == Material.VINE)
                                     {
-                                        this.setBlockAndNotifyAdequately(world, checkPos, this.leafBlock);
+                                        world.setBlockState(checkPos, this.leafBlock);
                                     }
                                 }
                             }
@@ -162,7 +162,7 @@ public class FeatureOakTree extends FeatureMod
 
                         if(checkState.getBlock().isAir(checkState, world, offsetPos) || checkState.getBlock().isLeaves(checkState, world, offsetPos) || checkState.getMaterial() == Material.VINE)
                         {
-                            this.setBlockAndNotifyAdequately(world, pos.up(heightOffset), this.logBlock);
+                            world.setBlockState(pos.up(heightOffset), this.logBlock);
                         }
                     }
 
@@ -180,16 +180,21 @@ public class FeatureOakTree extends FeatureMod
         }
     }
 
-    protected boolean canGrowInto(Block blockType)
+    @Override
+    public IBiomeTraitConfigurable create()
     {
-        Material material = blockType.getDefaultState().getMaterial();
+        return null;
+    }
+
+    private boolean canGrowInto(Block block)
+    {
+        Material material = block.getDefaultState().getMaterial();
         return material == Material.AIR || material == Material.LEAVES;
     }
 
-    public boolean isReplaceable(World world, BlockPos pos)
+    private boolean isReplaceable(World world, BlockPos pos)
     {
         IBlockState state = world.getBlockState(pos);
         return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || this.canGrowInto(state.getBlock());
     }
-
 }

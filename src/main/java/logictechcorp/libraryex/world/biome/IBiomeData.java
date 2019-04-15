@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.world.biome;
 
 import logictechcorp.libraryex.world.generation.GenerationStage;
-import logictechcorp.libraryex.world.generation.feature.FeatureMod;
+import logictechcorp.libraryex.world.generation.trait.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.Biome;
@@ -28,41 +28,63 @@ import java.util.Map;
 
 public interface IBiomeData
 {
+    /**
+     * Called to get the biome associated with this data.
+     *
+     * @return The biome associated with this data.
+     */
     Biome getBiome();
 
-    int getWeight();
+    /**
+     * Called to check if the associated biome should generate.
+     *
+     * @return Whether the associated biome should generate.
+     */
+    boolean generateBiome();
 
-    boolean isEnabled();
+    /**
+     * Called to check if the associated biome's default features should generate.
+     *
+     * @return Whether the associated biome's default features should generate.
+     */
+    boolean generateDefaultBiomeFeatures();
 
-    boolean generateDefaultFeatures();
+    /**
+     * Called to get the generation biomeGenerationWeight of the associated biome.
+     *
+     * @return The generation biomeGenerationWeight of the associated biome.
+     */
+    int getBiomeGenerationWeight();
 
-    IBlockState getBiomeBlock(BlockType type, IBlockState fallback);
+    /**
+     * Called to get a block that makes up the associated biome.
+     *
+     * @param type     The type of block to get.
+     * @param fallback The block to fallback to if the biome doesn't have a block for the type.
+     * @return A block that makes up the associated biome.
+     */
+    IBlockState getBiomeBlock(IBiomeBlock type, IBlockState fallback);
 
-    Map<String, IBlockState> getBlocks();
+    /**
+     * Called to get a map containing the biome blocks and their identifiers.
+     *
+     * @return A map containing the biome blocks and their identifiers.
+     */
+    Map<String, IBlockState> getBiomeBlocks();
 
-    List<Biome.SpawnListEntry> getEntities(EnumCreatureType creatureType);
+    /**
+     * Called to get a list of entities that spawn in the associated biome.
+     *
+     * @param creatureType The type of entity to get the list for.
+     * @return A list of entities that spawn in the associated biome.
+     */
+    List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType);
 
-    List<FeatureMod> getFeatures(GenerationStage generationStage);
-
-    enum BlockType
-    {
-        FLOOR_TOP_BLOCK("floorTopBlock"),
-        FLOOR_FILLER_BLOCK("floorFillerBlock"),
-        WALL_BLOCK("wallBlock"),
-        CEILING_FILLER_BLOCK("ceilingFillerBlock"),
-        CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
-        OCEAN_BLOCK("oceanBlock");
-
-        private String identifier;
-
-        BlockType(String identifier)
-        {
-            this.identifier = identifier;
-        }
-
-        public String getIdentifier()
-        {
-            return this.identifier;
-        }
-    }
+    /**
+     * Called to get a list of biome traits that generate in the associated biome.
+     *
+     * @param generationStage The stage to get the list for.
+     * @return A list of biome traits that generate in the associated biome.
+     */
+    List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage);
 }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation.feature;
+package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
@@ -27,48 +27,48 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class FeaturePool extends FeatureMod
+public class BiomeTraitPool extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToSurround;
 
-    public FeaturePool(Config config)
+    public BiomeTraitPool(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
     {
-        super(config);
-        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
-        this.blockToSurround = ConfigHelper.getBlockState(config, "blockToSurround");
-    }
-
-    public FeaturePool(int generationAttempts, double generationProbability, boolean randomizeGenerationAttempts, int minGenerationHeight, int maxGenerationHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
-    {
-        super(generationAttempts, generationProbability, randomizeGenerationAttempts, minGenerationHeight, maxGenerationHeight);
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToSurround = blockToSurround;
     }
 
     @Override
-    public Config serialize()
+    public void readFromConfig(Config config)
     {
-        Config config = super.serialize();
-        ConfigHelper.setBlockState(config, "blockToSurround", this.blockToSurround);
-        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
-        return config;
+        super.readFromConfig(config);
+        this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
+        this.blockToSurround = ConfigHelper.getBlockState(config, "blockToSurround");
     }
 
     @Override
-    public boolean generate(World world, Random random, BlockPos pos)
+    public void writeToConfig(Config config)
+    {
+        super.writeToConfig(config);
+        ConfigHelper.setBlockState(config, "blockToSurround", this.blockToSurround);
+        ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+    }
+
+    @Override
+    public boolean generate(World world, BlockPos pos, Random random)
     {
         if(this.blockToSpawn == null || this.blockToSurround == null)
         {
             return false;
         }
 
-        for(pos = pos.add(-8, 0, -8); pos.getY() > this.minGenerationHeight && world.isAirBlock(pos); pos = pos.down())
+        for(pos = pos.add(-8, 0, -8); pos.getY() > this.minimumGenerationHeight && world.isAirBlock(pos); pos = pos.down())
         {
 
         }
 
-        if(pos.getY() <= 4 || pos.getY() < this.minGenerationHeight)
+        if(pos.getY() <= 4 || pos.getY() < this.minimumGenerationHeight)
         {
             return false;
         }
@@ -165,5 +165,11 @@ public class FeaturePool extends FeatureMod
 
             return true;
         }
+    }
+
+    @Override
+    public IBiomeTraitConfigurable create()
+    {
+        return null;
     }
 }
