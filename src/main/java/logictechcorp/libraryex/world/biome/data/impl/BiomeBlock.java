@@ -15,23 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.world.biome.data.impl;
 
-import logictechcorp.libraryex.IModData;
-import logictechcorp.libraryex.world.biome.data.iface.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import logictechcorp.libraryex.world.biome.data.iface.IBiomeBlock;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public enum BiomeBlock implements IBiomeBlock
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
+    FLOOR_TOP_BLOCK("floorTopBlock"),
+    FLOOR_FILLER_BLOCK("floorFillerBlock"),
+    WALL_BLOCK("wallBlock"),
+    CEILING_FILLER_BLOCK("ceilingFillerBlock"),
+    CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
+    OCEAN_BLOCK("oceanBlock");
+
+    private String identifier;
+
+    BiomeBlock(String identifier)
     {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
+        this.identifier = identifier;
     }
 
-    public abstract T getBiomeData();
+    @Override
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }

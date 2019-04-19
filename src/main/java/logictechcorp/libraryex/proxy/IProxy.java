@@ -17,8 +17,6 @@
 
 package logictechcorp.libraryex.proxy;
 
-import net.minecraft.world.World;
-
 public interface IProxy
 {
     void preInit();
@@ -27,5 +25,5 @@ public interface IProxy
 
     void postInit();
 
-    void spawnParticle(World world, int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
+    void spawnParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
 }

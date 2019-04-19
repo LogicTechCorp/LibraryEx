@@ -15,23 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.api.internal;
 
-import logictechcorp.libraryex.IModData;
-import logictechcorp.libraryex.world.biome.data.iface.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public final class LibraryExAPIStub implements ILibraryExAPI
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
+    public static final ILibraryExAPI INSTANCE = new LibraryExAPIStub();
+
+    private LibraryExAPIStub()
     {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
     }
 
-    public abstract T getBiomeData();
+    @Override
+    public boolean isStub()
+    {
+        return true;
+    }
+
+    @Override
+    public IBiomeTraitRegistry getBiomeTraitRegistry()
+    {
+        return BiomeTraitRegistryStub.INSTANCE;
+    }
 }

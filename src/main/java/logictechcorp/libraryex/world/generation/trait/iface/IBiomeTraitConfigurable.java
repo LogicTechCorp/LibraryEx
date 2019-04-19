@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.world.generation.trait.iface;
 
-import logictechcorp.libraryex.IModData;
-import logictechcorp.libraryex.world.biome.data.iface.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import com.electronwill.nightconfig.core.Config;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public interface IBiomeTraitConfigurable extends IBiomeTrait
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
-    {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
-    }
+    /**
+     * Called when the server is starting to configure this biome trait.
+     *
+     * @param config The config that belongs to the biome trait.
+     */
+    void readFromConfig(Config config);
 
-    public abstract T getBiomeData();
+    /**
+     * Called when the server is stopping to save this biome trait.
+     *
+     * @param config The config that belongs to the biome trait.
+     */
+    void writeToConfig(Config config);
 }

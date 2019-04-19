@@ -15,23 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.trade;
 
-import logictechcorp.libraryex.IModData;
-import logictechcorp.libraryex.world.biome.data.iface.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.entity.IMerchant;
+import net.minecraft.entity.INpc;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public interface ITrader extends INpc, IMerchant
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
-    {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
-    }
-
-    public abstract T getBiomeData();
+    boolean useAlternateTexture();
 }

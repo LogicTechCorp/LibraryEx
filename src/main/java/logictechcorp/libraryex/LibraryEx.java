@@ -17,11 +17,13 @@
 
 package logictechcorp.libraryex;
 
+import logictechcorp.libraryex.api.LibraryExAPI;
+import logictechcorp.libraryex.api.internal.ILibraryExAPI;
+import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 @Mod(modid = LibraryEx.MOD_ID, name = LibraryEx.NAME, version = LibraryEx.VERSION, dependencies = LibraryEx.DEPENDENCIES)
-public class LibraryEx
+public class LibraryEx implements ILibraryExAPI
 {
     public static final String MOD_ID = "libraryex";
     public static final String NAME = "LibraryEx";
@@ -46,15 +48,23 @@ public class LibraryEx
     @Mod.EventHandler
     public void onFMLPreInitialization(FMLPreInitializationEvent event)
     {
+        LibraryExAPI.setInstance(this);
     }
 
-    @Mod.EventHandler
-    public void onFMLInitialization(FMLInitializationEvent event)
+    @Override
+    public boolean isStub()
     {
+        return false;
     }
 
-    @Mod.EventHandler
-    public void onFMLPostInitialization(FMLPostInitializationEvent event)
+    @Override
+    public IBiomeTraitRegistry getBiomeTraitRegistry()
     {
+        return BiomeTraitRegistry.INSTANCE;
+    }
+
+    public static ResourceLocation getResource(String name)
+    {
+        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
     }
 }

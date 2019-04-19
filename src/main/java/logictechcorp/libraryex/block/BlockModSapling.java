@@ -19,8 +19,8 @@ package logictechcorp.libraryex.block;
 
 import logictechcorp.libraryex.block.builder.BlockBuilder;
 import logictechcorp.libraryex.utility.BlockHelper;
-import logictechcorp.libraryex.world.generation.trait.BiomeTraitOakTree;
-import logictechcorp.libraryex.world.generation.trait.IBiomeTrait;
+import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
+import logictechcorp.libraryex.world.generation.trait.impl.BiomeTraitBasicTree;
 import net.minecraft.block.Block;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.properties.PropertyBool;
@@ -135,7 +135,7 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
             return;
         }
 
-        IBiomeTrait treeTrait = new BiomeTraitOakTree(1, false, 1.0F, pos.getY(), pos.up(8).getY(), this, this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
+        IBiomeTrait treeTrait = new BiomeTraitBasicTree(1, false, 1.0F, pos.getY(), pos.up(8).getY(), this, this.getLog(), this.getLeaf().withProperty(BlockModLeaf.DECAY, false), 4, 6);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 
