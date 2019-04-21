@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
@@ -30,9 +30,9 @@ import java.util.Random;
 
 public class BlockModOre extends BlockMod
 {
-    public BlockModOre(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModOre(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
     }
 
     @Override

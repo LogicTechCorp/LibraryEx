@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -49,9 +49,9 @@ public class BlockModSlab extends BlockMod
     protected static final AxisAlignedBB AABB_TOP_HALF = new AxisAlignedBB(0.0D, 0.5D, 0.0D, 1.0D, 1.0D, 1.0D);
     protected static final AxisAlignedBB AABB_BOTTOM_HALF = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
 
-    public BlockModSlab(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModSlab(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.setLightOpacity(255);
         this.useNeighborBrightness = true;
     }

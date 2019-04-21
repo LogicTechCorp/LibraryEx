@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import logictechcorp.libraryex.block.properties.UnlistedPropertyDynamic;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -35,9 +35,9 @@ public abstract class BlockDynamic extends BlockMod
     private final TexturePlacement texturePlacement;
     public static final UnlistedPropertyDynamic DYNAMIC = new UnlistedPropertyDynamic();
 
-    public BlockDynamic(ResourceLocation registryName, TexturePlacement texturePlacement, BlockBuilder builder)
+    public BlockDynamic(ResourceLocation registryName, TexturePlacement texturePlacement, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.texturePlacement = texturePlacement;
     }
 

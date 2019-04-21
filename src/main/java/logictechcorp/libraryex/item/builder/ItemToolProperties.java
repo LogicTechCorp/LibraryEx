@@ -19,37 +19,37 @@ package logictechcorp.libraryex.item.builder;
 
 import net.minecraft.item.Item;
 
-public class ItemToolBuilder extends ItemBuilder
+public class ItemToolProperties extends ItemProperties
 {
     private Item.ToolMaterial toolMaterial;
     private float attackDamage;
     private float attackSpeed;
 
-    public ItemToolBuilder(Item.ToolMaterial toolMaterial)
+    public ItemToolProperties(Item.ToolMaterial toolMaterial)
     {
         this.toolMaterial = toolMaterial;
     }
 
-    public ItemToolBuilder attackDamage(float attackDamage)
+    public ItemToolProperties attackDamage(float attackDamage)
     {
         this.attackDamage = attackDamage;
         return this;
     }
 
-    public ItemToolBuilder attackSpeed(float attackSpeed)
+    public ItemToolProperties attackSpeed(float attackSpeed)
     {
         this.attackSpeed = attackSpeed;
         return this;
     }
 
     @Override
-    public ItemToolBuilder copy()
+    public ItemToolProperties copy()
     {
-        ItemToolBuilder builder = (ItemToolBuilder) super.copy();
-        builder.toolMaterial = this.toolMaterial;
-        builder.attackDamage = this.attackDamage;
-        builder.attackSpeed = this.attackSpeed;
-        return builder;
+        ItemToolProperties properties = (ItemToolProperties) super.copy();
+        properties.toolMaterial = this.toolMaterial;
+        properties.attackDamage = this.attackDamage;
+        properties.attackSpeed = this.attackSpeed;
+        return properties;
     }
 
     public Item.ToolMaterial getToolMaterial()

@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
+import logictechcorp.libraryex.item.builder.ItemToolProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -27,18 +27,18 @@ public class ItemModSword extends ItemSword
 {
     private EnumRarity rarity;
 
-    public ItemModSword(ResourceLocation registryName, ItemToolBuilder builder)
+    public ItemModSword(ResourceLocation registryName, ItemToolProperties properties)
     {
-        super(builder.getToolMaterial());
+        super(properties.getToolMaterial());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }

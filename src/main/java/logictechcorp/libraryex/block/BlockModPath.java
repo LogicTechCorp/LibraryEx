@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -38,9 +38,9 @@ public class BlockModPath extends BlockMod
     private Block original;
     private static final AxisAlignedBB PATH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
 
-    public BlockModPath(ResourceLocation registryName, Block original, BlockBuilder builder)
+    public BlockModPath(ResourceLocation registryName, Block original, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.original = original;
         this.setLightOpacity(255);
     }

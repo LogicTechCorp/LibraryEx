@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.state.IBlockState;
@@ -28,21 +28,20 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class BlockModFence extends BlockFence
 {
-    public BlockModFence(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModFence(ResourceLocation registryName, BlockProperties properties)
     {
-        super(builder.getMaterial(), builder.getMapColor());
+        super(properties.getMaterial(), properties.getMapColor());
         this.setRegistryName(registryName);
-        this.setSoundType(builder.getSoundType());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.setLightLevel(builder.getLightLevel());
-        this.setHarvestLevel(builder.getHarvestTool(), builder.getHarvestLevel());
-        this.setHardness(builder.getHardness());
-        this.setResistance(builder.getResistance());
-        this.setTickRandomly(builder.needsRandomTick());
+        this.setSoundType(properties.getSoundType());
+        this.setLightLevel(properties.getLightLevel());
+        this.setHarvestLevel(properties.getHarvestTool(), properties.getHarvestLevel());
+        this.setHardness(properties.getHardness());
+        this.setResistance(properties.getResistance());
+        this.setTickRandomly(properties.needsRandomTick());
         this.setTranslationKey(registryName.toString());
         this.useNeighborBrightness = true;
-        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, builder.getMaterial(), "field_149764_J", "material");
-        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, builder.getMaterial().getMaterialMapColor(), "field_181083_K", "blockMapColor");
+        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, properties.getMaterial(), "field_149764_J", "material");
+        ObfuscationReflectionHelper.setPrivateValue(Block.class, this, properties.getMaterial().getMaterialMapColor(), "field_181083_K", "blockMapColor");
     }
 
     @Override

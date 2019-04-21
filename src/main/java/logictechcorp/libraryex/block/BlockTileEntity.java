@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import logictechcorp.libraryex.tileentity.TileEntityInventory;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -30,9 +30,9 @@ public class BlockTileEntity<T extends TileEntity> extends BlockMod
 {
     private final Class<T> cls;
 
-    public BlockTileEntity(ResourceLocation registryName, Class<T> cls, BlockBuilder builder)
+    public BlockTileEntity(ResourceLocation registryName, Class<T> cls, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         GameRegistry.registerTileEntity(cls, registryName);
         this.cls = cls;
     }

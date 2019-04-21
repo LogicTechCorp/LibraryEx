@@ -21,7 +21,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 
-public class ItemBuilder
+public class ItemProperties
 {
     private int maxDamage;
     private int maxStackSize = 64;
@@ -30,14 +30,14 @@ public class ItemBuilder
     private EnumRarity rarity = EnumRarity.COMMON;
     private boolean repairable = true;
 
-    public ItemBuilder maxDamage(int maxDamage)
+    public ItemProperties maxDamage(int maxDamage)
     {
         this.maxDamage = maxDamage;
         this.maxStackSize = 1;
         return this;
     }
 
-    public ItemBuilder maxStackSize(int maxStackSize)
+    public ItemProperties maxStackSize(int maxStackSize)
     {
         if(this.maxDamage > 0)
         {
@@ -50,40 +50,40 @@ public class ItemBuilder
         }
     }
 
-    public ItemBuilder containerItem(Item containerItem)
+    public ItemProperties containerItem(Item containerItem)
     {
         this.containerItem = containerItem;
         return this;
     }
 
-    public ItemBuilder creativeTab(CreativeTabs creativeTab)
+    public ItemProperties creativeTab(CreativeTabs creativeTab)
     {
         this.creativeTab = creativeTab;
         return this;
     }
 
-    public ItemBuilder rarity(EnumRarity rarity)
+    public ItemProperties rarity(EnumRarity rarity)
     {
         this.rarity = rarity;
         return this;
     }
 
-    public ItemBuilder unrepairable()
+    public ItemProperties unrepairable()
     {
         this.repairable = false;
         return this;
     }
 
-    public ItemBuilder copy()
+    public ItemProperties copy()
     {
-        ItemBuilder builder = new ItemBuilder();
-        builder.maxDamage = this.maxDamage;
-        builder.maxStackSize = this.maxStackSize;
-        builder.containerItem = this.containerItem;
-        builder.creativeTab = this.creativeTab;
-        builder.rarity = this.rarity;
-        builder.repairable = this.repairable;
-        return builder;
+        ItemProperties properties = new ItemProperties();
+        properties.maxDamage = this.maxDamage;
+        properties.maxStackSize = this.maxStackSize;
+        properties.containerItem = this.containerItem;
+        properties.creativeTab = this.creativeTab;
+        properties.rarity = this.rarity;
+        properties.repairable = this.repairable;
+        return properties;
     }
 
     public int getMaxDamage()

@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemBuilder;
+import logictechcorp.libraryex.item.builder.ItemProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,17 +27,17 @@ public class ItemMod extends Item
 {
     private EnumRarity rarity;
 
-    public ItemMod(ResourceLocation registryName, ItemBuilder builder)
+    public ItemMod(ResourceLocation registryName, ItemProperties properties)
     {
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }

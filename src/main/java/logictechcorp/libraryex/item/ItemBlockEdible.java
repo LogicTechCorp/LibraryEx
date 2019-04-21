@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemEdibleBuilder;
+import logictechcorp.libraryex.item.builder.ItemEdibleProperties;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,15 +41,15 @@ public class ItemBlockEdible extends ItemBlockMod
     private PotionEffect potionEffect;
     private float potionEffectProbability;
 
-    public ItemBlockEdible(Block block, ItemEdibleBuilder builder)
+    public ItemBlockEdible(Block block, ItemEdibleProperties properties)
     {
-        super(block, builder);
-        this.healAmount = builder.getHealAmount();
-        this.saturation = builder.getSaturation();
-        this.isWolfFood = builder.isWolfFood();
-        this.alwaysEdible = builder.isAlwaysEdible();
-        this.potionEffect = builder.getPotionEffect();
-        this.potionEffectProbability = builder.getPotionEffectProbability();
+        super(block, properties);
+        this.healAmount = properties.getHealAmount();
+        this.saturation = properties.getSaturation();
+        this.isWolfFood = properties.isWolfFood();
+        this.alwaysEdible = properties.isAlwaysEdible();
+        this.potionEffect = properties.getPotionEffect();
+        this.potionEffectProbability = properties.getPotionEffectProbability();
     }
 
     @Override

@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -35,9 +35,9 @@ public class BlockRising extends BlockMod
 {
     public static boolean riseInstantly;
 
-    public BlockRising(ResourceLocation registryName, BlockBuilder builder)
+    public BlockRising(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
     }
 
     @Override

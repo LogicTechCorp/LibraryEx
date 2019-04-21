@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemArmorBuilder;
+import logictechcorp.libraryex.item.builder.ItemArmorProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -27,18 +27,18 @@ public class ItemModArmor extends ItemArmor
 {
     private EnumRarity rarity;
 
-    public ItemModArmor(ResourceLocation registryName, ItemArmorBuilder builder)
+    public ItemModArmor(ResourceLocation registryName, ItemArmorProperties properties)
     {
-        super(builder.getArmorMaterial(), 0, builder.getEquipmentSlot());
+        super(properties.getArmorMaterial(), 0, properties.getEquipmentSlot());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }

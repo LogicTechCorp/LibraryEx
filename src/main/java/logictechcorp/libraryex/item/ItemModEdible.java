@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemEdibleBuilder;
+import logictechcorp.libraryex.item.builder.ItemEdibleProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -27,18 +27,18 @@ public class ItemModEdible extends ItemFood
 {
     private EnumRarity rarity;
 
-    public ItemModEdible(ResourceLocation registryName, ItemEdibleBuilder builder)
+    public ItemModEdible(ResourceLocation registryName, ItemEdibleProperties properties)
     {
-        super(builder.getHealAmount(), builder.getSaturation(), builder.isWolfFood());
+        super(properties.getHealAmount(), properties.getSaturation(), properties.isWolfFood());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }

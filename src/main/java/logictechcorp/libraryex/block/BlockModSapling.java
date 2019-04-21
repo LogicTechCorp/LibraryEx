@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import logictechcorp.libraryex.utility.BlockHelper;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
 import logictechcorp.libraryex.world.generation.trait.impl.BiomeTraitBasicTree;
@@ -42,9 +42,9 @@ public abstract class BlockModSapling extends BlockModBush implements IGrowable
     public static final PropertyBool GROW = PropertyBool.create("grow");
     protected static final AxisAlignedBB SAPLING_AABB = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
 
-    public BlockModSapling(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModSapling(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.setDefaultState(this.blockState.getBaseState().withProperty(GROW, false));
     }
 

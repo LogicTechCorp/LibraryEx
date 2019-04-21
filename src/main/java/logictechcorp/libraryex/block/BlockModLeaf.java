@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
@@ -47,9 +47,9 @@ public abstract class BlockModLeaf extends BlockMod implements IShearable
     public static final PropertyBool DECAY = PropertyBool.create("decay");
     private int[] surroundings;
 
-    public BlockModLeaf(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModLeaf(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.setDefaultState(this.blockState.getBaseState().withProperty(DECAY, true));
     }
 

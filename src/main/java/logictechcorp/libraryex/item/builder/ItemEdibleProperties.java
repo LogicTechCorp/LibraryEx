@@ -19,7 +19,7 @@ package logictechcorp.libraryex.item.builder;
 
 import net.minecraft.potion.PotionEffect;
 
-public class ItemEdibleBuilder extends ItemBuilder
+public class ItemEdibleProperties extends ItemProperties
 {
     private int healAmount;
     private float saturation;
@@ -28,37 +28,37 @@ public class ItemEdibleBuilder extends ItemBuilder
     private PotionEffect potionEffect;
     private float potionEffectProbability;
 
-    public ItemEdibleBuilder(int healAmount, float saturation, boolean isWolfFood)
+    public ItemEdibleProperties(int healAmount, float saturation, boolean isWolfFood)
     {
         this.healAmount = healAmount;
         this.saturation = saturation;
         this.isWolfFood = isWolfFood;
     }
 
-    public ItemEdibleBuilder potionEffect(PotionEffect potionEffect, float probability)
+    public ItemEdibleProperties potionEffect(PotionEffect potionEffect, float probability)
     {
         this.potionEffect = potionEffect;
         this.potionEffectProbability = probability;
         return this;
     }
 
-    public ItemEdibleBuilder alwaysEdible()
+    public ItemEdibleProperties alwaysEdible()
     {
         this.alwaysEdible = true;
         return this;
     }
 
     @Override
-    public ItemEdibleBuilder copy()
+    public ItemEdibleProperties copy()
     {
-        ItemEdibleBuilder builder = (ItemEdibleBuilder) super.copy();
-        builder.healAmount = this.healAmount;
-        builder.saturation = this.saturation;
-        builder.isWolfFood = this.isWolfFood;
-        builder.alwaysEdible = this.alwaysEdible;
-        builder.potionEffect = this.potionEffect;
-        builder.potionEffectProbability = this.potionEffectProbability;
-        return builder;
+        ItemEdibleProperties properties = (ItemEdibleProperties) super.copy();
+        properties.healAmount = this.healAmount;
+        properties.saturation = this.saturation;
+        properties.isWolfFood = this.isWolfFood;
+        properties.alwaysEdible = this.alwaysEdible;
+        properties.potionEffect = this.potionEffect;
+        properties.potionEffectProbability = this.potionEffectProbability;
+        return properties;
     }
 
     public int getHealAmount()

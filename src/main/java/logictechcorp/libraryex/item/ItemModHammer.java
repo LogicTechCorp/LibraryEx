@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
+import logictechcorp.libraryex.item.builder.ItemToolProperties;
 import logictechcorp.libraryex.utility.BlockHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -26,9 +26,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class ItemModHammer extends ItemModPickaxe
 {
-    public ItemModHammer(ResourceLocation registryName, ItemToolBuilder builder)
+    public ItemModHammer(ResourceLocation registryName, ItemToolProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
     }
 
     @Override

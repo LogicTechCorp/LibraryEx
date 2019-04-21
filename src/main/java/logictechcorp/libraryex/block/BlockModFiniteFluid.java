@@ -17,24 +17,23 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.BlockFluidFinite;
 import net.minecraftforge.fluids.Fluid;
 
 public class BlockModFiniteFluid extends BlockFluidFinite
 {
-    public BlockModFiniteFluid(ResourceLocation registryName, Fluid fluid, BlockBuilder builder)
+    public BlockModFiniteFluid(ResourceLocation registryName, Fluid fluid, BlockProperties properties)
     {
-        super(fluid, builder.getMaterial());
+        super(fluid, properties.getMaterial());
         this.setRegistryName(registryName);
-        this.setSoundType(builder.getSoundType());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.setLightLevel(builder.getLightLevel());
-        this.setHarvestLevel(builder.getHarvestTool(), builder.getHarvestLevel());
-        this.setHardness(builder.getHardness());
-        this.setResistance(builder.getResistance());
-        this.setTickRandomly(builder.needsRandomTick());
+        this.setSoundType(properties.getSoundType());
+        this.setLightLevel(properties.getLightLevel());
+        this.setHarvestLevel(properties.getHarvestTool(), properties.getHarvestLevel());
+        this.setHardness(properties.getHardness());
+        this.setResistance(properties.getResistance());
+        this.setTickRandomly(properties.needsRandomTick());
         this.setTranslationKey(registryName.toString());
     }
 }

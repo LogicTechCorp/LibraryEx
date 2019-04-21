@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
+import logictechcorp.libraryex.item.builder.ItemToolProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
@@ -27,19 +27,19 @@ public class ItemModHoe extends ItemHoe
 {
     private EnumRarity rarity;
 
-    public ItemModHoe(ResourceLocation registryName, ItemToolBuilder builder)
+    public ItemModHoe(ResourceLocation registryName, ItemToolProperties properties)
     {
-        super(builder.getToolMaterial());
+        super(properties.getToolMaterial());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
 
-        this.rarity = builder.getRarity();
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }

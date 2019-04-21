@@ -22,14 +22,12 @@ import logictechcorp.libraryex.block.HarvestTool;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 
-public class BlockBuilder
+public class BlockProperties
 {
     private Material material;
     private MapColor mapColor;
     private SoundType soundType = SoundType.STONE;
-    private CreativeTabs creativeTab = CreativeTabs.DECORATIONS;
     private float lightLevel;
     private String harvestTool;
     private int harvestLevel;
@@ -37,67 +35,60 @@ public class BlockBuilder
     private float resistance;
     private boolean tickRandomly;
 
-    public BlockBuilder(Material material, MapColor mapColor)
+    public BlockProperties(Material material, MapColor mapColor)
     {
         this.material = material;
         this.mapColor = mapColor;
     }
 
-    public BlockBuilder sound(SoundType soundType)
+    public BlockProperties sound(SoundType soundType)
     {
         this.soundType = soundType;
         return this;
     }
 
-    public BlockBuilder creativeTab(CreativeTabs creativeTab)
-    {
-        this.creativeTab = creativeTab;
-        return this;
-    }
-
-    public BlockBuilder lightLevel(float lightLevel)
+    public BlockProperties lightLevel(float lightLevel)
     {
         this.lightLevel = lightLevel;
         return this;
     }
 
-    public BlockBuilder harvestLevel(HarvestTool harvestTool, HarvestLevel harvestLevel)
+    public BlockProperties harvestLevel(HarvestTool harvestTool, HarvestLevel harvestLevel)
     {
         this.harvestTool = harvestTool.toString().toLowerCase();
         this.harvestLevel = harvestLevel.getLevel();
         return this;
     }
 
-    public BlockBuilder hardness(float hardness)
+    public BlockProperties hardness(float hardness)
     {
         this.hardness = hardness;
         return this;
     }
 
-    public BlockBuilder resistance(float resistance)
+    public BlockProperties resistance(float resistance)
     {
         this.resistance = Math.max(0.0F, resistance);
         return this;
     }
 
-    public BlockBuilder tickRandomly()
+    public BlockProperties tickRandomly()
     {
         this.tickRandomly = true;
         return this;
     }
 
-    public BlockBuilder copy()
+    public BlockProperties copy()
     {
-        BlockBuilder builder = new BlockBuilder(this.material, this.mapColor);
-        builder.soundType = this.soundType;
-        builder.creativeTab = this.creativeTab;
-        builder.lightLevel = this.lightLevel;
-        builder.harvestTool = this.harvestTool;
-        builder.harvestLevel = this.harvestLevel;
-        builder.hardness = this.hardness;
-        builder.resistance = this.resistance;
-        builder.tickRandomly = this.tickRandomly;
-        return builder;
+        BlockProperties properties = new BlockProperties(this.material, this.mapColor);
+        properties.soundType = this.soundType;
+        properties.lightLevel = this.lightLevel;
+        properties.harvestTool = this.harvestTool;
+        properties.harvestLevel = this.harvestLevel;
+        properties.hardness = this.hardness;
+        properties.resistance = this.resistance;
+        properties.tickRandomly = this.tickRandomly;
+        return properties;
     }
 
     public Material getMaterial()
@@ -113,11 +104,6 @@ public class BlockBuilder
     public SoundType getSoundType()
     {
         return this.soundType;
-    }
-
-    public CreativeTabs getCreativeTab()
-    {
-        return this.creativeTab;
     }
 
     public float getLightLevel()

@@ -17,23 +17,22 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 
 public class BlockMod extends Block
 {
-    public BlockMod(ResourceLocation registryName, BlockBuilder builder)
+    public BlockMod(ResourceLocation registryName, BlockProperties properties)
     {
-        super(builder.getMaterial(), builder.getMapColor());
+        super(properties.getMaterial(), properties.getMapColor());
         this.setRegistryName(registryName);
-        this.setSoundType(builder.getSoundType());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.setLightLevel(builder.getLightLevel());
-        this.setHarvestLevel(builder.getHarvestTool(), builder.getHarvestLevel());
-        this.setHardness(builder.getHardness());
-        this.setResistance(builder.getResistance());
-        this.setTickRandomly(builder.needsRandomTick());
+        this.setSoundType(properties.getSoundType());
+        this.setLightLevel(properties.getLightLevel());
+        this.setHarvestLevel(properties.getHarvestTool(), properties.getHarvestLevel());
+        this.setHardness(properties.getHardness());
+        this.setResistance(properties.getResistance());
+        this.setTickRandomly(properties.needsRandomTick());
         this.setTranslationKey(registryName.toString());
     }
 }

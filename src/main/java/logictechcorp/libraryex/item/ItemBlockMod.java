@@ -17,31 +17,40 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemBuilder;
+import logictechcorp.libraryex.item.builder.ItemProperties;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 public class ItemBlockMod extends ItemBlock
 {
+    private CreativeTabs creativeTab;
     private EnumRarity rarity;
 
-    public ItemBlockMod(Block block, ItemBuilder builder)
+    public ItemBlockMod(Block block, ItemProperties properties)
     {
         super(block);
         this.setRegistryName(block.getRegistryName());
         this.setTranslationKey(block.getRegistryName().toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }
+    }
+
+    @Override
+    public CreativeTabs getCreativeTab()
+    {
+        return this.creativeTab;
     }
 
     @Override
@@ -54,5 +63,12 @@ public class ItemBlockMod extends ItemBlock
     public EnumRarity getRarity(ItemStack stack)
     {
         return this.rarity;
+    }
+
+    @Override
+    public Item setCreativeTab(CreativeTabs creativeTab)
+    {
+        this.creativeTab = creativeTab;
+        return this;
     }
 }

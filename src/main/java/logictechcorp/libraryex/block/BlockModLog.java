@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockBuilder;
+import logictechcorp.libraryex.block.builder.BlockProperties;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,9 +31,9 @@ public class BlockModLog extends BlockMod
 {
     public static final PropertyEnum<EnumAxis> AXIS = PropertyEnum.create("axis", EnumAxis.class);
 
-    public BlockModLog(ResourceLocation registryName, BlockBuilder builder)
+    public BlockModLog(ResourceLocation registryName, BlockProperties properties)
     {
-        super(registryName, builder);
+        super(registryName, properties);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AXIS, EnumAxis.Y));
     }
 

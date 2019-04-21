@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.item;
 
 import logictechcorp.libraryex.block.BlockModSlab;
-import logictechcorp.libraryex.item.builder.ItemBuilder;
+import logictechcorp.libraryex.item.builder.ItemProperties;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -38,9 +38,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockModSlab extends ItemBlockMod
 {
-    public ItemBlockModSlab(BlockModSlab block, ItemBuilder builder)
+    public ItemBlockModSlab(BlockModSlab block, ItemProperties properties)
     {
-        super(block, builder);
+        super(block, properties);
         this.setHasSubtypes(true);
     }
 

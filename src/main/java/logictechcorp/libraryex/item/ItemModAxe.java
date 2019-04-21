@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.item;
 
-import logictechcorp.libraryex.item.builder.ItemToolBuilder;
+import logictechcorp.libraryex.item.builder.ItemToolProperties;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
@@ -27,20 +27,20 @@ public class ItemModAxe extends ItemAxe
 {
     private EnumRarity rarity;
 
-    public ItemModAxe(ResourceLocation registryName, ItemToolBuilder builder)
+    public ItemModAxe(ResourceLocation registryName, ItemToolProperties properties)
     {
-        super(builder.getToolMaterial(), builder.getAttackDamage(), builder.getAttackSpeed());
+        super(properties.getToolMaterial(), properties.getAttackDamage(), properties.getAttackSpeed());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(builder.getMaxDamage());
-        this.setMaxStackSize(builder.getMaxStackSize());
-        this.setContainerItem(builder.getContainerItem());
-        this.setCreativeTab(builder.getCreativeTab());
-        this.attackDamage = builder.getAttackDamage();
-        this.attackSpeed = builder.getAttackSpeed();
-        this.rarity = builder.getRarity();
+        this.setMaxDamage(properties.getMaxDamage());
+        this.setMaxStackSize(properties.getMaxStackSize());
+        this.setContainerItem(properties.getContainerItem());
+        this.setCreativeTab(properties.getCreativeTab());
+        this.attackDamage = properties.getAttackDamage();
+        this.attackSpeed = properties.getAttackSpeed();
+        this.rarity = properties.getRarity();
 
-        if(!builder.isRepairable())
+        if(!properties.isRepairable())
         {
             this.setNoRepair();
         }
