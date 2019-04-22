@@ -19,35 +19,30 @@ package logictechcorp.libraryex.world.generation.trait.impl;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.BlockBush;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class BiomeTraitScatter extends BiomeTraitConfigurable
+public class BiomeTraitPatch extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
-    private Placement placement;
-
-    public BiomeTraitScatter(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
+    private int patchWidth;
+    
+    public BiomeTraitPatch(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, int patchWidth)
     {
         super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToTarget = blockToTarget;
-        this.placement = placement;
+        this.patchWidth = patchWidth;
     }
 
-    private BiomeTraitScatter(Builder builder)
+    private BiomeTraitPatch(Builder builder)
     {
         super(builder);
-        this.blockToSpawn = builder.blockToSpawn;
-        this.blockToTarget = builder.blockToTarget;
-        this.placement = builder.placement;
     }
 
     @Override
@@ -56,7 +51,7 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
         super.readFromConfig(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.placement = config.getEnumOrElse("placement", Placement.ON_GROUND);
+        this.patchWidth = config.get("patchWidth");
     }
 
     @Override
@@ -65,62 +60,53 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
         super.writeToConfig(config);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
         ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase());
+        config.add("patchWidth", this.patchWidth);
     }
 
     @Override
     public boolean generate(World world, BlockPos pos, Random random)
     {
-        if(this.blockToSpawn == null || this.blockToTarget == null || this.placement == null)
+        if(this.blockToSpawn == null || this.blockToTarget == null)
         {
             return false;
         }
 
-        for(int i = 0; i < 64; i++)
+        while (world.isAirBlock(pos) && pos.getY() > 2)
         {
-            BlockPos newPos = pos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
+            pos = pos.down();
+        }
 
-            if(world.isAirBlock(newPos) && world.getBlockState(newPos.down()) == this.blockToTarget)
+        if (world.getBlockState(pos) != this.blockToTarget)
+        {
+            return false;
+        }
+        else
+        {
+            int width = random.nextInt(this.patchWidth - 2) + 2;
+
+            for (int posX = pos.getX() - width; posX <= pos.getX() + width; posX++)
             {
-                if(this.blockToSpawn instanceof BlockBush)
+                for (int posZ = pos.getZ() - width; posZ <= pos.getZ() + width; posZ++)
                 {
-                    if(((BlockBush) this.blockToSpawn).canBlockStay(world, this.placement.offsetPos(pos), this.blockToSpawn))
+                    int areaX = posX - pos.getX();
+                    int areaZ = posZ - pos.getZ();
+
+                    if (areaX * areaX + areaZ * areaZ <= width * width)
                     {
-                        world.setBlockState(this.placement.offsetPos(newPos), this.blockToSpawn, 2);
+                        for (int posY = pos.getY() - 1; posY <= pos.getY() + 1; posY++)
+                        {
+                            BlockPos blockPos = new BlockPos(posX, posY, posZ);
+
+                            if(world.getBlockState(blockPos) == this.blockToTarget)
+                            {
+                                world.setBlockState(blockPos, this.blockToSpawn, 2);
+                            }
+                        }
                     }
                 }
-                else
-                {
-                    world.setBlockState(this.placement.offsetPos(newPos), this.blockToSpawn, 2);
-                }
             }
-        }
 
-        return true;
-    }
-
-    public enum Placement
-    {
-        ON_GROUND(null),
-        IN_GROUND(EnumFacing.DOWN);
-
-        EnumFacing offset;
-
-        Placement(EnumFacing offsetIn)
-        {
-            this.offset = offsetIn;
-        }
-
-        public BlockPos offsetPos(BlockPos pos)
-        {
-            if(this.offset != null)
-            {
-                return pos.offset(this.offset);
-            }
-            else
-            {
-                return pos;
-            }
+            return true;
         }
     }
 
@@ -128,13 +114,13 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;
-        private Placement placement;
+        private int patchWidth;
 
         public Builder()
         {
-            this.blockToSpawn = Blocks.TALLGRASS.getDefaultState();
-            this.blockToTarget = Blocks.GRASS.getDefaultState();
-            this.placement = Placement.ON_GROUND;
+            this.blockToSpawn = Blocks.PACKED_ICE.getDefaultState();
+            this.blockToTarget = Blocks.ICE.getDefaultState();
+            this.patchWidth = 4;
         }
 
         public Builder blockToSpawn(IBlockState blockToSpawn)
@@ -149,16 +135,16 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
             return this;
         }
 
-        public Builder placement(Placement placement)
+        public Builder patchWidth(int patchWidth)
         {
-            this.placement = placement;
+            this.patchWidth = patchWidth;
             return this;
         }
 
         @Override
         public BiomeTrait create()
         {
-            return new BiomeTraitScatter(this);
+            return new BiomeTraitPatch(this);
         }
     }
 }

@@ -37,6 +37,7 @@ final class BiomeTraitRegistry implements IBiomeTraitRegistry
     {
         this.registerBiomeTrait(LibraryEx.getResource("scatter"), new BiomeTraitScatter.Builder(), BiomeTraitScatter.class);
         this.registerBiomeTrait(LibraryEx.getResource("cluster"), new BiomeTraitCluster.Builder(), BiomeTraitCluster.class);
+        this.registerBiomeTrait(LibraryEx.getResource("patch"), new BiomeTraitPatch.Builder(), BiomeTraitPatch.class);
         this.registerBiomeTrait(LibraryEx.getResource("ore"), new BiomeTraitOre.Builder(), BiomeTraitOre.class);
         this.registerBiomeTrait(LibraryEx.getResource("fluid"), new BiomeTraitFluid.Builder(), BiomeTraitFluid.class);
         this.registerBiomeTrait(LibraryEx.getResource("pool"), new BiomeTraitPool.Builder(), BiomeTraitPool.class);
