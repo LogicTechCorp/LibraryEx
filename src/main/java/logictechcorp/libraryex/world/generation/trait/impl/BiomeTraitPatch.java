@@ -31,7 +31,7 @@ public class BiomeTraitPatch extends BiomeTraitConfigurable
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
     private int patchWidth;
-    
+
     public BiomeTraitPatch(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, int patchWidth)
     {
         super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
@@ -71,12 +71,12 @@ public class BiomeTraitPatch extends BiomeTraitConfigurable
             return false;
         }
 
-        while (world.isAirBlock(pos) && pos.getY() > 2)
+        while(world.isAirBlock(pos) && pos.getY() > 2)
         {
             pos = pos.down();
         }
 
-        if (world.getBlockState(pos) != this.blockToTarget)
+        if(world.getBlockState(pos) != this.blockToTarget)
         {
             return false;
         }
@@ -84,16 +84,16 @@ public class BiomeTraitPatch extends BiomeTraitConfigurable
         {
             int width = random.nextInt(this.patchWidth - 2) + 2;
 
-            for (int posX = pos.getX() - width; posX <= pos.getX() + width; posX++)
+            for(int posX = pos.getX() - width; posX <= pos.getX() + width; posX++)
             {
-                for (int posZ = pos.getZ() - width; posZ <= pos.getZ() + width; posZ++)
+                for(int posZ = pos.getZ() - width; posZ <= pos.getZ() + width; posZ++)
                 {
                     int areaX = posX - pos.getX();
                     int areaZ = posZ - pos.getZ();
 
-                    if (areaX * areaX + areaZ * areaZ <= width * width)
+                    if(areaX * areaX + areaZ * areaZ <= width * width)
                     {
-                        for (int posY = pos.getY() - 1; posY <= pos.getY() + 1; posY++)
+                        for(int posY = pos.getY() - 1; posY <= pos.getY() + 1; posY++)
                         {
                             BlockPos blockPos = new BlockPos(posX, posY, posZ);
 

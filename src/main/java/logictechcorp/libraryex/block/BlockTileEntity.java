@@ -63,12 +63,9 @@ public class BlockTileEntity<T extends TileEntity> extends BlockMod
     {
         TileEntity tileEntity = world.getTileEntity(pos);
 
-        if(tileEntity != null)
+        if(tileEntity instanceof TileEntityInventory)
         {
-            if(tileEntity instanceof TileEntityInventory)
-            {
-                ((TileEntityInventory) tileEntity).dropInventoryItems(world, pos);
-            }
+            ((TileEntityInventory) tileEntity).dropInventoryItems(world, pos);
         }
 
         super.breakBlock(world, pos, state);
