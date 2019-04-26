@@ -38,10 +38,13 @@ final class BiomeTraitRegistry implements IBiomeTraitRegistry
         this.registerBiomeTrait(LibraryEx.getResource("scatter"), new BiomeTraitScatter.Builder(), BiomeTraitScatter.class);
         this.registerBiomeTrait(LibraryEx.getResource("cluster"), new BiomeTraitCluster.Builder(), BiomeTraitCluster.class);
         this.registerBiomeTrait(LibraryEx.getResource("patch"), new BiomeTraitPatch.Builder(), BiomeTraitPatch.class);
+        this.registerBiomeTrait(LibraryEx.getResource("boulder"), new BiomeTraitBoulder.Builder(), BiomeTraitBoulder.class);
         this.registerBiomeTrait(LibraryEx.getResource("ore"), new BiomeTraitOre.Builder(), BiomeTraitOre.class);
         this.registerBiomeTrait(LibraryEx.getResource("fluid"), new BiomeTraitFluid.Builder(), BiomeTraitFluid.class);
         this.registerBiomeTrait(LibraryEx.getResource("pool"), new BiomeTraitPool.Builder(), BiomeTraitPool.class);
         this.registerBiomeTrait(LibraryEx.getResource("basic_tree"), new BiomeTraitBasicTree.Builder(), BiomeTraitBasicTree.class);
+        this.registerBiomeTrait(LibraryEx.getResource("dense_tree"), new BiomeTraitDenseTree.Builder(), BiomeTraitDenseTree.class);
+        this.registerBiomeTrait(LibraryEx.getResource("sparse_tree"), new BiomeTraitSparseTree.Builder(), BiomeTraitSparseTree.class);
         this.registerBiomeTrait(LibraryEx.getResource("big_mushroom"), new BiomeTraitBigMushroom.Builder(), BiomeTraitBigMushroom.class);
         this.registerBiomeTrait(LibraryEx.getResource("structure"), new BiomeTraitStructure.Builder(), BiomeTraitStructure.class);
     }

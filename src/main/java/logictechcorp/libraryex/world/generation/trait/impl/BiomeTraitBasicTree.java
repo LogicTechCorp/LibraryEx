@@ -17,105 +17,58 @@
 
 package logictechcorp.libraryex.world.generation.trait.impl;
 
-import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockOldLeaf;
-import net.minecraft.block.BlockOldLog;
-import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IPlantable;
 
 import java.util.Random;
 
-public class BiomeTraitBasicTree extends BiomeTraitConfigurable
+public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
 {
-    private IPlantable sapling;
-    private IBlockState logBlock;
-    private IBlockState leafBlock;
-    private int minimumGrowthHeight;
-    private int maximumGrowthHeight;
-
-    public BiomeTraitBasicTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IPlantable sapling, IBlockState logBlock, IBlockState leafBlock, int minimumGrowthHeight, int maximumGrowthHeight)
+    public BiomeTraitBasicTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState logBlock, IBlockState leafBlock, IBlockState blockToTarget, int minimumGrowthHeight, int maximumGrowthHeight)
     {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.sapling = sapling;
-        this.logBlock = logBlock;
-        this.leafBlock = leafBlock;
-        this.minimumGrowthHeight = minimumGrowthHeight;
-        this.maximumGrowthHeight = maximumGrowthHeight;
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight, logBlock, leafBlock, blockToTarget, minimumGrowthHeight, maximumGrowthHeight);
     }
 
     private BiomeTraitBasicTree(Builder builder)
     {
         super(builder);
-        this.sapling = builder.sapling;
         this.logBlock = builder.logBlock;
         this.leafBlock = builder.leafBlock;
+        this.blockToTarget = builder.blockToTarget;
         this.minimumGrowthHeight = builder.minimumGrowthHeight;
         this.maximumGrowthHeight = builder.maximumGrowthHeight;
     }
 
     @Override
-    public void readFromConfig(Config config)
-    {
-        super.readFromConfig(config);
-        this.sapling = (IPlantable) ConfigHelper.getBlockState(config, "sapling");
-        this.logBlock = ConfigHelper.getBlockState(config, "logBlock");
-        this.leafBlock = ConfigHelper.getBlockState(config, "leafBlock");
-        this.minimumGrowthHeight = config.getOrElse("minimumGrowthHeight", 2);
-        this.maximumGrowthHeight = config.getOrElse("maximumGrowthHeight", 32);
-    }
-
-    @Override
-    public void writeToConfig(Config config)
-    {
-        super.writeToConfig(config);
-        ConfigHelper.setBlockState(config, "sapling", (IBlockState) this.sapling);
-        ConfigHelper.setBlockState(config, "logBlock", this.logBlock);
-        ConfigHelper.setBlockState(config, "leafBlock", this.leafBlock);
-        config.add("minimumGrowthHeight", this.minimumGrowthHeight);
-        config.add("maximumGrowthHeight", this.maximumGrowthHeight);
-    }
-
-    @Override
     public boolean generate(World world, BlockPos pos, Random random)
     {
-        if(this.logBlock == null || this.leafBlock == null)
-        {
-            return false;
-        }
-
         int height = RandomHelper.getNumberInRange(this.minimumGrowthHeight, this.maximumGrowthHeight, random);
         boolean flag = true;
 
         if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getHeight())
         {
-            for(int posY = pos.getY(); posY <= pos.getY() + 1 + height; ++posY)
+            for(int posY = pos.getY(); posY <= pos.getY() + 1 + height; posY++)
             {
-                int k = 1;
+                int adjustedHeight = 1;
 
                 if(posY == pos.getY())
                 {
-                    k = 0;
+                    adjustedHeight = 0;
                 }
 
                 if(posY >= pos.getY() + 1 + height - 2)
                 {
-                    k = 2;
+                    adjustedHeight = 2;
                 }
 
                 BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
-                for(int posX = pos.getX() - k; posX <= pos.getX() + k && flag; ++posX)
+                for(int posX = pos.getX() - adjustedHeight; posX <= pos.getX() + adjustedHeight && flag; posX++)
                 {
-                    for(int posZ = pos.getZ() - k; posZ <= pos.getZ() + k && flag; ++posZ)
+                    for(int posZ = pos.getZ() - adjustedHeight; posZ <= pos.getZ() + adjustedHeight && flag; posZ++)
                     {
                         if(posY >= 0 && posY < world.getHeight())
                         {
@@ -140,7 +93,7 @@ public class BiomeTraitBasicTree extends BiomeTraitConfigurable
             {
                 IBlockState checkState = world.getBlockState(pos.down());
 
-                if(checkState.getBlock().canSustainPlant(checkState, world, pos.down(), EnumFacing.UP, this.sapling) && pos.getY() < world.getHeight() - height - 1)
+                if(this.blockToTarget == checkState && pos.getY() < world.getHeight() - height - 1)
                 {
                     checkState.getBlock().onPlantGrow(checkState, world, pos.down(), pos);
 
@@ -196,65 +149,8 @@ public class BiomeTraitBasicTree extends BiomeTraitConfigurable
         }
     }
 
-    private boolean canGrowInto(Block block)
+    public static class Builder extends BiomeTraitAbstractTree.Builder
     {
-        Material material = block.getDefaultState().getMaterial();
-        return material == Material.AIR || material == Material.LEAVES;
-    }
-
-    private boolean isReplaceable(World world, BlockPos pos)
-    {
-        IBlockState state = world.getBlockState(pos);
-        return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || this.canGrowInto(state.getBlock());
-    }
-
-    public static class Builder extends BiomeTrait.Builder
-    {
-        private IPlantable sapling;
-        private IBlockState logBlock;
-        private IBlockState leafBlock;
-        private int minimumGrowthHeight;
-        private int maximumGrowthHeight;
-
-        public Builder()
-        {
-            this.sapling = (IPlantable) Blocks.SAPLING;
-            this.logBlock = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
-            this.leafBlock = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK);
-            this.minimumGrowthHeight = 4;
-            this.maximumGrowthHeight = 6;
-        }
-
-        public Builder sapling(IPlantable sapling)
-        {
-            this.sapling = sapling;
-            return this;
-        }
-
-        public Builder logBlock(IBlockState logBlock)
-        {
-            this.logBlock = logBlock;
-            return this;
-        }
-
-        public Builder leafBlock(IBlockState leafBlock)
-        {
-            this.leafBlock = leafBlock;
-            return this;
-        }
-
-        public Builder minimumGrowthHeight(int minimumGrowthHeight)
-        {
-            this.minimumGrowthHeight = minimumGrowthHeight;
-            return this;
-        }
-
-        public Builder maximumGrowthHeight(int maximumGrowthHeight)
-        {
-            this.maximumGrowthHeight = maximumGrowthHeight;
-            return this;
-        }
-
         @Override
         public BiomeTrait create()
         {

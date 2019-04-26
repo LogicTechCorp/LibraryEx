@@ -116,22 +116,22 @@ public class BiomeTraitCluster extends BiomeTraitConfigurable
 
                 if(world.isAirBlock(newPos))
                 {
-                    int j = 0;
+                    int adjacentBlocks = 0;
 
                     for(EnumFacing facing : EnumFacing.values())
                     {
                         if(world.getBlockState(newPos.offset(facing)).getBlock() == this.blockToSpawn.getBlock())
                         {
-                            j++;
+                            adjacentBlocks++;
                         }
 
-                        if(j > 1)
+                        if(adjacentBlocks > 1)
                         {
                             break;
                         }
                     }
 
-                    if(j == 1)
+                    if(adjacentBlocks == 1)
                     {
                         world.setBlockState(newPos, this.blockToSpawn, 3);
                     }

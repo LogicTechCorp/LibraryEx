@@ -21,32 +21,28 @@ import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
-public class BiomeTraitScatter extends BiomeTraitConfigurable
+public class BiomeTraitBoulder extends BiomeTraitConfigurable
 {
     private IBlockState blockToSpawn;
     private IBlockState blockToTarget;
-    private Placement placement;
+    private int radius;
 
-    public BiomeTraitScatter(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
+    public BiomeTraitBoulder(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, int radius)
     {
         super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
         this.blockToSpawn = blockToSpawn;
         this.blockToTarget = blockToTarget;
-        this.placement = placement;
+        this.radius = radius;
     }
 
-    private BiomeTraitScatter(Builder builder)
+    public BiomeTraitBoulder(Builder builder)
     {
         super(builder);
-        this.blockToSpawn = builder.blockToSpawn;
-        this.blockToTarget = builder.blockToTarget;
-        this.placement = builder.placement;
     }
 
     @Override
@@ -55,7 +51,7 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
         super.readFromConfig(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.placement = config.getEnumOrElse("placement", Placement.ON_GROUND);
+        this.radius = config.getOrElse("radius", 4);
     }
 
     @Override
@@ -64,71 +60,63 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
         super.writeToConfig(config);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
         ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase());
+        config.add("radius", this.radius);
     }
 
     @Override
     public boolean generate(World world, BlockPos pos, Random random)
     {
-        if(this.blockToSpawn == null || this.blockToTarget == null || this.placement == null)
+        if(this.blockToSpawn == null || this.blockToTarget == null)
         {
             return false;
         }
 
-        for(int i = 0; i < 64; i++)
+        while(true)
         {
-            BlockPos newPos = pos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-
-            if(world.isAirBlock(newPos))
+            airCheckLabel:
             {
-                if((this.placement == Placement.ON_GROUND || this.placement == Placement.IN_GROUND) && world.getBlockState(newPos.down()) == this.blockToTarget)
+                if(pos.getY() > 3)
                 {
-                    BlockPos offsetPos = this.placement.offsetPos(newPos);
-
-                    if(this.blockToSpawn.getBlock().canPlaceBlockAt(world, offsetPos))
+                    if(world.isAirBlock(pos.down()))
                     {
-                        world.setBlockState(offsetPos, this.blockToSpawn, 3);
+                        break airCheckLabel;
+                    }
+
+                    IBlockState state = world.getBlockState(pos.down());
+
+                    if(this.blockToTarget != state)
+                    {
+                        break airCheckLabel;
                     }
                 }
-                else if((this.placement == Placement.ON_ROOF || this.placement == Placement.IN_ROOF) && world.getBlockState(newPos.up()) == this.blockToTarget)
+
+                if(pos.getY() <= 3)
                 {
-                    BlockPos offsetPos = this.placement.offsetPos(newPos);
-
-                    if(this.blockToSpawn.getBlock().canPlaceBlockAt(world, offsetPos))
-                    {
-                        world.setBlockState(offsetPos, this.blockToSpawn, 3);
-                    }
+                    return false;
                 }
+
+                for(int i = 0; this.radius >= 0 && i < 3; i++)
+                {
+                    int posX = this.radius + random.nextInt(2);
+                    int posY = this.radius + random.nextInt(2);
+                    int posZ = this.radius + random.nextInt(2);
+                    float distance = (float) (posX + posY + posZ) * 0.333F + 0.5F;
+
+                    for(BlockPos posLocal : BlockPos.getAllInBox(pos.add(-posX, -posY, -posZ), pos.add(posX, posY, posZ)))
+                    {
+                        if(posLocal.distanceSq(pos) <= (double) (distance * distance))
+                        {
+                            world.setBlockState(posLocal, this.blockToSpawn, 4);
+                        }
+                    }
+
+                    pos = pos.add(-(this.radius + 1) + random.nextInt(2 + this.radius * 2), 0 - random.nextInt(2), -(this.radius + 1) + random.nextInt(2 + this.radius * 2));
+                }
+
+                return true;
             }
-        }
 
-        return true;
-    }
-
-    public enum Placement
-    {
-        ON_GROUND(null),
-        IN_GROUND(EnumFacing.DOWN),
-        ON_ROOF(null),
-        IN_ROOF(EnumFacing.UP);
-
-        EnumFacing offset;
-
-        Placement(EnumFacing offsetIn)
-        {
-            this.offset = offsetIn;
-        }
-
-        public BlockPos offsetPos(BlockPos pos)
-        {
-            if(this.offset != null)
-            {
-                return pos.offset(this.offset);
-            }
-            else
-            {
-                return pos;
-            }
+            pos = pos.down();
         }
     }
 
@@ -136,13 +124,13 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;
-        private Placement placement;
+        private int radius;
 
         public Builder()
         {
-            this.blockToSpawn = Blocks.TALLGRASS.getDefaultState();
+            this.blockToSpawn = Blocks.MOSSY_COBBLESTONE.getDefaultState();
             this.blockToTarget = Blocks.GRASS.getDefaultState();
-            this.placement = Placement.ON_GROUND;
+            this.radius = 4;
         }
 
         public Builder blockToSpawn(IBlockState blockToSpawn)
@@ -157,16 +145,16 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
             return this;
         }
 
-        public Builder placement(Placement placement)
+        public Builder radius(int radius)
         {
-            this.placement = placement;
+            this.radius = radius;
             return this;
         }
 
         @Override
         public BiomeTrait create()
         {
-            return new BiomeTraitScatter(this);
+            return new BiomeTraitBoulder(this);
         }
     }
 }
