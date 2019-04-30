@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.internal;
+package logictechcorp.libraryex.api.internal.iface;
 
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
 
