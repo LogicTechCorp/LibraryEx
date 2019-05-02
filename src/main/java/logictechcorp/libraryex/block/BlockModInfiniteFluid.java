@@ -24,7 +24,6 @@ import net.minecraftforge.fluids.Fluid;
 
 public class BlockModInfiniteFluid extends BlockFluidClassic
 {
-
     public BlockModInfiniteFluid(ResourceLocation registryName, Fluid fluid, BlockProperties properties)
     {
         super(fluid, properties.getMaterial());
