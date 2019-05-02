@@ -17,7 +17,6 @@
 
 package logictechcorp.libraryex.utility;
 
-import logictechcorp.libraryex.LibraryEx;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -76,11 +75,6 @@ public class WorldHelper
 
     public static String getSaveDirectory(World world)
     {
-        if(LibraryEx.CONFIG_DIRECTORY.getPath().length() == 1)
-        {
-            return world.getSaveHandler().getWorldDirectory().getName();
-        }
-
-        return "saves/" + world.getSaveHandler().getWorldDirectory().getName();
+        return world.getSaveHandler().getWorldDirectory().toString();
     }
 }

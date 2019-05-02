@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.world.biome.data.iface;
 
 import com.electronwill.nightconfig.core.Config;
+import logictechcorp.libraryex.api.IBiomeDataAPI;
 
 public interface IBiomeDataConfigurable extends IBiomeData
 {
@@ -26,7 +27,7 @@ public interface IBiomeDataConfigurable extends IBiomeData
      *
      * @param config The config that belongs to the biome data.
      */
-    void readFromConfig(Config config);
+    void readFromConfig(IBiomeDataAPI biomeDataAPI, Config config);
 
     /**
      * Called when the server is stopping to save this biome data.

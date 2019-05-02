@@ -29,11 +29,11 @@ import java.util.Map;
 public interface IBiomeData
 {
     /**
-     * Called to get the biome associated with this data.
+     * Returns true if this data represents a sub biome.
      *
-     * @return The biome associated with this data.
+     * @return True if this data represents a sub biome.
      */
-    Biome getBiome();
+    boolean isSubBiomeData();
 
     /**
      * Called to check if the associated biome should generate.
@@ -48,6 +48,13 @@ public interface IBiomeData
      * @return Whether the associated biome's default biomeTraits should generate.
      */
     boolean generateDefaultBiomeFeatures();
+
+    /**
+     * Called to get the biome associated with this data.
+     *
+     * @return The biome associated with this data.
+     */
+    Biome getBiome();
 
     /**
      * Called to get the generation biomeGenerationWeight of the associated biome.
@@ -87,4 +94,11 @@ public interface IBiomeData
      * @return A list of biome traits that generate in the associated biome.
      */
     List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage);
+
+    /**
+     * Called to get a list of sub biomes that can generate in the associated biome.
+     *
+     * @return A list of sub biomes that can generate in the associated biome.
+     */
+    List<IBiomeData> getSubBiomeData();
 }

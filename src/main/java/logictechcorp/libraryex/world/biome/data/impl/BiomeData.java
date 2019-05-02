@@ -23,6 +23,7 @@ import logictechcorp.libraryex.world.generation.GenerationStage;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -39,36 +40,44 @@ public class BiomeData implements IBiomeData
 {
     protected Biome biome;
     protected int biomeGenerationWeight;
+    protected boolean isSubBiomeData;
     protected boolean generateBiome;
     protected boolean generateDefaultBiomeFeatures;
     protected Map<String, IBlockState> blocks;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
     protected Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
+    protected List<IBiomeData> subBiomeData;
 
-    public BiomeData(Biome biome, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
+    public BiomeData(Biome biome, int biomeGenerationWeight, boolean isSubBiomeData, boolean generateBiome, boolean generateDefaultBiomeFeatures)
     {
-        this.biome = biome;
+        if(biome != null)
+        {
+            this.biome = biome;
+        }
+        else
+        {
+            this.biome = Biomes.PLAINS;
+            generateBiome = false;
+        }
+
         this.biomeGenerationWeight = biomeGenerationWeight;
+        this.isSubBiomeData = isSubBiomeData;
         this.generateBiome = generateBiome;
         this.generateDefaultBiomeFeatures = generateDefaultBiomeFeatures;
         this.blocks = new HashMap<>();
         this.entities = new HashMap<>();
         this.biomeTraits = new HashMap<>();
+        this.subBiomeData = new ArrayList<>();
     }
 
-    public BiomeData(ResourceLocation biomeRegistryName, int biomeGenerationWeight, boolean generateBiome, boolean generateDefaultBiomeFeatures)
+    public BiomeData(ResourceLocation biomeRegistryName, int biomeGenerationWeight, boolean isSubBiomeData, boolean generateBiome, boolean generateDefaultBiomeFeatures)
     {
-        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), biomeGenerationWeight, generateBiome, generateDefaultBiomeFeatures);
+        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), biomeGenerationWeight, isSubBiomeData, generateBiome, generateDefaultBiomeFeatures);
     }
 
     public BiomeData(ResourceLocation biomeRegistryName)
     {
-        this(biomeRegistryName, 10, true, true);
-    }
-
-    public BiomeData(Biome biome)
-    {
-        this(biome.getRegistryName());
+        this(biomeRegistryName, 10, false, true, true);
     }
 
     @Override
@@ -81,6 +90,12 @@ public class BiomeData implements IBiomeData
     public int getBiomeGenerationWeight()
     {
         return this.biomeGenerationWeight;
+    }
+
+    @Override
+    public boolean isSubBiomeData()
+    {
+        return this.isSubBiomeData;
     }
 
     @Override
@@ -125,5 +140,11 @@ public class BiomeData implements IBiomeData
     public List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage)
     {
         return this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>());
+    }
+
+    @Override
+    public List<IBiomeData> getSubBiomeData()
+    {
+        return this.subBiomeData;
     }
 }
