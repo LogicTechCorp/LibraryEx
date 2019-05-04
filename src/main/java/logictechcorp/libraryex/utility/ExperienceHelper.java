@@ -34,8 +34,8 @@ public class ExperienceHelper
         int experience = getPlayerExperience(player) + amount;
         player.experienceTotal = experience;
         player.experienceLevel = getLevelForExperience(experience);
-        int experienceLevel = getExperienceForLevel(player.experienceLevel);
-        player.experience = (float) (experience - experienceLevel) / (float) player.xpBarCap();
+        int experienceForLevel = getExperienceForLevel(player.experienceLevel);
+        player.experience = (float) (experience - experienceForLevel) / (float) player.xpBarCap();
     }
 
     public static int getPlayerExperience(EntityPlayer player)
@@ -49,15 +49,15 @@ public class ExperienceHelper
 
         while(true)
         {
-            int levelCap = getLevelExperienceCap(level);
+            int levelExperienceCap = getLevelExperienceCap(level);
 
-            if(experience < levelCap)
+            if(experience < levelExperienceCap)
             {
                 return level;
             }
 
             level++;
-            experience -= levelCap;
+            experience -= levelExperienceCap;
         }
     }
 
@@ -88,10 +88,6 @@ public class ExperienceHelper
         else if(level >= 15)
         {
             return 37 + (level - 15) * 5;
-        }
-        else if(level == 0)
-        {
-            return 0;
         }
 
         return 7 + level * 2;
