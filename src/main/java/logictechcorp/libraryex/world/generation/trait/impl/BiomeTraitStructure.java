@@ -40,33 +40,44 @@ import net.minecraft.world.gen.structure.template.PlacementSettings;
 import net.minecraft.world.gen.structure.template.Template;
 import net.minecraft.world.gen.structure.template.TemplateManager;
 
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class BiomeTraitStructure extends BiomeTraitConfigurable
 {
-    private ResourceLocation structure;
+    private List<ResourceLocation> structures;
     private Type type;
     private Mirror mirror;
     private Rotation rotation;
     private Block ignoredBlock;
     private double clearancePercentage;
+    private boolean orientRandomly;
 
-    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, ResourceLocation structure, Type type, Block ignoredBlock, double clearancePercentage)
+    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, List<ResourceLocation> structures, Type type, Mirror mirror, Rotation rotation, Block ignoredBlock, double clearancePercentage)
     {
         super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.structure = structure;
+        this.structures = structures;
         this.type = type;
-        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
-        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
+        this.mirror = mirror;
+        this.rotation = rotation;
         this.ignoredBlock = ignoredBlock;
         this.clearancePercentage = clearancePercentage;
+        this.orientRandomly = false;
+    }
+
+    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, List<ResourceLocation> structures, Type type, Block ignoredBlock, double clearancePercentage)
+    {
+        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
+        this.structures = structures;
+        this.type = type;
+        this.ignoredBlock = ignoredBlock;
+        this.clearancePercentage = clearancePercentage;
+        this.orientRandomly = true;
     }
 
     private BiomeTraitStructure(Builder builder)
     {
         super(builder);
-        this.structure = builder.structure;
+        this.structures = builder.structures;
         this.type = builder.type;
         this.mirror = builder.mirror;
         this.rotation = builder.rotation;
@@ -78,10 +89,23 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
     public void readFromConfig(Config config)
     {
         super.readFromConfig(config);
-        this.structure = new ResourceLocation(config.get("structure"));
-        this.type = config.getEnumOrElse("type", Type.GROUNDED);
-        this.mirror = RandomHelper.getRandomEnum(Mirror.class);
-        this.rotation = RandomHelper.getRandomEnum(Rotation.class);
+        List<String> structureNames = config.getOrElse("structures", new ArrayList<>());
+        this.structures = new ArrayList<>();
+
+        for(String structureName : structureNames)
+        {
+            this.structures.add(new ResourceLocation(structureName));
+        }
+
+        this.type = config.getEnumOrElse("type", Type.GROUND);
+        this.orientRandomly = config.getOrElse("orientRandomly", true);
+
+        if(!this.orientRandomly)
+        {
+            this.mirror = config.getEnumOrElse("mirror", RandomHelper.getRandomEnum(Mirror.class));
+            this.rotation = config.getEnumOrElse("rotation", RandomHelper.getRandomEnum(Rotation.class));
+        }
+
         IBlockState ignoredBlockState = ConfigHelper.getBlockState(config, "ignoredBlock");
 
         if(ignoredBlockState != null)
@@ -96,49 +120,79 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
     public void writeToConfig(Config config)
     {
         super.writeToConfig(config);
-        config.add("clearancePercentage", this.clearancePercentage);
+        List<String> structureNames = new ArrayList<>();
+
+        for(ResourceLocation structureName : this.structures)
+        {
+            structureNames.add(structureName.toString());
+        }
+
+        config.add("structures", structureNames);
+        config.add("type", this.type.toString().toLowerCase());
+
+        if(!this.orientRandomly)
+        {
+            config.add("mirror", this.mirror);
+            config.add("rotation", this.rotation);
+        }
+
         ConfigHelper.setBlockState(config, "ignoredBlock", this.ignoredBlock.getDefaultState());
-        config.add("type", this.type == null ? null : this.type.toString().toLowerCase());
-        config.add("structure", this.structure == null ? null : this.structure.toString().toLowerCase());
+        config.add("clearancePercentage", this.clearancePercentage);
     }
 
     @Override
     public boolean generate(World world, BlockPos pos, Random random)
     {
-        if(this.structure == null || this.type == null || this.ignoredBlock == null)
+        if(this.structures == null || this.type == null || this.ignoredBlock == null)
         {
             return false;
         }
 
+        if(this.orientRandomly)
+        {
+            this.mirror = RandomHelper.getRandomEnum(Mirror.class, random);
+            this.rotation = RandomHelper.getRandomEnum(Rotation.class, random);
+        }
+
         MinecraftServer server = world.getMinecraftServer();
-        TemplateManager manager = world.getSaveHandler().getStructureTemplateManager();
-        Template template = manager.getTemplate(server, this.structure);
-        PlacementSettings placementSettings = new PlacementSettings().setMirror(this.mirror).setRotation(this.rotation).setReplacedBlock(this.ignoredBlock).setRandom(random);
-        BlockPos structureSize = template.transformedSize(this.rotation);
-        BlockPos spawnPos = null;
+        TemplateManager templateManager = world.getSaveHandler().getStructureTemplateManager();
+        Template template = templateManager.get(server, this.structures.get(random.nextInt(this.structures.size())));
 
-        if(this.type == Type.GROUNDED)
+        if(template != null)
         {
-            spawnPos = StructureHelper.getGroundedPos(world, pos, structureSize, this.clearancePercentage);
-        }
-        else if(this.type == Type.FLOATING)
-        {
-            spawnPos = StructureHelper.getFloatingPos(world, pos, structureSize, this.clearancePercentage);
-        }
-        else if(this.type == Type.HANGING)
-        {
-            spawnPos = StructureHelper.getHangingPos(world, pos, structureSize, this.clearancePercentage);
-        }
-        else if(this.type == Type.BURIED)
-        {
-            spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, this.clearancePercentage);
+            PlacementSettings placementSettings = new PlacementSettings().setMirror(this.mirror).setRotation(this.rotation).setReplacedBlock(this.ignoredBlock).setRandom(random);
+            BlockPos structureSize = template.transformedSize(placementSettings.getRotation());
+            BlockPos spawnPos = null;
+
+            if(this.type == Type.GROUND)
+            {
+                spawnPos = StructureHelper.getGroundPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+            }
+            else if(this.type == Type.AIR)
+            {
+                spawnPos = StructureHelper.getAirPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+            }
+            else if(this.type == Type.BURIED)
+            {
+                spawnPos = StructureHelper.getBuriedPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+            }
+            else if(this.type == Type.CEILING)
+            {
+                spawnPos = StructureHelper.getCeilingPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+            }
+
+            if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
+            {
+                template.addBlocksToWorld(world, spawnPos, placementSettings.copy());
+                this.handleDataBlocks(world, spawnPos, template, placementSettings.copy(), random);
+                return true;
+            }
         }
 
-        if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
+        if(this.orientRandomly)
         {
-            template.addBlocksToWorld(world, spawnPos, placementSettings);
-            this.handleDataBlocks(world, spawnPos, template, placementSettings, random);
-            return true;
+            this.mirror = null;
+            this.rotation = null;
         }
 
         return false;
@@ -200,26 +254,27 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private ResourceLocation structure;
+        private List<ResourceLocation> structures;
         private Type type;
         private Mirror mirror;
         private Rotation rotation;
         private Block ignoredBlock;
         private double clearancePercentage;
+        private boolean orientRandomly;
 
         public Builder()
         {
-            this.structure = new ResourceLocation("minecraft:missing_no");
-            this.type = Type.GROUNDED;
-            this.mirror = RandomHelper.getRandomEnum(Mirror.class);
-            this.rotation = RandomHelper.getRandomEnum(Rotation.class);
+            this.structures = Collections.singletonList(new ResourceLocation("minecraft:missing_no"));
+            this.type = Type.GROUND;
+            this.mirror = null;
+            this.rotation = null;
             this.ignoredBlock = Blocks.STRUCTURE_VOID;
             this.clearancePercentage = 75.0D;
         }
 
-        public Builder structure(ResourceLocation structure)
+        public Builder structure(List<ResourceLocation> structures)
         {
-            this.structure = structure;
+            this.structures = structures;
             return this;
         }
 
@@ -253,6 +308,12 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
             return this;
         }
 
+        public Builder orientRandomly(boolean orientRandomly)
+        {
+            this.orientRandomly = orientRandomly;
+            return this;
+        }
+
         @Override
         public BiomeTrait create()
         {
@@ -262,9 +323,9 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
 
     public enum Type
     {
-        GROUNDED,
-        FLOATING,
-        HANGING,
+        GROUND,
+        AIR,
+        CEILING,
         BURIED
     }
 }

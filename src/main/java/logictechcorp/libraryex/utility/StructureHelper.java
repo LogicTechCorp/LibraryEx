@@ -19,47 +19,51 @@ package logictechcorp.libraryex.utility;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.PlacementSettings;
 
 public class StructureHelper
 {
-    public static BlockPos getGroundedPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
+    public static BlockPos getGroundPos(World world, BlockPos pos, PlacementSettings placementSettings, BlockPos structureSize, double clearancePercentage)
     {
-        if(world.isAreaLoaded(pos, pos.add(structureSize)))
+        int sizeX = structureSize.getX() + 2;
+        int sizeY = structureSize.getY() + 1;
+        int sizeZ = structureSize.getZ() + 2;
+
+        int startX = (structureSize.getX() / 2);
+        int startZ = (structureSize.getZ() / 2);
+        int endX = (sizeX - startX);
+        int endZ = (sizeZ - startZ);
+
+        if(world.isAreaLoaded(pos.add(orientBlockPos(new BlockPos(startX, 0, startZ), placementSettings)), pos.add(orientBlockPos(new BlockPos(endX, 0, endZ), placementSettings))))
         {
             while(pos.getY() > 0)
             {
-                float sizeX = structureSize.getX();
-                float sizeY = structureSize.getY();
-                float sizeZ = structureSize.getZ();
+                int groundBlocks = 0;
+                int replaceableBlocks = 0;
 
-                int surfaceBlocks = 0;
-
-                for(int x = 0; x <= MathHelper.abs(sizeX); x++)
+                for(int x = -startX; x < endX; x++)
                 {
-                    for(int z = 0; z <= MathHelper.abs(sizeZ); z++)
+                    for(int z = -startZ; z < endZ; z++)
                     {
-                        BlockPos newPos = pos.add(x, 0, z);
+                        BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, 0, z), placementSettings));
 
                         if(!world.getBlockState(newPos).getMaterial().isReplaceable() && world.getBlockState(newPos.up()).getMaterial().isReplaceable())
                         {
-                            surfaceBlocks++;
+                            groundBlocks++;
                         }
                     }
                 }
 
-                int replaceableBlocks = 0;
-
-                if(surfaceBlocks >= MathHelper.abs(sizeX * sizeZ) * clearancePercentage)
+                if(groundBlocks >= (int) Math.floor(sizeX * sizeZ * clearancePercentage))
                 {
-                    for(int y = 1; y < sizeY; y++)
+                    for(int y = 0; y < sizeY; y++)
                     {
-                        for(int x = 0; x <= MathHelper.abs(sizeX); x++)
+                        for(int x = -startX; x < endX; x++)
                         {
-                            for(int z = 0; z <= MathHelper.abs(sizeZ); z++)
+                            for(int z = -startZ; z < endZ; z++)
                             {
-                                BlockPos newPos = pos.add(x, y, z);
+                                BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, y, z), placementSettings));
 
                                 if(world.getBlockState(newPos).getMaterial().isReplaceable())
                                 {
@@ -70,9 +74,9 @@ public class StructureHelper
                     }
                 }
 
-                if(replaceableBlocks > MathHelper.abs(sizeX * sizeY * sizeZ) * 0.875F)
+                if((groundBlocks + replaceableBlocks) >= (int) Math.floor(sizeX * sizeY * sizeZ * clearancePercentage))
                 {
-                    return pos;
+                    return pos.add((-startX + 1), 1, (-startZ + 1));
                 }
 
                 pos = pos.down();
@@ -82,25 +86,30 @@ public class StructureHelper
         return null;
     }
 
-    public static BlockPos getFloatingPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
+    public static BlockPos getAirPos(World world, BlockPos pos, PlacementSettings placementSettings, BlockPos structureSize, double clearancePercentage)
     {
-        if(world.isAreaLoaded(pos, pos.add(structureSize)))
-        {
-            while(pos.getY() > 32)
-            {
-                float sizeX = structureSize.getX();
-                float sizeZ = structureSize.getZ();
-                float sizeY = structureSize.getY();
+        int sizeX = structureSize.getX() + 2;
+        int sizeY = structureSize.getY() + 1;
+        int sizeZ = structureSize.getZ() + 2;
 
+        int startX = (structureSize.getX() / 2);
+        int startZ = (structureSize.getZ() / 2);
+        int endX = (sizeX - startX);
+        int endZ = (sizeZ - startZ);
+
+        if(world.isAreaLoaded(pos.add(orientBlockPos(new BlockPos(startX, 0, startZ), placementSettings)), pos.add(orientBlockPos(new BlockPos(endX, 0, endZ), placementSettings))))
+        {
+            while(pos.getY() > world.getSeaLevel() + 1)
+            {
                 int replaceableBlocks = 0;
 
-                for(int x = 0; x <= MathHelper.abs(sizeX); x++)
+                for(int y = 0; y < sizeY; y++)
                 {
-                    for(int z = 0; z <= MathHelper.abs(sizeZ); z++)
+                    for(int x = -startX; x < endX; x++)
                     {
-                        for(int y = 0; y <= sizeY; y++)
+                        for(int z = -startZ; z < endZ; z++)
                         {
-                            BlockPos newPos = pos.add(x, y, z);
+                            BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, y, z), placementSettings));
 
                             if(world.getBlockState(newPos).getMaterial().isReplaceable())
                             {
@@ -110,9 +119,9 @@ public class StructureHelper
                     }
                 }
 
-                if(replaceableBlocks >= MathHelper.abs(sizeX * sizeY * sizeZ) * clearancePercentage)
+                if(replaceableBlocks >= (int) Math.floor(sizeX * sizeY * sizeZ * clearancePercentage))
                 {
-                    return pos;
+                    return pos.add((-startX + 1), 0, (-startZ + 1));
                 }
 
                 pos = pos.down();
@@ -122,76 +131,30 @@ public class StructureHelper
         return null;
     }
 
-    public static BlockPos getHangingPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
+    public static BlockPos getBuriedPos(World world, BlockPos pos, PlacementSettings placementSettings, BlockPos structureSize, double clearancePercentage)
     {
-        if(world.isAreaLoaded(pos, pos.add(structureSize)))
-        {
-            while(pos.getY() < 128)
-            {
-                float sizeX = structureSize.getX();
-                float sizeZ = structureSize.getZ();
-                float sizeY = structureSize.getY();
+        int sizeX = structureSize.getX() + 2;
+        int sizeY = structureSize.getY() + 1;
+        int sizeZ = structureSize.getZ() + 2;
 
-                int ceilingBlocks = 0;
-                int replaceableBlocks = 0;
+        int startX = (structureSize.getX() / 2);
+        int startZ = (structureSize.getZ() / 2);
+        int endX = (sizeX - startX);
+        int endZ = (sizeZ - startZ);
 
-                for(int x = 0; x <= MathHelper.abs(sizeX); x++)
-                {
-                    for(int z = 0; z <= MathHelper.abs(sizeZ); z++)
-                    {
-                        for(int y = 0; y <= sizeY; y++)
-                        {
-                            BlockPos newPos = pos.add(x, -y, z);
-
-                            if(y == 0)
-                            {
-                                if(world.getBlockState(newPos).isSideSolid(world, newPos, EnumFacing.DOWN))
-                                {
-                                    ceilingBlocks++;
-                                }
-                            }
-                            else
-                            {
-                                if(world.getBlockState(newPos).getBlock().isReplaceable(world, newPos))
-                                {
-                                    replaceableBlocks++;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if(ceilingBlocks + replaceableBlocks >= MathHelper.abs(sizeX * sizeY * sizeZ) * clearancePercentage)
-                {
-                    return pos.add(0, -sizeY, 0);
-                }
-
-                pos = pos.up();
-            }
-        }
-
-        return null;
-    }
-
-    public static BlockPos getBuriedPos(World world, BlockPos pos, BlockPos structureSize, double clearancePercentage)
-    {
-        if(world.isAreaLoaded(pos, pos.add(structureSize)))
+        if(world.isAreaLoaded(pos.add(orientBlockPos(new BlockPos(startX, 0, startZ), placementSettings)), pos.add(orientBlockPos(new BlockPos(endX, 0, endZ), placementSettings))))
         {
             while(pos.getY() > 32)
             {
-                float sizeX = structureSize.getX();
-                float sizeZ = structureSize.getZ();
-                float sizeY = structureSize.getY();
-
                 int nonReplaceableBlocks = 0;
 
-                for(int x = 0; x <= MathHelper.abs(sizeX); x++)
+                for(int y = 0; y < sizeY; y++)
                 {
-                    for(int z = 0; z <= MathHelper.abs(sizeZ); z++)
+                    for(int x = -startX; x < endX; x++)
                     {
-                        for(int y = 0; y <= sizeY; y++)
+                        for(int z = -startZ; z < endZ; z++)
                         {
-                            BlockPos newPos = pos.add(x, y, z);
+                            BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, y, z), placementSettings));
 
                             if(!world.getBlockState(newPos).getMaterial().isReplaceable())
                             {
@@ -201,9 +164,9 @@ public class StructureHelper
                     }
                 }
 
-                if(nonReplaceableBlocks >= MathHelper.abs(sizeX * sizeY * sizeZ) * clearancePercentage)
+                if(nonReplaceableBlocks >= (int) Math.floor(sizeX * sizeY * sizeZ * clearancePercentage))
                 {
-                    return pos;
+                    return pos.add((-startX + 1), 0, (-startZ + 1));
                 }
 
                 pos = pos.down();
@@ -211,5 +174,99 @@ public class StructureHelper
         }
 
         return null;
+    }
+
+    public static BlockPos getCeilingPos(World world, BlockPos pos, PlacementSettings placementSettings, BlockPos structureSize, double clearancePercentage)
+    {
+        int sizeX = structureSize.getX() + 2;
+        int sizeY = structureSize.getY() + 1;
+        int sizeZ = structureSize.getZ() + 2;
+
+        int startX = (structureSize.getX() / 2);
+        int startZ = (structureSize.getZ() / 2);
+        int endX = (sizeX - startX);
+        int endZ = (sizeZ - startZ);
+
+        if(world.isAreaLoaded(pos.add(orientBlockPos(new BlockPos(startX, 0, startZ), placementSettings)), pos.add(orientBlockPos(new BlockPos(endX, 0, endZ), placementSettings))))
+        {
+            while(pos.getY() < world.getActualHeight())
+            {
+                int ceilingBlocks = 0;
+                int replaceableBlocks = 0;
+
+                for(int x = -startX; x < endX; x++)
+                {
+                    for(int z = -startZ; z < endZ; z++)
+                    {
+                        BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, 0, z), placementSettings));
+
+                        if(world.getBlockState(newPos).isSideSolid(world, newPos, EnumFacing.DOWN))
+                        {
+                            ceilingBlocks++;
+                        }
+                    }
+                }
+
+                if(ceilingBlocks >= (int) Math.floor(sizeX * sizeZ * clearancePercentage))
+                {
+                    for(int y = 0; y < sizeY; y++)
+                    {
+                        for(int x = -startX; x < endX; x++)
+                        {
+                            for(int z = -startZ; z < endZ; z++)
+                            {
+                                BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, -y, z), placementSettings));
+
+                                if(world.getBlockState(newPos).getBlock().isReplaceable(world, newPos))
+                                {
+                                    replaceableBlocks++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if((ceilingBlocks + replaceableBlocks) >= (int) Math.floor(sizeX * sizeY * sizeZ * clearancePercentage))
+                {
+                    return pos.add((-startX + 1), -sizeY + 1, (-startZ + 1));
+                }
+
+                pos = pos.up();
+            }
+        }
+
+        return null;
+    }
+
+    public static BlockPos orientBlockPos(BlockPos pos, PlacementSettings placementSettings)
+    {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        boolean mirrored = true;
+
+        switch(placementSettings.getMirror())
+        {
+            case LEFT_RIGHT:
+                z = -z;
+                break;
+            case FRONT_BACK:
+                x = -x;
+                break;
+            default:
+                mirrored = false;
+        }
+
+        switch(placementSettings.getRotation())
+        {
+            case COUNTERCLOCKWISE_90:
+                return new BlockPos(z, y, -x);
+            case CLOCKWISE_90:
+                return new BlockPos(-z, y, x);
+            case CLOCKWISE_180:
+                return new BlockPos(-x, y, -z);
+            default:
+                return mirrored ? new BlockPos(x, y, z) : pos;
+        }
     }
 }

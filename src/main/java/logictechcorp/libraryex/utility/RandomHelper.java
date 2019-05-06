@@ -23,6 +23,11 @@ public class RandomHelper
 {
     private static final Random RANDOM = new Random();
 
+    public static int getNumberInRange(int min, int max)
+    {
+        return getNumberInRange(min, max, RANDOM);
+    }
+
     public static int getNumberInRange(int min, int max, Random random)
     {
         return random.nextInt(max - min + 1) + min;
@@ -30,7 +35,12 @@ public class RandomHelper
 
     public static <E extends Enum> E getRandomEnum(Class<? extends E> cls)
     {
-        return cls.getEnumConstants()[RANDOM.nextInt(cls.getEnumConstants().length)];
+        return getRandomEnum(cls, RANDOM);
+    }
+
+    public static <E extends Enum> E getRandomEnum(Class<? extends E> cls, Random random)
+    {
+        return cls.getEnumConstants()[random.nextInt(cls.getEnumConstants().length)];
     }
 
     public static Random getRandom()

@@ -1,7 +1,7 @@
 [
     {
         "modid": "libraryex",
-        "name": "LibEx",
+        "name": "LibraryEx",
         "description": "A library for mods that add expansions, explorations, and experiences to Minecraft.",
         "version": "${version}",
         "mcversion": "${mcversion}",
