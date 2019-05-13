@@ -102,8 +102,8 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
 
         if(!this.orientRandomly)
         {
-            this.mirror = config.getEnumOrElse("mirror", RandomHelper.getRandomEnum(Mirror.class));
-            this.rotation = config.getEnumOrElse("rotation", RandomHelper.getRandomEnum(Rotation.class));
+            this.mirror = config.getEnumOrElse("mirror", RandomHelper.getEnum(Mirror.class));
+            this.rotation = config.getEnumOrElse("rotation", RandomHelper.getEnum(Rotation.class));
         }
 
         IBlockState ignoredBlockState = ConfigHelper.getBlockState(config, "ignoredBlock");
@@ -150,8 +150,8 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
 
         if(this.orientRandomly)
         {
-            this.mirror = RandomHelper.getRandomEnum(Mirror.class, random);
-            this.rotation = RandomHelper.getRandomEnum(Rotation.class, random);
+            this.mirror = RandomHelper.getEnum(Mirror.class, random);
+            this.rotation = RandomHelper.getEnum(Rotation.class, random);
         }
 
         MinecraftServer server = world.getMinecraftServer();

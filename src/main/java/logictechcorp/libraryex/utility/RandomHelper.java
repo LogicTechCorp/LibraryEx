@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.utility;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class RandomHelper
 {
@@ -33,14 +34,26 @@ public class RandomHelper
         return random.nextInt(max - min + 1) + min;
     }
 
-    public static <E extends Enum> E getRandomEnum(Class<? extends E> cls)
+    public static <E extends Enum> E getEnum(Class<? extends E> cls)
     {
-        return getRandomEnum(cls, RANDOM);
+        return getEnum(cls, RANDOM);
     }
 
-    public static <E extends Enum> E getRandomEnum(Class<? extends E> cls, Random random)
+    public static <E extends Enum> E getEnum(Class<? extends E> cls, Random random)
     {
         return cls.getEnumConstants()[random.nextInt(cls.getEnumConstants().length)];
+    }
+
+    public static UUID getUUID()
+    {
+        return getUUID(RANDOM);
+    }
+
+    public static UUID getUUID(Random random)
+    {
+        long mostSignificantBits = random.nextLong() & -61441L | 16384L;
+        long leastSignificantBits = random.nextLong() & 4611686018427387903L | Long.MIN_VALUE;
+        return new UUID(mostSignificantBits, leastSignificantBits);
     }
 
     public static Random getRandom()
