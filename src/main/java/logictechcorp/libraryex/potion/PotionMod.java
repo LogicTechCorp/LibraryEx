@@ -21,9 +21,9 @@ import logictechcorp.libraryex.IModData;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 
-public class PotionTypeLibEx extends PotionType
+public class PotionMod extends PotionType
 {
-    public PotionTypeLibEx(IModData data, String name, PotionEffect effect)
+    public PotionMod(IModData data, String name, PotionEffect effect)
     {
         super(data.getModId() + ":" + name, effect);
         this.setRegistryName(data.getModId() + ":" + name);

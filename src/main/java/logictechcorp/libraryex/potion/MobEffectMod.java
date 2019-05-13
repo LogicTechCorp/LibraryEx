@@ -28,15 +28,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.awt.*;
 
-public class PotionLibEx extends Potion
+public class MobEffectMod extends Potion
 {
     private final ResourceLocation iconTexture;
 
-    public PotionLibEx(IModData data, String name, boolean isBadEffect, int red, int green, int blue)
+    public MobEffectMod(IModData data, String name, boolean isBadEffect, int red, int green, int blue)
     {
         super(isBadEffect, new Color(red, green, blue).getRGB());
         this.setRegistryName(data.getModId() + ":" + name);
-        this.setPotionName("potion.effect." + this.getRegistryName());
+        this.setPotionName("mob_effect." + this.getRegistryName());
         this.iconTexture = new ResourceLocation(data.getModId() + ":textures/potions/" + name + ".png");
     }
 
