@@ -15,14 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation;
+package logictechcorp.libraryex.world.generation.impl;
 
-public enum GenerationStage
+import logictechcorp.libraryex.world.generation.iface.IGeneratorStage;
+
+public enum GenerationStage implements IGeneratorStage
 {
-    PRE_DECORATE,
-    DECORATE,
-    POST_DECORATE,
-    PRE_ORE,
-    ORE,
-    POST_ORE,
+    PRE_DECORATE("pre_decorate"),
+    DECORATE("decorate"),
+    POST_DECORATE("post_decorate"),
+    PRE_ORE("pre_ore"),
+    ORE("ore"),
+    POST_ORE("post_ore");
+
+    private String identifier;
+
+    GenerationStage(String identifier)
+    {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }

@@ -24,15 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
 {
-    public BiomeTraitSparseTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState logBlock, IBlockState leafBlock, IBlockState blockToTarget, int minimumGrowthHeight, int maximumGrowthHeight)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight, logBlock, leafBlock, blockToTarget, minimumGrowthHeight, maximumGrowthHeight);
-    }
-
-    private BiomeTraitSparseTree(Builder builder)
+    protected BiomeTraitSparseTree(Builder builder)
     {
         super(builder);
         this.logBlock = builder.logBlock;
@@ -40,6 +36,13 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
         this.blockToTarget = builder.blockToTarget;
         this.minimumGrowthHeight = builder.minimumGrowthHeight;
         this.maximumGrowthHeight = builder.maximumGrowthHeight;
+    }
+
+    public static BiomeTraitSparseTree create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -242,7 +245,7 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
     public static class Builder extends BiomeTraitAbstractTree.Builder
     {
         @Override
-        public BiomeTrait create()
+        public BiomeTraitSparseTree create()
         {
             return new BiomeTraitSparseTree(this);
         }

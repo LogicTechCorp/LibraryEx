@@ -25,24 +25,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitPatch extends BiomeTraitConfigurable
+public class BiomeTraitPatch extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToTarget;
-    private int patchWidth;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToTarget;
+    protected int patchWidth;
 
-    public BiomeTraitPatch(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, int patchWidth)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToTarget = blockToTarget;
-        this.patchWidth = patchWidth;
-    }
-
-    private BiomeTraitPatch(Builder builder)
+    protected BiomeTraitPatch(Builder builder)
     {
         super(builder);
+    }
+
+    public static BiomeTraitPatch create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class BiomeTraitPatch extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitPatch create()
         {
             return new BiomeTraitPatch(this);
         }

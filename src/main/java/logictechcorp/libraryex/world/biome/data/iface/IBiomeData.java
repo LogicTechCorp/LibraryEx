@@ -17,7 +17,10 @@
 
 package logictechcorp.libraryex.world.biome.data.iface;
 
-import logictechcorp.libraryex.world.generation.GenerationStage;
+import com.electronwill.nightconfig.core.Config;
+import logictechcorp.libraryex.api.IBiomeDataAPI;
+import logictechcorp.libraryex.world.generation.iface.IGeneratorStage;
+import logictechcorp.libraryex.world.generation.impl.GenerationStage;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
@@ -28,6 +31,20 @@ import java.util.Map;
 
 public interface IBiomeData
 {
+    /**
+     * Called when the server is starting to configure this biome data.
+     *
+     * @param config The config that belongs to the biome data.
+     */
+    void readFromConfig(IBiomeDataAPI biomeDataAPI, Config config);
+
+    /**
+     * Called when the server is stopping to save this biome data.
+     *
+     * @param config The config that belongs to the biome data.
+     */
+    void writeToConfig(Config config);
+
     /**
      * Returns true if this data represents a sub biome.
      *
@@ -93,7 +110,7 @@ public interface IBiomeData
      * @param generationStage The stage to get the list for.
      * @return A list of biome traits that generate in the associated biome.
      */
-    List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage);
+    List<IBiomeTrait> getBiomeTraits(IGeneratorStage generationStage);
 
     /**
      * Called to get a list of sub biomes that can generate in the associated biome.
@@ -101,4 +118,11 @@ public interface IBiomeData
      * @return A list of sub biomes that can generate in the associated biome.
      */
     List<IBiomeData> getSubBiomeData();
+
+    /**
+     * Called to get the biome data config's relative save file.
+     *
+     * @return The biome data config's relative save file.
+     */
+    String getRelativeSaveFile();
 }

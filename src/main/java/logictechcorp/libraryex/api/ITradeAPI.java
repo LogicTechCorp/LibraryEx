@@ -1,4 +1,4 @@
-package logictechcorp.libraryex.api.internal;
+package logictechcorp.libraryex.api;
 
 import logictechcorp.libraryex.trade.ITradeManager;
 

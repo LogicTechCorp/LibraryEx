@@ -17,6 +17,8 @@
 
 package logictechcorp.libraryex.world.generation.trait.impl;
 
+import com.electronwill.nightconfig.core.Config;
+import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.utility.RandomHelper;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitBuilder;
@@ -36,16 +38,7 @@ public abstract class BiomeTrait implements IBiomeTrait
     protected int minimumGenerationHeight;
     protected int maximumGenerationHeight;
 
-    public BiomeTrait(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight)
-    {
-        this.generationAttempts = generationAttempts;
-        this.randomizeGenerationAttempts = randomizeGenerationAttempts;
-        this.generationProbability = generationProbability;
-        this.minimumGenerationHeight = minimumGenerationHeight;
-        this.maximumGenerationHeight = maximumGenerationHeight;
-    }
-
-    public BiomeTrait(Builder builder)
+    protected BiomeTrait(Builder builder)
     {
         this.generationAttempts = builder.generationAttempts;
         this.randomizeGenerationAttempts = builder.randomizeGenerationAttempts;
@@ -56,6 +49,27 @@ public abstract class BiomeTrait implements IBiomeTrait
 
     @Override
     public abstract boolean generate(World world, BlockPos pos, Random random);
+
+    @Override
+    public void readFromConfig(Config config)
+    {
+        this.generationAttempts = config.getOrElse("generationAttempts", 4);
+        this.randomizeGenerationAttempts = config.getOrElse("randomizeGenerationAttempts", false);
+        this.generationProbability = config.getOrElse("generationProbability", 1.0D);
+        this.minimumGenerationHeight = config.getOrElse("minimumGenerationHeight", 0);
+        this.maximumGenerationHeight = config.getOrElse("maximumGenerationHeight", 255);
+    }
+
+    @Override
+    public void writeToConfig(Config config)
+    {
+        config.add("trait", LibraryExAPI.getInstance().getBiomeTraitRegistry().getBiomeTraitName(this.getClass()).toString());
+        config.add("generationAttempts", this.generationAttempts);
+        config.add("randomizeGenerationAttempts", this.randomizeGenerationAttempts);
+        config.add("generationProbability", this.generationProbability);
+        config.add("minimumGenerationHeight", this.minimumGenerationHeight);
+        config.add("maximumGenerationHeight", this.maximumGenerationHeight);
+    }
 
     @Override
     public boolean useRandomizedGenerationAttempts()
@@ -111,7 +125,7 @@ public abstract class BiomeTrait implements IBiomeTrait
         {
             this.generationAttempts = 4;
             this.randomizeGenerationAttempts = false;
-            this.generationProbability = 0.5D;
+            this.generationProbability = 1.0D;
             this.minimumGenerationHeight = 2;
             this.maximumGenerationHeight = 60;
         }
@@ -128,7 +142,7 @@ public abstract class BiomeTrait implements IBiomeTrait
             return this;
         }
 
-        public Builder generationAttempts(double generationProbability)
+        public Builder generationProbability(double generationProbability)
         {
             this.generationProbability = generationProbability;
             return this;

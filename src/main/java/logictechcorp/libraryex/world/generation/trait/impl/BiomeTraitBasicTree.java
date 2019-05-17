@@ -24,15 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
 {
-    public BiomeTraitBasicTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState logBlock, IBlockState leafBlock, IBlockState blockToTarget, int minimumGrowthHeight, int maximumGrowthHeight)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight, logBlock, leafBlock, blockToTarget, minimumGrowthHeight, maximumGrowthHeight);
-    }
-
-    private BiomeTraitBasicTree(Builder builder)
+    protected BiomeTraitBasicTree(Builder builder)
     {
         super(builder);
         this.logBlock = builder.logBlock;
@@ -40,6 +36,13 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
         this.blockToTarget = builder.blockToTarget;
         this.minimumGrowthHeight = builder.minimumGrowthHeight;
         this.maximumGrowthHeight = builder.maximumGrowthHeight;
+    }
+
+    public static BiomeTraitBasicTree create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -152,7 +155,7 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
     public static class Builder extends BiomeTraitAbstractTree.Builder
     {
         @Override
-        public BiomeTrait create()
+        public BiomeTraitBasicTree create()
         {
             return new BiomeTraitBasicTree(this);
         }

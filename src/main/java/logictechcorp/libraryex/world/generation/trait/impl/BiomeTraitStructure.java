@@ -41,48 +41,35 @@ import net.minecraft.world.gen.structure.template.Template;
 import net.minecraft.world.gen.structure.template.TemplateManager;
 
 import java.util.*;
+import java.util.function.Consumer;
 
-public class BiomeTraitStructure extends BiomeTraitConfigurable
+public class BiomeTraitStructure extends BiomeTrait
 {
-    private List<ResourceLocation> structures;
-    private Type type;
-    private Mirror mirror;
-    private Rotation rotation;
-    private Block ignoredBlock;
-    private double clearancePercentage;
-    private boolean orientRandomly;
+    protected List<ResourceLocation> structures;
+    protected StructureType structureType;
+    protected Mirror mirror;
+    protected Rotation rotation;
+    protected Block ignoredBlock;
+    protected double clearancePercentage;
+    protected boolean orientRandomly;
 
-    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, List<ResourceLocation> structures, Type type, Mirror mirror, Rotation rotation, Block ignoredBlock, double clearancePercentage)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.structures = structures;
-        this.type = type;
-        this.mirror = mirror;
-        this.rotation = rotation;
-        this.ignoredBlock = ignoredBlock;
-        this.clearancePercentage = clearancePercentage;
-        this.orientRandomly = false;
-    }
-
-    public BiomeTraitStructure(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, List<ResourceLocation> structures, Type type, Block ignoredBlock, double clearancePercentage)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.structures = structures;
-        this.type = type;
-        this.ignoredBlock = ignoredBlock;
-        this.clearancePercentage = clearancePercentage;
-        this.orientRandomly = true;
-    }
-
-    private BiomeTraitStructure(Builder builder)
+    protected BiomeTraitStructure(Builder builder)
     {
         super(builder);
         this.structures = builder.structures;
-        this.type = builder.type;
+        this.structureType = builder.structureType;
         this.mirror = builder.mirror;
         this.rotation = builder.rotation;
         this.ignoredBlock = builder.ignoredBlock;
         this.clearancePercentage = builder.clearancePercentage;
+        this.orientRandomly = builder.orientRandomly;
+    }
+
+    public static BiomeTraitStructure create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -97,7 +84,7 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
             this.structures.add(new ResourceLocation(structureName));
         }
 
-        this.type = config.getEnumOrElse("type", Type.GROUND);
+        this.structureType = config.getEnumOrElse("structureType", StructureType.GROUND);
         this.orientRandomly = config.getOrElse("orientRandomly", true);
 
         if(!this.orientRandomly)
@@ -128,7 +115,7 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
         }
 
         config.add("structures", structureNames);
-        config.add("type", this.type.toString().toLowerCase());
+        config.add("structureType", this.structureType.toString().toLowerCase());
 
         if(!this.orientRandomly)
         {
@@ -143,7 +130,7 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
     @Override
     public boolean generate(World world, BlockPos pos, Random random)
     {
-        if(this.structures == null || this.type == null || this.ignoredBlock == null)
+        if(this.structures == null || this.structureType == null || this.ignoredBlock == null)
         {
             return false;
         }
@@ -164,19 +151,19 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
             BlockPos structureSize = template.transformedSize(placementSettings.getRotation());
             BlockPos spawnPos = null;
 
-            if(this.type == Type.GROUND)
+            if(this.structureType == StructureType.GROUND)
             {
                 spawnPos = StructureHelper.getGroundPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
             }
-            else if(this.type == Type.AIR)
+            else if(this.structureType == StructureType.AIR)
             {
                 spawnPos = StructureHelper.getAirPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
             }
-            else if(this.type == Type.BURIED)
+            else if(this.structureType == StructureType.BURIED)
             {
                 spawnPos = StructureHelper.getBuriedPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
             }
-            else if(this.type == Type.CEILING)
+            else if(this.structureType == StructureType.CEILING)
             {
                 spawnPos = StructureHelper.getCeilingPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
             }
@@ -255,7 +242,7 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
     public static class Builder extends BiomeTrait.Builder
     {
         private List<ResourceLocation> structures;
-        private Type type;
+        private StructureType structureType;
         private Mirror mirror;
         private Rotation rotation;
         private Block ignoredBlock;
@@ -265,22 +252,22 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
         public Builder()
         {
             this.structures = Collections.singletonList(new ResourceLocation("minecraft:missing_no"));
-            this.type = Type.GROUND;
+            this.structureType = StructureType.GROUND;
             this.mirror = null;
             this.rotation = null;
             this.ignoredBlock = Blocks.STRUCTURE_VOID;
             this.clearancePercentage = 75.0D;
         }
 
-        public Builder structure(List<ResourceLocation> structures)
+        public Builder structures(List<ResourceLocation> structures)
         {
             this.structures = structures;
             return this;
         }
 
-        public Builder type(Type type)
+        public Builder structureType(StructureType structureType)
         {
-            this.type = type;
+            this.structureType = structureType;
             return this;
         }
 
@@ -315,13 +302,13 @@ public class BiomeTraitStructure extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitStructure create()
         {
             return new BiomeTraitStructure(this);
         }
     }
 
-    public enum Type
+    public enum StructureType
     {
         GROUND,
         AIR,

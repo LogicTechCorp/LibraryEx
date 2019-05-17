@@ -26,27 +26,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitCluster extends BiomeTraitConfigurable
+public class BiomeTraitCluster extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToAttachTo;
-    private EnumFacing direction;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToAttachTo;
+    protected EnumFacing direction;
 
-    public BiomeTraitCluster(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToAttachTo, EnumFacing direction)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToAttachTo = blockToAttachTo;
-        this.direction = direction;
-    }
-
-    private BiomeTraitCluster(Builder builder)
+    protected BiomeTraitCluster(Builder builder)
     {
         super(builder);
         this.blockToSpawn = builder.blockToSpawn;
         this.blockToAttachTo = builder.blockToAttachTo;
         this.direction = builder.direction;
+    }
+
+    public static BiomeTraitCluster create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -174,7 +174,7 @@ public class BiomeTraitCluster extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitCluster create()
         {
             return new BiomeTraitCluster(this);
         }

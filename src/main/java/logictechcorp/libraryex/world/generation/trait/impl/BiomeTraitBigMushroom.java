@@ -26,30 +26,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitBigMushroom extends BiomeTraitConfigurable
+public class BiomeTraitBigMushroom extends BiomeTrait
 {
-    private IBlockState mushroomCap;
-    private IBlockState mushroomStem;
-    private IBlockState blockToPlaceOn;
-    private Shape shape;
+    protected IBlockState mushroomCap;
+    protected IBlockState mushroomStem;
+    protected IBlockState blockToPlaceOn;
+    protected Shape shape;
 
-    public BiomeTraitBigMushroom(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState mushroomCap, IBlockState mushroomStem, IBlockState blockToPlaceOn, Shape shape)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.mushroomCap = mushroomCap;
-        this.mushroomStem = mushroomStem;
-        this.blockToPlaceOn = blockToPlaceOn;
-        this.shape = shape;
-    }
-
-    private BiomeTraitBigMushroom(Builder builder)
+    protected BiomeTraitBigMushroom(Builder builder)
     {
         super(builder);
         this.mushroomCap = builder.mushroomCap;
         this.mushroomStem = builder.mushroomStem;
         this.blockToPlaceOn = builder.blockToPlaceOn;
         this.shape = builder.shape;
+    }
+
+    public static BiomeTraitBigMushroom create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -289,12 +288,6 @@ public class BiomeTraitBigMushroom extends BiomeTraitConfigurable
             this.shape = Shape.FLAT;
         }
 
-        @Override
-        public BiomeTrait create()
-        {
-            return new BiomeTraitBigMushroom(this);
-        }
-
         public Builder mushroomCap(IBlockState mushroomCap)
         {
             this.mushroomCap = mushroomCap;
@@ -317,6 +310,12 @@ public class BiomeTraitBigMushroom extends BiomeTraitConfigurable
         {
             this.shape = shape;
             return this;
+        }
+
+        @Override
+        public BiomeTraitBigMushroom create()
+        {
+            return new BiomeTraitBigMushroom(this);
         }
     }
 

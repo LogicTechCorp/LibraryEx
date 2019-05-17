@@ -27,27 +27,27 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitOre extends BiomeTraitConfigurable
+public class BiomeTraitOre extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToReplace;
-    private int veinSize;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToReplace;
+    protected int veinSize;
 
-    public BiomeTraitOre(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToReplace, int veinSize)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToReplace = blockToReplace;
-        this.veinSize = veinSize;
-    }
-
-    private BiomeTraitOre(Builder builder)
+    protected BiomeTraitOre(Builder builder)
     {
         super(builder);
         this.blockToSpawn = builder.blockToSpawn;
         this.blockToReplace = builder.blockToReplace;
         this.veinSize = builder.veinSize;
+    }
+
+    public static BiomeTraitOre create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -168,7 +168,7 @@ public class BiomeTraitOre extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitOre create()
         {
             return new BiomeTraitOre(this);
         }

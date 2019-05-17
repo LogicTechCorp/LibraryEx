@@ -25,27 +25,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitFluid extends BiomeTraitConfigurable
+public class BiomeTraitFluid extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToTarget;
-    private boolean hidden;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToTarget;
+    protected boolean generateFalling;
 
-    public BiomeTraitFluid(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, boolean hidden)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToTarget = blockToTarget;
-        this.hidden = hidden;
-    }
-
-    private BiomeTraitFluid(Builder builder)
+    protected BiomeTraitFluid(Builder builder)
     {
         super(builder);
         this.blockToSpawn = builder.blockToSpawn;
         this.blockToTarget = builder.blockToTarget;
-        this.hidden = builder.hidden;
+        this.generateFalling = builder.generateFalling;
+    }
+
+    public static BiomeTraitFluid create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -54,16 +54,16 @@ public class BiomeTraitFluid extends BiomeTraitConfigurable
         super.readFromConfig(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.hidden = config.getOrElse("hidden", true);
+        this.generateFalling = config.getOrElse("generateFalling", true);
     }
 
     @Override
     public void writeToConfig(Config config)
     {
         super.writeToConfig(config);
-        config.add("hidden", this.hidden);
         ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
+        config.add("generateFalling", this.generateFalling);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class BiomeTraitFluid extends BiomeTraitConfigurable
                 j++;
             }
 
-            if(!this.hidden && i == 4 && j == 1 || i == 5)
+            if(!this.generateFalling && i == 4 && j == 1 || i == 5)
             {
                 world.setBlockState(pos, this.blockToSpawn, 2);
                 world.immediateBlockTick(pos, this.blockToSpawn, random);
@@ -152,13 +152,13 @@ public class BiomeTraitFluid extends BiomeTraitConfigurable
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;
-        private boolean hidden;
+        private boolean generateFalling;
 
         public Builder()
         {
             this.blockToSpawn = Blocks.WATER.getDefaultState();
             this.blockToTarget = Blocks.STONE.getDefaultState();
-            this.hidden = false;
+            this.generateFalling = false;
         }
 
         public Builder blockToSpawn(IBlockState blockToSpawn)
@@ -173,14 +173,14 @@ public class BiomeTraitFluid extends BiomeTraitConfigurable
             return this;
         }
 
-        public Builder hidden(boolean hidden)
+        public Builder generateFalling(boolean generateFalling)
         {
-            this.hidden = hidden;
+            this.generateFalling = generateFalling;
             return this;
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitFluid create()
         {
             return new BiomeTraitFluid(this);
         }

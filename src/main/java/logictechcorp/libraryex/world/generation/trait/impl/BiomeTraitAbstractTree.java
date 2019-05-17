@@ -29,23 +29,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class BiomeTraitAbstractTree extends BiomeTraitConfigurable
+public abstract class BiomeTraitAbstractTree extends BiomeTrait
 {
     protected IBlockState logBlock;
     protected IBlockState leafBlock;
     protected IBlockState blockToTarget;
     protected int minimumGrowthHeight;
     protected int maximumGrowthHeight;
-
-    public BiomeTraitAbstractTree(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState logBlock, IBlockState leafBlock, IBlockState blockToTarget, int minimumGrowthHeight, int maximumGrowthHeight)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.logBlock = logBlock;
-        this.leafBlock = leafBlock;
-        this.blockToTarget = blockToTarget;
-        this.minimumGrowthHeight = minimumGrowthHeight;
-        this.maximumGrowthHeight = maximumGrowthHeight;
-    }
 
     protected BiomeTraitAbstractTree(Builder builder)
     {

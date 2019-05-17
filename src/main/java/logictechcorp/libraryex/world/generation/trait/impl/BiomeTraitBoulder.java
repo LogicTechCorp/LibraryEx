@@ -25,24 +25,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitBoulder extends BiomeTraitConfigurable
+public class BiomeTraitBoulder extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToTarget;
-    private int radius;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToTarget;
+    protected int boulderRadius;
 
-    public BiomeTraitBoulder(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, int radius)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToTarget = blockToTarget;
-        this.radius = radius;
-    }
-
-    public BiomeTraitBoulder(Builder builder)
+    protected BiomeTraitBoulder(Builder builder)
     {
         super(builder);
+    }
+
+    public static BiomeTraitBoulder create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
         super.readFromConfig(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToTarget = ConfigHelper.getBlockState(config, "blockToTarget");
-        this.radius = config.getOrElse("radius", 4);
+        this.boulderRadius = config.getOrElse("boulderRadius", 4);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
         super.writeToConfig(config);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
         ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        config.add("radius", this.radius);
+        config.add("boulderRadius", this.boulderRadius);
     }
 
     @Override
@@ -95,11 +95,11 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
                     return false;
                 }
 
-                for(int i = 0; this.radius >= 0 && i < 3; i++)
+                for(int i = 0; this.boulderRadius >= 0 && i < 3; i++)
                 {
-                    int posX = this.radius + random.nextInt(2);
-                    int posY = this.radius + random.nextInt(2);
-                    int posZ = this.radius + random.nextInt(2);
+                    int posX = this.boulderRadius + random.nextInt(2);
+                    int posY = this.boulderRadius + random.nextInt(2);
+                    int posZ = this.boulderRadius + random.nextInt(2);
                     float distance = (float) (posX + posY + posZ) * 0.333F + 0.5F;
 
                     for(BlockPos posLocal : BlockPos.getAllInBox(pos.add(-posX, -posY, -posZ), pos.add(posX, posY, posZ)))
@@ -110,7 +110,7 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
                         }
                     }
 
-                    pos = pos.add(-(this.radius + 1) + random.nextInt(2 + this.radius * 2), 0 - random.nextInt(2), -(this.radius + 1) + random.nextInt(2 + this.radius * 2));
+                    pos = pos.add(-(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2), 0 - random.nextInt(2), -(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2));
                 }
 
                 return true;
@@ -124,13 +124,13 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;
-        private int radius;
+        private int boulderRadius;
 
         public Builder()
         {
             this.blockToSpawn = Blocks.MOSSY_COBBLESTONE.getDefaultState();
             this.blockToTarget = Blocks.GRASS.getDefaultState();
-            this.radius = 4;
+            this.boulderRadius = 4;
         }
 
         public Builder blockToSpawn(IBlockState blockToSpawn)
@@ -145,14 +145,14 @@ public class BiomeTraitBoulder extends BiomeTraitConfigurable
             return this;
         }
 
-        public Builder radius(int radius)
+        public Builder boulderRadius(int boulderRadius)
         {
-            this.radius = radius;
+            this.boulderRadius = boulderRadius;
             return this;
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitBoulder create()
         {
             return new BiomeTraitBoulder(this);
         }

@@ -17,6 +17,7 @@
 
 package logictechcorp.libraryex.world.generation.trait.iface;
 
+import com.electronwill.nightconfig.core.Config;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,6 +25,20 @@ import java.util.Random;
 
 public interface IBiomeTrait
 {
+    /**
+     * Called when the server is starting to configure this biome trait.
+     *
+     * @param config The config that belongs to the biome trait.
+     */
+    void readFromConfig(Config config);
+
+    /**
+     * Called when the server is stopping to save this biome trait.
+     *
+     * @param config The config that belongs to the biome trait.
+     */
+    void writeToConfig(Config config);
+
     /**
      * Called to generate the biome trait.
      *

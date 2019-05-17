@@ -26,27 +26,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitScatter extends BiomeTraitConfigurable
+public class BiomeTraitScatter extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToTarget;
-    private Placement placement;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToTarget;
+    protected Placement placement;
 
-    public BiomeTraitScatter(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToTarget, Placement placement)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToTarget = blockToTarget;
-        this.placement = placement;
-    }
-
-    private BiomeTraitScatter(Builder builder)
+    protected BiomeTraitScatter(Builder builder)
     {
         super(builder);
         this.blockToSpawn = builder.blockToSpawn;
         this.blockToTarget = builder.blockToTarget;
         this.placement = builder.placement;
+    }
+
+    public static BiomeTraitScatter create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -164,7 +164,7 @@ public class BiomeTraitScatter extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitScatter create()
         {
             return new BiomeTraitScatter(this);
         }

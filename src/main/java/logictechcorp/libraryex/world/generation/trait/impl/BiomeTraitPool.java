@@ -26,24 +26,25 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class BiomeTraitPool extends BiomeTraitConfigurable
+public class BiomeTraitPool extends BiomeTrait
 {
-    private IBlockState blockToSpawn;
-    private IBlockState blockToSurround;
+    protected IBlockState blockToSpawn;
+    protected IBlockState blockToSurround;
 
-    public BiomeTraitPool(int generationAttempts, boolean randomizeGenerationAttempts, double generationProbability, int minimumGenerationHeight, int maximumGenerationHeight, IBlockState blockToSpawn, IBlockState blockToSurround)
-    {
-        super(generationAttempts, randomizeGenerationAttempts, generationProbability, minimumGenerationHeight, maximumGenerationHeight);
-        this.blockToSpawn = blockToSpawn;
-        this.blockToSurround = blockToSurround;
-    }
-
-    private BiomeTraitPool(Builder builder)
+    protected BiomeTraitPool(Builder builder)
     {
         super(builder);
         this.blockToSpawn = builder.blockToSpawn;
         this.blockToSurround = builder.blockToSurround;
+    }
+
+    public static BiomeTraitPool create(Consumer<Builder> consumer)
+    {
+        Builder builder = new Builder();
+        consumer.accept(builder);
+        return builder.create();
     }
 
     @Override
@@ -198,7 +199,7 @@ public class BiomeTraitPool extends BiomeTraitConfigurable
         }
 
         @Override
-        public BiomeTrait create()
+        public BiomeTraitPool create()
         {
             return new BiomeTraitPool(this);
         }
