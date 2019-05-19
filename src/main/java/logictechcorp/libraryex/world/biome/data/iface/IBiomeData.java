@@ -20,7 +20,6 @@ package logictechcorp.libraryex.world.biome.data.iface;
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.api.IBiomeDataAPI;
 import logictechcorp.libraryex.world.generation.iface.IGeneratorStage;
-import logictechcorp.libraryex.world.generation.impl.GenerationStage;
 import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
