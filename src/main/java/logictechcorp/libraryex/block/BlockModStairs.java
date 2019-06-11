@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockProperties;
+import logictechcorp.libraryex.block.property.BlockProperties;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;

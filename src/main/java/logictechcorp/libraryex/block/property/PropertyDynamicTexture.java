@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.block.properties;
+package logictechcorp.libraryex.block.property;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 
-public class UnlistedPropertyDynamic implements IUnlistedProperty<IBlockState>
+public class PropertyDynamicTexture implements IUnlistedProperty<IBlockState>
 {
     @Override
     public String getName()
     {
-        return "UnlistedPropertyDynamic";
+        return "PropertyDynamicTexture";
     }
 
     @Override
