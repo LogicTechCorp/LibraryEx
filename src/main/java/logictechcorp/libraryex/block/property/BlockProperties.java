@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.block.builder;
+package logictechcorp.libraryex.block.property;
 
 import logictechcorp.libraryex.block.HarvestLevel;
 import logictechcorp.libraryex.block.HarvestTool;

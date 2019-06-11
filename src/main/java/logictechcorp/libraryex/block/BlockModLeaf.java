@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.builder.BlockProperties;
+import logictechcorp.libraryex.block.property.BlockProperties;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.PropertyBool;
