@@ -19,7 +19,7 @@ package logictechcorp.libraryex;
 
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.internal.iface.ILibraryExAPI;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;

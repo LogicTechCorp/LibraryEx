@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.api.internal.iface;
 
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 
 public interface ILibraryExAPI
 {

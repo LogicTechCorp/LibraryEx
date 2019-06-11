@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.client.util;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.api.IModData;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;

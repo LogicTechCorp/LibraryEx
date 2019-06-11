@@ -17,21 +17,27 @@
 
 package logictechcorp.libraryex.world.biome;
 
-import logictechcorp.libraryex.api.IModData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public enum BiomeBlock implements IBiomeBlock
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
+    FLOOR_TOP_BLOCK("floorTopBlock"),
+    FLOOR_FILLER_BLOCK("floorFillerBlock"),
+    WALL_BLOCK("wallBlock"),
+    CEILING_FILLER_BLOCK("ceilingFillerBlock"),
+    CEILING_BOTTOM_BLOCK("ceilingBottomBlock"),
+    OCEAN_BLOCK("oceanBlock");
+
+    private String identifier;
+
+    BiomeBlock(String identifier)
     {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
+        this.identifier = identifier;
     }
 
-    public abstract T getBiomeData();
+    @Override
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }

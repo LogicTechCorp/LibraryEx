@@ -14,8 +14,8 @@ package logictechcorp.libraryex.utility;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.*;
-import logictechcorp.libraryex.IModData;
 import logictechcorp.libraryex.LibraryEx;
+import logictechcorp.libraryex.api.IModData;
 import logictechcorp.libraryex.item.crafting.RecipeRepairItemMod;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -65,7 +65,7 @@ public class RecipeHelper
 
         IRecipe recipe = new ShapelessRecipes(data.getModId(), output, ingredients).setRegistryName(generateRegistryName(data, output));
 
-        if(data.writeRecipeJsons())
+        if(data.writeRecipesToJson())
         {
             writeRecipeJson(recipe);
         }
@@ -118,7 +118,7 @@ public class RecipeHelper
         NonNullList<Ingredient> ingredients = deserializeIngredients(pattern.toArray(new String[0]), key, width, height);
         IRecipe recipe = new ShapedRecipes(data.getModId(), width, height, ingredients, output).setRegistryName(generateRegistryName(data, output));
 
-        if(data.writeRecipeJsons())
+        if(data.writeRecipesToJson())
         {
             writeRecipeJson(recipe);
         }

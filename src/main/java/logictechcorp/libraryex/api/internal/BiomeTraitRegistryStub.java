@@ -17,9 +17,9 @@
 
 package logictechcorp.libraryex.api.internal;
 
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitBuilder;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;

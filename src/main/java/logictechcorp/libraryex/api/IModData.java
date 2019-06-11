@@ -15,23 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.api;
 
-import logictechcorp.libraryex.api.IModData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.creativetab.CreativeTabs;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public interface IModData
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
-    {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
-    }
+    String getModId();
 
-    public abstract T getBiomeData();
+    CreativeTabs getCreativeTab();
+
+    boolean writeRecipesToJson();
 }

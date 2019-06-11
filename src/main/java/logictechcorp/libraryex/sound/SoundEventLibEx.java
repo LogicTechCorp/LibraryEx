@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.sound;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.api.IModData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 

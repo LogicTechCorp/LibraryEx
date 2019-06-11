@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.fluid;
 
-import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.api.IModData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;

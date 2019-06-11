@@ -173,7 +173,7 @@ public class Trade extends MerchantRecipe
     {
         if(object instanceof Trade)
         {
-            return object == this || ((Trade) object).getIdentifier().equals(this.getIdentifier());
+            return object == this || ((Trade) object).getIdentifier().equals(this.identifier);
         }
 
         return false;

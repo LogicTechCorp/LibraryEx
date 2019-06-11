@@ -19,7 +19,7 @@ package logictechcorp.libraryex.api.internal.impl;
 
 import logictechcorp.libraryex.api.internal.BiomeTraitRegistryStub;
 import logictechcorp.libraryex.api.internal.iface.ILibraryExAPI;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 
 public final class LibraryExAPIStub implements ILibraryExAPI
 {

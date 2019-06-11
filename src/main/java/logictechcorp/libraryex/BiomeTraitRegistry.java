@@ -17,10 +17,10 @@
 
 package logictechcorp.libraryex;
 
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTrait;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitBuilder;
-import logictechcorp.libraryex.world.generation.trait.iface.IBiomeTraitRegistry;
-import logictechcorp.libraryex.world.generation.trait.impl.*;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
+import logictechcorp.libraryex.world.generation.trait.*;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;

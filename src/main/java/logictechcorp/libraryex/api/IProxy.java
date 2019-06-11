@@ -15,23 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.api;
 
-import logictechcorp.libraryex.api.IModData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
-import net.minecraft.world.biome.Biome;
-
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public interface IProxy
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
-    {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
-    }
+    void preInit();
 
-    public abstract T getBiomeData();
+    void init();
+
+    void postInit();
+
+    void spawnParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
 }

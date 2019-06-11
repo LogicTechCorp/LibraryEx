@@ -15,23 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.biome;
+package logictechcorp.libraryex.world.generation;
 
-import logictechcorp.libraryex.api.IModData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
-import net.minecraft.world.biome.Biome;
+import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public enum GenerationStage implements IGeneratorStage
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
+    PRE_DECORATE("pre_decorate"),
+    DECORATE("decorate"),
+    POST_DECORATE("post_decorate"),
+    PRE_ORE("pre_ore"),
+    ORE("ore"),
+    POST_ORE("post_ore");
+
+    private String identifier;
+
+    GenerationStage(String identifier)
     {
-        super(properties);
-        this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
+        this.identifier = identifier;
     }
 
-    public abstract T getBiomeData();
+    @Override
+    public String getIdentifier()
+    {
+        return this.identifier;
+    }
 }
