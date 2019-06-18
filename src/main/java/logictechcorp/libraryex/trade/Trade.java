@@ -18,15 +18,16 @@
 package logictechcorp.libraryex.trade;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.village.MerchantRecipe;
+import net.minecraft.item.MerchantOffer;
 
+import java.util.LinkedHashMap;
 import java.util.Random;
 
-public class Trade extends MerchantRecipe
+public class Trade extends MerchantOffer
 {
     protected TradeStack output;
     protected TradeStack inputOne;
@@ -34,36 +35,38 @@ public class Trade extends MerchantRecipe
     protected int minTradeCount;
     protected int maxTradeCount;
     protected int tradeLevel;
+    protected float priceMultiplier;
     private String identifier;
 
-    public Trade(TradeStack output, TradeStack inputOne, TradeStack inputTwo, int minTradeCount, int maxTradeCount, int tradeLevel)
+    public Trade(TradeStack output, TradeStack inputOne, TradeStack inputTwo, int minTradeCount, int maxTradeCount, int tradeLevel, float priceMultiplier)
     {
-        super(inputOne.getItemStack(), inputTwo.getItemStack(), output.getItemStack(), 0, maxTradeCount);
+        super(inputOne.getItemStack(), inputTwo.getItemStack(), output.getItemStack(), 0, maxTradeCount, priceMultiplier);
         this.output = output;
         this.inputOne = inputOne;
         this.inputTwo = inputTwo;
         this.minTradeCount = minTradeCount;
         this.maxTradeCount = maxTradeCount;
         this.tradeLevel = tradeLevel;
+        this.priceMultiplier = priceMultiplier;
 
         ItemStack outputStack = this.output.getItemStack().copy();
         ItemStack inputOneStack = this.inputOne.getItemStack().copy();
-        this.identifier = outputStack.getItem().getRegistryName() + "@" + outputStack.getItemDamage();
-        this.identifier += "=" + inputOneStack.getItem().getRegistryName() + "@" + inputOneStack.getItemDamage();
+        ItemStack inputTwoStack = this.inputTwo.getItemStack().copy();
+        this.identifier = outputStack.getItem().getRegistryName() + "@" + outputStack.getDamage();
+        this.identifier += "=" + inputOneStack.getItem().getRegistryName() + "@" + inputOneStack.getDamage();
 
-        if(this.hasSecondItemToBuy())
+        if(!inputTwoStack.isEmpty())
         {
-            ItemStack inputTwoStack = this.inputTwo.getItemStack().copy();
-            this.identifier += "+" + inputTwoStack.getItem().getRegistryName() + "@" + inputTwoStack.getItemDamage();
+            this.identifier += "+" + inputTwoStack.getItem().getRegistryName() + "@" + inputTwoStack.getDamage();
         }
     }
 
     public Trade(Config config)
     {
-        this(new TradeStack(config, "output"), new TradeStack(config, "inputOne"), new TradeStack(config, "inputTwo"), config.getOrElse("minTradeCount", 1), config.getOrElse("maxTradeCount", 8), config.getOrElse("tradeLevel", 1));
+        this(new TradeStack(config, "output"), new TradeStack(config, "inputOne"), new TradeStack(config, "inputTwo"), config.getOrElse("minTradeCount", 1), config.getOrElse("maxTradeCount", 8), config.getOrElse("tradeLevel", 1), config.getOrElse("priceMultiplier", 0.05F));
     }
 
-    public MerchantRecipe randomize(Random random)
+    public MerchantOffer randomize(Random random)
     {
         ItemStack outputStack = this.output.getItemStack().copy();
         ItemStack inputOneStack = this.inputOne.getItemStack().copy();
@@ -72,14 +75,14 @@ public class Trade extends MerchantRecipe
         outputStack.setCount(RandomHelper.getNumberInRange(this.output.getMinCount(), this.output.getMaxCount(), random));
         inputOneStack.setCount(RandomHelper.getNumberInRange(this.inputOne.getMinCount(), this.inputOne.getMaxCount(), random));
 
-        if(this.hasSecondItemToBuy())
+        if(!inputTwoStack.isEmpty())
         {
             inputTwoStack.setCount(RandomHelper.getNumberInRange(this.inputTwo.getMinCount(), this.inputTwo.maxCount, random));
         }
 
         int tradesAvailable = RandomHelper.getNumberInRange(this.minTradeCount, this.maxTradeCount, random);
 
-        return new MerchantRecipe(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable);
+        return new MerchantOffer(inputOneStack, inputTwoStack, outputStack, 0, tradesAvailable, this.priceMultiplier);
     }
 
     public String getIdentifier()
@@ -119,7 +122,7 @@ public class Trade extends MerchantRecipe
 
     public Config getAsConfig()
     {
-        Config tradeConfig = ModJsonConfigFormat.newConfig();
+        Config tradeConfig = JsonFormat.newConfig(LinkedHashMap::new);
         ConfigHelper.setItemStackSimple(tradeConfig, "output", this.output.getItemStack());
 
         if(!tradeConfig.contains("output.minCount"))
@@ -160,12 +163,6 @@ public class Trade extends MerchantRecipe
         tradeConfig.add("maxTradeCount", this.maxTradeCount);
         tradeConfig.add("tradeLevel", this.tradeLevel);
         return tradeConfig;
-    }
-
-    @Override
-    public boolean hasSecondItemToBuy()
-    {
-        return !this.inputTwo.getItemStack().isEmpty();
     }
 
     @Override

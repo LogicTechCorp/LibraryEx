@@ -20,34 +20,29 @@ package logictechcorp.libraryex;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.internal.iface.ILibraryExAPI;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-@Mod(modid = LibraryEx.MOD_ID, name = LibraryEx.NAME, version = LibraryEx.VERSION, dependencies = LibraryEx.DEPENDENCIES)
+@Mod(LibraryEx.MOD_ID)
 public class LibraryEx implements ILibraryExAPI
 {
-    static final String NAME = "LibraryEx";
-    static final String VERSION = "1.0.9";
-    static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.4.2768,);";
-
     public static final String MOD_ID = "libraryex";
-    public static final File CONFIG_DIRECTORY = Loader.instance().getConfigDir();
-    public static final boolean IS_DEV_ENV = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-
-    @Mod.Instance(MOD_ID)
-    public static LibraryEx instance;
-
+    public static final File CONFIG_DIRECTORY = FMLPaths.CONFIGDIR.get().toFile();
     public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
 
-    @Mod.EventHandler
-    public void onFMLPreInitialization(FMLPreInitializationEvent event)
+    public LibraryEx()
+    {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event)
     {
         LibraryExAPI.setInstance(this);
     }

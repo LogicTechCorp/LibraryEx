@@ -17,20 +17,21 @@
 
 package logictechcorp.libraryex.item.builder;
 
+import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 
-public class ItemToolProperties extends ItemProperties
+public class ItemToolProperties extends Item.Properties
 {
-    private Item.ToolMaterial toolMaterial;
-    private float attackDamage;
+    private IItemTier toolMaterial;
+    private int attackDamage;
     private float attackSpeed;
 
-    public ItemToolProperties(Item.ToolMaterial toolMaterial)
+    public ItemToolProperties(IItemTier toolMaterial)
     {
         this.toolMaterial = toolMaterial;
     }
 
-    public ItemToolProperties attackDamage(float attackDamage)
+    public ItemToolProperties attackDamage(int attackDamage)
     {
         this.attackDamage = attackDamage;
         return this;
@@ -42,22 +43,12 @@ public class ItemToolProperties extends ItemProperties
         return this;
     }
 
-    @Override
-    public ItemToolProperties copy()
-    {
-        ItemToolProperties properties = (ItemToolProperties) super.copy();
-        properties.toolMaterial = this.toolMaterial;
-        properties.attackDamage = this.attackDamage;
-        properties.attackSpeed = this.attackSpeed;
-        return properties;
-    }
-
-    public Item.ToolMaterial getToolMaterial()
+    public IItemTier getToolMaterial()
     {
         return this.toolMaterial;
     }
 
-    public float getAttackDamage()
+    public int getAttackDamage()
     {
         return this.attackDamage;
     }

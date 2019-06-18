@@ -17,14 +17,14 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.IProperty;
 
 public class BlockStateHelper
 {
-    public static IProperty getProperty(IBlockState state, String propertyName)
+    public static IProperty getProperty(BlockState state, String propertyName)
     {
-        for(IProperty property : state.getPropertyKeys())
+        for(IProperty property : state.getProperties())
         {
             if(property.getName().equalsIgnoreCase(propertyName))
             {

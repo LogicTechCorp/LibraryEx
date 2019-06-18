@@ -17,8 +17,9 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -26,22 +27,22 @@ import java.util.List;
 
 public class ArmorHelper
 {
-    public static boolean isWearingFullArmorSet(EntityPlayer player, ItemArmor.ArmorMaterial material)
+    public static boolean isWearingFullArmorSet(PlayerEntity player, IArmorMaterial material)
     {
         Iterable<ItemStack> armor = player.getArmorInventoryList();
-        List<ItemArmor.ArmorMaterial> armorMaterials = new ArrayList<>();
+        List<IArmorMaterial> armorMaterials = new ArrayList<>();
 
         for(ItemStack testStack : armor)
         {
-            if(testStack == ItemStack.EMPTY || !(testStack.getItem() instanceof ItemArmor))
+            if(testStack == ItemStack.EMPTY || !(testStack.getItem() instanceof ArmorItem))
             {
                 return false;
             }
 
-            armorMaterials.add(((ItemArmor) testStack.getItem()).getArmorMaterial());
+            armorMaterials.add(((ArmorItem) testStack.getItem()).getArmorMaterial());
         }
 
-        for(ItemArmor.ArmorMaterial testMaterial : armorMaterials)
+        for(IArmorMaterial testMaterial : armorMaterials)
         {
             if(testMaterial != material)
             {

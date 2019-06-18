@@ -18,12 +18,12 @@
 package logictechcorp.libraryex.utility;
 
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nonnull;
 
 /**
- * Utility methods for automatic injection systems like {@link GameRegistry.ObjectHolder} and {@link CapabilityInject}.
+ * Utility methods for automatic injection systems like {@link ObjectHolder} and {@link CapabilityInject}.
  *
  * @author Choonster
  */

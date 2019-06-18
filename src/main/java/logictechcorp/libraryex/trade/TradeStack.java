@@ -19,9 +19,8 @@ package logictechcorp.libraryex.trade;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IItemProvider;
 
 public class TradeStack
 {
@@ -38,24 +37,9 @@ public class TradeStack
         this.maxCount = maxCount;
     }
 
-    public TradeStack(Item item, int meta, int minCount, int maxCount)
+    public TradeStack(IItemProvider item, int minCount, int maxCount)
     {
-        this(new ItemStack(item, 1, meta), minCount, maxCount);
-    }
-
-    public TradeStack(Item item, int minCount, int maxCount)
-    {
-        this(item, 0, minCount, maxCount);
-    }
-
-    public TradeStack(Block block, int meta, int minCount, int maxCount)
-    {
-        this(new ItemStack(block, 0, meta), minCount, maxCount);
-    }
-
-    public TradeStack(Block block, int minCount, int maxCount)
-    {
-        this(block, block.getMetaFromState(block.getDefaultState()), minCount, maxCount);
+        this(new ItemStack(item, 1), minCount, maxCount);
     }
 
     public TradeStack(Config config, String path)

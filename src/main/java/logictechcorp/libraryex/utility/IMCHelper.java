@@ -17,27 +17,26 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.fml.InterModComms;
 
 public class IMCHelper
 {
     public static void registerChiseledBlock(String group, ItemStack stack)
     {
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("group", group);
-        compound.setTag("stack", stack.writeToNBT(new NBTTagCompound()));
-        FMLInterModComms.sendMessage("chisel", "add_variation", compound);
+        CompoundNBT compound = new CompoundNBT();
+        compound.putString("group", group);
+        compound.put("stack", stack.write(new CompoundNBT()));
+        InterModComms.sendTo("chisel", "add_variation", () -> compound);
     }
 
-    public static void registerChiseledBlock(String group, IBlockState state)
+    public static void registerChiseledBlock(String group, BlockState state)
     {
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("group", group);
-        compound.setString("block", state.getBlock().getRegistryName().toString());
-        compound.setInteger("meta", 0);
-        FMLInterModComms.sendMessage("chisel", "add_variation", compound);
+        CompoundNBT compound = new CompoundNBT();
+        compound.putString("group", group);
+        compound.putString("block", state.getBlock().getRegistryName().toString());
+        InterModComms.sendTo("chisel", "add_variation", () -> compound);
     }
 }

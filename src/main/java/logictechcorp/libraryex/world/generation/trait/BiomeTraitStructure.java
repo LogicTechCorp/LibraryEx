@@ -18,29 +18,36 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
+import com.google.common.collect.ImmutableList;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import logictechcorp.libraryex.utility.StructureHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.MobSpawnerBaseLogic;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.state.properties.StructureMode;
+import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.template.PlacementSettings;
-import net.minecraft.world.gen.structure.template.Template;
-import net.minecraft.world.gen.structure.template.TemplateManager;
+import net.minecraft.world.gen.feature.template.BlockIgnoreStructureProcessor;
+import net.minecraft.world.gen.feature.template.PlacementSettings;
+import net.minecraft.world.gen.feature.template.Template;
+import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraft.world.spawner.AbstractSpawner;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class BiomeTraitStructure extends BiomeTrait
@@ -93,7 +100,7 @@ public class BiomeTraitStructure extends BiomeTrait
             this.rotation = config.getEnumOrElse("rotation", RandomHelper.getEnum(Rotation.class));
         }
 
-        IBlockState ignoredBlockState = ConfigHelper.getBlockState(config, "ignoredBlock");
+        BlockState ignoredBlockState = ConfigHelper.getBlockState(config, "ignoredBlock");
 
         if(ignoredBlockState != null)
         {
@@ -141,45 +148,49 @@ public class BiomeTraitStructure extends BiomeTrait
             this.rotation = RandomHelper.getEnum(Rotation.class, random);
         }
 
-        MinecraftServer server = world.getMinecraftServer();
-        TemplateManager templateManager = world.getSaveHandler().getStructureTemplateManager();
-        Template template = templateManager.get(server, this.structures.get(random.nextInt(this.structures.size())));
+        MinecraftServer server = world.getServer();
 
-        if(template != null)
+        if(server != null)
         {
-            PlacementSettings placementSettings = new PlacementSettings().setMirror(this.mirror).setRotation(this.rotation).setReplacedBlock(this.ignoredBlock).setRandom(random);
-            BlockPos structureSize = template.transformedSize(placementSettings.getRotation());
-            BlockPos spawnPos = null;
+            TemplateManager templateManager = server.getActiveAnvilConverter().getSaveLoader(world.getWorldInfo().getWorldName(), server).getStructureTemplateManager();
+            Template template = templateManager.getTemplate(this.structures.get(random.nextInt(this.structures.size())));
 
-            if(this.structureType == StructureType.GROUND)
+            if(template != null)
             {
-                spawnPos = StructureHelper.getGroundPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
-            }
-            else if(this.structureType == StructureType.AIR)
-            {
-                spawnPos = StructureHelper.getAirPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
-            }
-            else if(this.structureType == StructureType.BURIED)
-            {
-                spawnPos = StructureHelper.getBuriedPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
-            }
-            else if(this.structureType == StructureType.CEILING)
-            {
-                spawnPos = StructureHelper.getCeilingPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                PlacementSettings placementSettings = new PlacementSettings().setMirror(this.mirror).setRotation(this.rotation).addProcessor(new BlockIgnoreStructureProcessor(ImmutableList.of(this.ignoredBlock))).setRandom(random);
+                BlockPos structureSize = template.transformedSize(placementSettings.getRotation());
+                BlockPos spawnPos = null;
+
+                if(this.structureType == StructureType.GROUND)
+                {
+                    spawnPos = StructureHelper.getGroundPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                }
+                else if(this.structureType == StructureType.AIR)
+                {
+                    spawnPos = StructureHelper.getAirPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                }
+                else if(this.structureType == StructureType.BURIED)
+                {
+                    spawnPos = StructureHelper.getBuriedPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                }
+                else if(this.structureType == StructureType.CEILING)
+                {
+                    spawnPos = StructureHelper.getCeilingPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                }
+
+                if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
+                {
+                    template.addBlocksToWorld(world, spawnPos, placementSettings.copy());
+                    this.handleDataBlocks(world, spawnPos, template, placementSettings.copy(), random);
+                    return true;
+                }
             }
 
-            if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
+            if(this.orientRandomly)
             {
-                template.addBlocksToWorld(world, spawnPos, placementSettings.copy());
-                this.handleDataBlocks(world, spawnPos, template, placementSettings.copy(), random);
-                return true;
+                this.mirror = null;
+                this.rotation = null;
             }
-        }
-
-        if(this.orientRandomly)
-        {
-            this.mirror = null;
-            this.rotation = null;
         }
 
         return false;
@@ -187,54 +198,69 @@ public class BiomeTraitStructure extends BiomeTrait
 
     private void handleDataBlocks(World world, BlockPos pos, Template template, PlacementSettings placementSettings, Random random)
     {
-        Map<BlockPos, String> map = template.getDataBlocks(pos, placementSettings);
-
-        for(Map.Entry<BlockPos, String> entry : map.entrySet())
+        for(Template.BlockInfo blockInfo : template.func_215381_a(pos, placementSettings, Blocks.STRUCTURE_BLOCK))
         {
-            BlockPos dataPos = entry.getKey();
-            String[] data = entry.getValue().split("\\s+");
+            CompoundNBT blockCompound = blockInfo.nbt;
 
-            if(data[0].equals("chest") && data.length == 2)
+            if(blockCompound != null && StructureMode.valueOf(blockCompound.getString("mode")) == StructureMode.DATA)
             {
-                world.setBlockState(dataPos, Blocks.CHEST.correctFacing(world, dataPos, Blocks.CHEST.getDefaultState()));
-                TileEntityChest chest = (TileEntityChest) world.getTileEntity(dataPos);
+                BlockPos dataPos = blockInfo.pos;
+                String[] data = blockCompound.getString("metadata").split("\\s+");
 
-                if(chest != null)
+                if(data[0].equals("chest") && data.length == 2)
                 {
-                    chest.setLootTable(new ResourceLocation(data[1]), random.nextLong());
-                }
-            }
-            else if(data[0].equals("spawner") && data.length == 2)
-            {
-                world.setBlockState(dataPos, Blocks.MOB_SPAWNER.getDefaultState());
-                TileEntityMobSpawner spawner = (TileEntityMobSpawner) world.getTileEntity(dataPos);
+                    world.setBlockState(dataPos, Blocks.CHEST.getDefaultState());
+                    ChestTileEntity chest = (ChestTileEntity) world.getTileEntity(dataPos);
 
-                if(spawner != null)
-                {
-                    MobSpawnerBaseLogic logic = spawner.getSpawnerBaseLogic();
-                    NBTTagCompound compound = new NBTTagCompound();
-                    logic.writeToNBT(compound);
-                    compound.removeTag("SpawnPotentials");
-                    logic.readFromNBT(compound);
-                    logic.setEntityId(new ResourceLocation(data[1]));
-                    spawner.markDirty();
-                    IBlockState state = world.getBlockState(dataPos);
-                    world.notifyBlockUpdate(pos, state, state, 3);
+                    if(chest != null)
+                    {
+                        chest.setLootTable(new ResourceLocation(data[1]), random.nextLong());
+                    }
                 }
-            }
-            else if(data[0].equals("entity") && data.length == 2)
-            {
-                Entity entity = EntityList.newEntity(EntityList.getClass(new ResourceLocation(data[1])), world);
+                else if(data[0].equals("spawner") && data.length == 2)
+                {
+                    world.setBlockState(dataPos, Blocks.SPAWNER.getDefaultState());
+                    MobSpawnerTileEntity spawner = (MobSpawnerTileEntity) world.getTileEntity(dataPos);
 
-                if(entity != null)
-                {
-                    entity.setPosition(dataPos.getX() + 0.5F, dataPos.getY(), dataPos.getZ() + 0.5F);
-                    world.spawnEntity(entity);
+                    if(spawner != null)
+                    {
+                        AbstractSpawner logic = spawner.getSpawnerBaseLogic();
+                        CompoundNBT spawnerCompound = new CompoundNBT();
+                        logic.write(spawnerCompound);
+                        spawnerCompound.remove("SpawnPotentials");
+                        logic.read(spawnerCompound);
+                        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(data[1]));
+
+                        if(entityType != null)
+                        {
+                            logic.setEntityType(entityType);
+                        }
+
+                        spawner.markDirty();
+                        BlockState state = world.getBlockState(dataPos);
+                        world.notifyBlockUpdate(pos, state, state, 3);
+                    }
                 }
-            }
-            else
-            {
-                world.setBlockToAir(dataPos);
+                else if(data[0].equals("entity") && data.length == 2)
+                {
+                    EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(data[1]));
+
+                    if(entityType != null)
+                    {
+                        Entity entity = entityType.create(world);
+
+                        if(entity != null)
+                        {
+                            entity.setPosition(dataPos.getX() + 0.5F, dataPos.getY(), dataPos.getZ() + 0.5F);
+                            world.addEntity(entity);
+                        }
+
+                    }
+                }
+                else
+                {
+                    world.setBlockState(dataPos, Blocks.AIR.getDefaultState());
+                }
             }
         }
     }

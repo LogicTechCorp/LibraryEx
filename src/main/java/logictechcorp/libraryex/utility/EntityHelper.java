@@ -17,16 +17,15 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.passive.AbstractHorse;
-import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FlyingEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.CreeperEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.horse.AbstractHorseEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -34,38 +33,23 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class EntityHelper
 {
-    private static final Map<Class<? extends EntityLivingBase>, String> ENTITY_RESOURCE_LOCATION_CACHE = new HashMap<>();
+    private static final Map<EntityType<?>, ResourceLocation> ENTITY_RESOURCE_LOCATION_CACHE = new HashMap<>();
 
-    public static String getEntityLocation(EntityLivingBase entity)
+    public static ResourceLocation getEntityLocation(EntityType<?> entityType)
     {
-        Class<? extends EntityLivingBase> cls = entity.getClass();
-        return ENTITY_RESOURCE_LOCATION_CACHE.computeIfAbsent(cls, k -> {
-            ResourceLocation location = EntityList.getKey(k);
-            return location != null ? location.toString() : null;
-        });
+        return ENTITY_RESOURCE_LOCATION_CACHE.computeIfAbsent(entityType, EntityType::getKey);
     }
 
-    public static Entity getFromUUID(MinecraftServer server, UUID uuid)
+    public static boolean shouldAttackEntity(LivingEntity target, LivingEntity owner)
     {
-        if(server != null && uuid != null)
+        if(!(target instanceof CreeperEntity) && !(target instanceof FlyingEntity))
         {
-            return server.getEntityFromUuid(uuid);
-        }
-
-        return null;
-    }
-
-    public static boolean shouldAttackEntity(EntityLivingBase target, EntityLivingBase owner)
-    {
-        if(!(target instanceof EntityCreeper) && !(target instanceof EntityFlying))
-        {
-            if(target instanceof EntityWolf)
+            if(target instanceof WolfEntity)
             {
-                EntityWolf wolf = (EntityWolf) target;
+                WolfEntity wolf = (WolfEntity) target;
 
                 if(wolf.isTamed() && wolf.getOwner() == owner)
                 {
@@ -73,13 +57,13 @@ public class EntityHelper
                 }
             }
 
-            if(target instanceof EntityPlayer && owner instanceof EntityPlayer && !((EntityPlayer) owner).canAttackPlayer((EntityPlayer) target))
+            if(target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity) owner).canAttackPlayer((PlayerEntity) target))
             {
                 return false;
             }
             else
             {
-                return !(target instanceof AbstractHorse) || !((AbstractHorse) target).isTame();
+                return !(target instanceof AbstractHorseEntity) || !((AbstractHorseEntity) target).isTame();
             }
         }
         else
@@ -88,9 +72,9 @@ public class EntityHelper
         }
     }
 
-    public static boolean isInBlock(Entity entity, IBlockState... states)
+    public static boolean isInBlock(Entity entity, BlockState... states)
     {
-        AxisAlignedBB boundingBox = entity.getEntityBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D);
+        AxisAlignedBB boundingBox = entity.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D);
         int minX = MathHelper.floor(boundingBox.minX);
         int maxX = MathHelper.ceil(boundingBox.maxX);
         int minY = MathHelper.floor(boundingBox.minY);
@@ -105,13 +89,13 @@ public class EntityHelper
             {
                 for(int posZ = minZ; posZ < maxZ; posZ++)
                 {
-                    IBlockState checkState = entity.getEntityWorld().getBlockState(pooledMutableBlockPos.setPos(posX, posY, posZ));
+                    BlockState checkState = entity.getEntityWorld().getBlockState(pooledMutableBlockPos.setPos(posX, posY, posZ));
 
-                    for(IBlockState state : states)
+                    for(BlockState state : states)
                     {
                         if(state == checkState)
                         {
-                            pooledMutableBlockPos.release();
+                            pooledMutableBlockPos.close();
                             return true;
                         }
 
@@ -120,7 +104,7 @@ public class EntityHelper
             }
         }
 
-        pooledMutableBlockPos.release();
+        pooledMutableBlockPos.close();
         return false;
     }
 

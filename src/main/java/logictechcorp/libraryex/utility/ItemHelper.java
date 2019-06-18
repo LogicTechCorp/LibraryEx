@@ -18,21 +18,19 @@
 package logictechcorp.libraryex.utility;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
+import net.minecraft.item.Items;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraft.potion.Potions;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemHelper
 {
-    private static final List<PotionType> POTION_TYPES = getPotions();
+    private static final List<Potion> POTION_TYPES = getPotions();
 
     public static ItemStack getRandomlyEnchantedBook(int amountOfEnchantments)
     {
@@ -48,33 +46,19 @@ public class ItemHelper
 
     public static ItemStack getRandomPotion()
     {
-        ItemStack stack = new ItemStack(Items.POTIONITEM);
+        ItemStack stack = new ItemStack(Items.POTION);
         PotionUtils.addPotionToItemStack(stack, POTION_TYPES.get(RandomHelper.getRandom().nextInt(POTION_TYPES.size())));
         return stack;
     }
 
-    public static boolean isOreDict(String id, Item item)
+    private static List<Potion> getPotions()
     {
-        for(ItemStack stack : OreDictionary.getOres(id))
-        {
-            if(stack.getItem() == item)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static List<PotionType> getPotions()
-    {
-        List<PotionType> potionTypes = new ArrayList<>((ForgeRegistries.POTION_TYPES.getValuesCollection()));
-        potionTypes.remove(PotionTypes.EMPTY);
-        potionTypes.remove(PotionTypes.WATER);
-        potionTypes.remove(PotionTypes.MUNDANE);
-        potionTypes.remove(PotionTypes.THICK);
-        potionTypes.remove(PotionTypes.AWKWARD);
-
+        List<Potion> potionTypes = new ArrayList<>((ForgeRegistries.POTION_TYPES.getValues()));
+        potionTypes.remove(Potions.EMPTY);
+        potionTypes.remove(Potions.WATER);
+        potionTypes.remove(Potions.MUNDANE);
+        potionTypes.remove(Potions.THICK);
+        potionTypes.remove(Potions.AWKWARD);
         return potionTypes;
     }
 }

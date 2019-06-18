@@ -19,29 +19,26 @@ package logictechcorp.libraryex.item;
 
 import logictechcorp.libraryex.item.builder.ItemEdibleProperties;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.EnumAction;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.stats.StatList;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.item.UseAction;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.stats.Stats;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-public class ItemBlockEdible extends ItemBlockMod
+public class EdibleBlockItem extends BlockItem
 {
     private final int healAmount;
     private final float saturation;
     private final boolean isWolfFood;
     private boolean alwaysEdible;
-    private PotionEffect potionEffect;
+    private EffectInstance potionEffect;
     private float potionEffectProbability;
 
-    public ItemBlockEdible(Block block, ItemEdibleProperties properties)
+    public EdibleBlockItem(Block block, ItemEdibleProperties properties)
     {
         super(block, properties);
         this.healAmount = properties.getHealAmount();
@@ -53,15 +50,15 @@ public class ItemBlockEdible extends ItemBlockMod
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving)
+    public ItemStack onItemUseFinish(ItemStack stack, World world, LivingEntity entityLiving)
     {
-        if(entityLiving instanceof EntityPlayer)
+        if(entityLiving instanceof PlayerEntity)
         {
-            EntityPlayer player = (EntityPlayer) entityLiving;
+            PlayerEntity player = (PlayerEntity) entityLiving;
             player.getFoodStats().addStats(this.healAmount, this.saturation);
             world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
             this.onFoodEaten(stack, world, player);
-            player.addStat(StatList.getObjectUseStats(this));
+            player.addStat(Stats.ITEM_USED.get(this));
         }
 
         stack.shrink(1);
@@ -69,38 +66,38 @@ public class ItemBlockEdible extends ItemBlockMod
     }
 
     @Override
-    public int getMaxItemUseDuration(ItemStack stack)
+    public int getUseDuration(ItemStack stack)
     {
         return 32;
     }
 
     @Override
-    public EnumAction getItemUseAction(ItemStack stack)
+    public UseAction getUseAction(ItemStack stack)
     {
-        return EnumAction.EAT;
+        return UseAction.EAT;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
     {
         ItemStack stack = player.getHeldItem(hand);
 
         if(player.canEat(this.alwaysEdible))
         {
             player.setActiveHand(hand);
-            return new ActionResult(EnumActionResult.SUCCESS, stack);
+            return new ActionResult(ActionResultType.SUCCESS, stack);
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, stack);
+            return new ActionResult(ActionResultType.FAIL, stack);
         }
     }
 
-    protected void onFoodEaten(ItemStack stack, World world, EntityPlayer player)
+    protected void onFoodEaten(ItemStack stack, World world, PlayerEntity player)
     {
         if(!world.isRemote && this.potionEffect != null && world.rand.nextFloat() < this.potionEffectProbability)
         {
-            player.addPotionEffect(new PotionEffect(this.potionEffect));
+            player.addPotionEffect(new EffectInstance(this.potionEffect));
         }
     }
 
@@ -119,7 +116,7 @@ public class ItemBlockEdible extends ItemBlockMod
         return this.isWolfFood;
     }
 
-    public PotionEffect getPotionEffect()
+    public EffectInstance getPotionEffect()
     {
         return this.potionEffect;
     }

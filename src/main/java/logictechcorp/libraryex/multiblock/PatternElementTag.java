@@ -15,15 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.client.gui;
+package logictechcorp.libraryex.multiblock;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.tags.Tag;
 
-@FunctionalInterface
-@SideOnly(Side.CLIENT)
-public interface IGuiButtonPressed
+public class PatternElementTag extends PatternElement
 {
-    void onPressed(GuiButton button);
+    private Tag<Block>[] tags;
+
+    PatternElementTag(BlockState state, char identifier, Tag<Block>... tags)
+    {
+        super(state, identifier);
+        this.tags = tags;
+    }
+
+    @Override
+    public boolean matches(BlockState state)
+    {
+        for(Tag<Block> tag : this.tags)
+        {
+            if(state.isIn(tag))
+            {
+                return true;
+            }
+        }
+
+        return super.matches(state);
+    }
 }

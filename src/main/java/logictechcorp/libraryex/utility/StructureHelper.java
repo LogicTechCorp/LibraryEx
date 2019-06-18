@@ -17,10 +17,13 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.template.PlacementSettings;
+import net.minecraft.world.gen.feature.template.PlacementSettings;
 
 public class StructureHelper
 {
@@ -199,8 +202,9 @@ public class StructureHelper
                     for(int z = -startZ; z < endZ; z++)
                     {
                         BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, 0, z), placementSettings));
+                        BlockState state = world.getBlockState(newPos);
 
-                        if(world.getBlockState(newPos).isSideSolid(world, newPos, EnumFacing.DOWN))
+                        if(Block.doesSideFillSquare(state.getCollisionShape(world, newPos, ISelectionContext.dummy()), Direction.DOWN))
                         {
                             ceilingBlocks++;
                         }
@@ -217,7 +221,7 @@ public class StructureHelper
                             {
                                 BlockPos newPos = pos.add(orientBlockPos(new BlockPos(x, -y, z), placementSettings));
 
-                                if(world.getBlockState(newPos).getBlock().isReplaceable(world, newPos))
+                                if(world.isAirBlock(newPos))
                                 {
                                     replaceableBlocks++;
                                 }

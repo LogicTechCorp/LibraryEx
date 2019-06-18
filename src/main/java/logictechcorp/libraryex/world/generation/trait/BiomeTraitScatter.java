@@ -19,9 +19,9 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,8 +30,8 @@ import java.util.function.Consumer;
 
 public class BiomeTraitScatter extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToTarget;
     protected Placement placement;
 
     protected BiomeTraitScatter(Builder builder)
@@ -85,7 +85,7 @@ public class BiomeTraitScatter extends BiomeTrait
                 {
                     BlockPos offsetPos = this.placement.offsetPos(newPos);
 
-                    if(this.blockToSpawn.getBlock().canPlaceBlockAt(world, offsetPos))
+                    if(this.blockToSpawn.isValidPosition(world, offsetPos))
                     {
                         world.setBlockState(offsetPos, this.blockToSpawn, 3);
                     }
@@ -94,7 +94,7 @@ public class BiomeTraitScatter extends BiomeTrait
                 {
                     BlockPos offsetPos = this.placement.offsetPos(newPos);
 
-                    if(this.blockToSpawn.getBlock().canPlaceBlockAt(world, offsetPos))
+                    if(this.blockToSpawn.isValidPosition(world, offsetPos))
                     {
                         world.setBlockState(offsetPos, this.blockToSpawn, 3);
                     }
@@ -108,13 +108,13 @@ public class BiomeTraitScatter extends BiomeTrait
     public enum Placement
     {
         ON_GROUND(null),
-        IN_GROUND(EnumFacing.DOWN),
+        IN_GROUND(Direction.DOWN),
         ON_ROOF(null),
-        IN_ROOF(EnumFacing.UP);
+        IN_ROOF(Direction.UP);
 
-        EnumFacing offset;
+        Direction offset;
 
-        Placement(EnumFacing offsetIn)
+        Placement(Direction offsetIn)
         {
             this.offset = offsetIn;
         }
@@ -134,24 +134,24 @@ public class BiomeTraitScatter extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToTarget;
+        private BlockState blockToSpawn;
+        private BlockState blockToTarget;
         private Placement placement;
 
         public Builder()
         {
-            this.blockToSpawn = Blocks.TALLGRASS.getDefaultState();
-            this.blockToTarget = Blocks.GRASS.getDefaultState();
+            this.blockToSpawn = Blocks.GRASS.getDefaultState();
+            this.blockToTarget = Blocks.GRASS_BLOCK.getDefaultState();
             this.placement = Placement.ON_GROUND;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToTarget(IBlockState blockToTarget)
+        public Builder blockToTarget(BlockState blockToTarget)
         {
             this.blockToTarget = blockToTarget;
             return this;

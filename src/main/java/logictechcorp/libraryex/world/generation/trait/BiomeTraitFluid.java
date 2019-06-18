@@ -19,18 +19,21 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Random;
 import java.util.function.Consumer;
 
 public class BiomeTraitFluid extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToTarget;
     protected boolean generateFalling;
 
     protected BiomeTraitFluid(Builder builder)
@@ -141,7 +144,12 @@ public class BiomeTraitFluid extends BiomeTrait
             if(!this.generateFalling && i == 4 && j == 1 || i == 5)
             {
                 world.setBlockState(pos, this.blockToSpawn, 2);
-                world.immediateBlockTick(pos, this.blockToSpawn, random);
+                Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(this.blockToSpawn.getBlock().getRegistryName().getPath()));
+
+                if(fluid != null)
+                {
+                    world.getPendingFluidTicks().scheduleTick(pos, fluid, 0);
+                }
             }
 
             return true;
@@ -150,8 +158,8 @@ public class BiomeTraitFluid extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToTarget;
+        private BlockState blockToSpawn;
+        private BlockState blockToTarget;
         private boolean generateFalling;
 
         public Builder()
@@ -161,13 +169,13 @@ public class BiomeTraitFluid extends BiomeTrait
             this.generateFalling = false;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToTarget(IBlockState blockToTarget)
+        public Builder blockToTarget(BlockState blockToTarget)
         {
             this.blockToTarget = blockToTarget;
             return this;

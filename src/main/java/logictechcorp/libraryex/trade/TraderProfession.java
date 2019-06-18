@@ -19,14 +19,14 @@ package logictechcorp.libraryex.trade;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class TraderProfession<P extends TraderProfession<P, C>, C extends TraderProfession.Career> extends IForgeRegistryEntry.Impl<P>
+public abstract class TraderProfession<P extends TraderProfession<P, C>, C extends TraderProfession.Career> extends ForgeRegistryEntry<P>
 {
     private ResourceLocation name;
     private List<C> careers = new ArrayList<>();

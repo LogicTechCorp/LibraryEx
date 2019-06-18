@@ -19,9 +19,9 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,8 +30,8 @@ import java.util.function.Consumer;
 
 public class BiomeTraitPool extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToSurround;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToSurround;
 
     protected BiomeTraitPool(Builder builder)
     {
@@ -177,8 +177,8 @@ public class BiomeTraitPool extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToSurround;
+        private BlockState blockToSpawn;
+        private BlockState blockToSurround;
 
         public Builder()
         {
@@ -186,13 +186,13 @@ public class BiomeTraitPool extends BiomeTrait
             this.blockToSurround = Blocks.STONE.getDefaultState();
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToSurround(IBlockState blockToSurround)
+        public Builder blockToSurround(BlockState blockToSurround)
         {
             this.blockToSurround = blockToSurround;
             return this;

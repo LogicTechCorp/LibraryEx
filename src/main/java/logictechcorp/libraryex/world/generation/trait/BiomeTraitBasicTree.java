@@ -18,8 +18,9 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import logictechcorp.libraryex.utility.RandomHelper;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -51,7 +52,7 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
         int height = RandomHelper.getNumberInRange(this.minimumGrowthHeight, this.maximumGrowthHeight, random);
         boolean flag = true;
 
-        if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getHeight())
+        if(pos.getY() >= 1 && pos.getY() + height + 1 <= world.getActualHeight())
         {
             for(int posY = pos.getY(); posY <= pos.getY() + 1 + height; posY++)
             {
@@ -73,7 +74,7 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
                 {
                     for(int posZ = pos.getZ() - adjustedHeight; posZ <= pos.getZ() + adjustedHeight && flag; posZ++)
                     {
-                        if(posY >= 0 && posY < world.getHeight())
+                        if(posY >= 0 && posY < world.getActualHeight())
                         {
                             if(!this.isReplaceable(world, mutablePos.setPos(posX, posY, posZ)))
                             {
@@ -94,9 +95,9 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
             }
             else
             {
-                IBlockState checkState = world.getBlockState(pos.down());
+                BlockState checkState = world.getBlockState(pos.down());
 
-                if(this.blockToTarget == checkState && pos.getY() < world.getHeight() - height - 1)
+                if(this.blockToTarget == checkState && pos.getY() < world.getActualHeight() - height - 1)
                 {
                     checkState.getBlock().onPlantGrow(checkState, world, pos.down(), pos);
 
@@ -118,7 +119,7 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
                                     BlockPos checkPos = new BlockPos(checkPosX, checkPosY, checkPosZ);
                                     checkState = world.getBlockState(checkPos);
 
-                                    if(checkState.getBlock().isAir(checkState, world, checkPos) || checkState.getBlock().isLeaves(checkState, world, checkPos) || checkState.getMaterial() == Material.VINE)
+                                    if(checkState.getBlock().isAir(checkState, world, checkPos) || checkState.getBlock().isIn(BlockTags.LEAVES) || checkState.getMaterial() == Material.TALL_PLANTS)
                                     {
                                         world.setBlockState(checkPos, this.leafBlock);
                                     }
@@ -132,7 +133,7 @@ public class BiomeTraitBasicTree extends BiomeTraitAbstractTree
                         BlockPos offsetPos = pos.up(heightOffset);
                         checkState = world.getBlockState(offsetPos);
 
-                        if(checkState.getBlock().isAir(checkState, world, offsetPos) || checkState.getBlock().isLeaves(checkState, world, offsetPos) || checkState.getMaterial() == Material.VINE)
+                        if(checkState.getBlock().isAir(checkState, world, offsetPos) || checkState.getBlock().isIn(BlockTags.LEAVES) || checkState.getMaterial() == Material.TALL_PLANTS)
                         {
                             world.setBlockState(pos.up(heightOffset), this.logBlock);
                         }

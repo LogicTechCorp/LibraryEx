@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.utility;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * A class of methods that help with manipulating experience
@@ -29,7 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
  */
 public class ExperienceHelper
 {
-    public static void adjustPlayerExperience(EntityPlayer player, int amount)
+    public static void adjustPlayerExperience(PlayerEntity player, int amount)
     {
         int experience = getPlayerExperience(player) + amount;
         player.experienceTotal = experience;
@@ -38,7 +38,7 @@ public class ExperienceHelper
         player.experience = (float) (experience - experienceForLevel) / (float) player.xpBarCap();
     }
 
-    public static int getPlayerExperience(EntityPlayer player)
+    public static int getPlayerExperience(PlayerEntity player)
     {
         return (int) (getExperienceForLevel(player.experienceLevel) + (player.experience * player.xpBarCap()));
     }

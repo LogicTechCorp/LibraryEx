@@ -18,8 +18,9 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import logictechcorp.libraryex.utility.RandomHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -100,12 +101,12 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
             else
             {
                 BlockPos downPos = pos.down();
-                IBlockState state = world.getBlockState(downPos);
+                BlockState state = world.getBlockState(downPos);
 
-                if(this.blockToTarget == state && pos.getY() < world.getHeight() - height - 1)
+                if(this.blockToTarget == state && pos.getY() < world.getMaxHeight() - height - 1)
                 {
                     state.getBlock().onPlantGrow(state, world, downPos, pos);
-                    EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
+                    Direction facing = Direction.Plane.HORIZONTAL.random(random);
 
                     int adjustedHeight = height - random.nextInt(4) - 1;
                     int bonusHeight = 3 - random.nextInt(3);
@@ -127,7 +128,7 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
                         BlockPos offsetPos = new BlockPos(posXOffset, adjustedLocalHeight, posZOffset);
                         state = world.getBlockState(offsetPos);
 
-                        if(state.getBlock().isAir(state, world, offsetPos) || state.getBlock().isLeaves(state, world, offsetPos))
+                        if(state.getBlock().isAir(state, world, offsetPos) || state.getBlock().isIn(BlockTags.LEAVES))
                         {
                             this.placeLogAt(world, offsetPos);
                             posYOffset = adjustedLocalHeight;
@@ -163,7 +164,7 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
                     this.placeLeafAt(world, posLeaf.north(2));
                     posXOffset = pos.getX();
                     posZOffset = pos.getZ();
-                    EnumFacing horizontalFacing = EnumFacing.Plane.HORIZONTAL.random(random);
+                    Direction horizontalFacing = Direction.Plane.HORIZONTAL.random(random);
 
                     if(horizontalFacing != facing)
                     {
@@ -181,7 +182,7 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
                                 BlockPos posLog = new BlockPos(posXOffset, posYLog, posZOffset);
                                 state = world.getBlockState(posLog);
 
-                                if(state.getBlock().isAir(state, world, posLog) || state.getBlock().isLeaves(state, world, posLog))
+                                if(state.getBlock().isAir(state, world, posLog) || state.getBlock().isIn(BlockTags.LEAVES))
                                 {
                                     this.placeLogAt(world, posLog);
                                     posYOffset = posYLog;
@@ -234,9 +235,9 @@ public class BiomeTraitSparseTree extends BiomeTraitAbstractTree
 
     private void placeLeafAt(World world, BlockPos pos)
     {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
 
-        if(state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos))
+        if(state.getBlock().isAir(state, world, pos) || state.getBlock().isIn(BlockTags.LEAVES))
         {
             world.setBlockState(pos, this.leafBlock);
         }

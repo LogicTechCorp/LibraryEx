@@ -45,7 +45,6 @@ final class BiomeTraitRegistry implements IBiomeTraitRegistry
         this.registerBiomeTrait(LibraryEx.getResource("basic_tree"), new BiomeTraitBasicTree.Builder(), BiomeTraitBasicTree.class);
         this.registerBiomeTrait(LibraryEx.getResource("dense_tree"), new BiomeTraitDenseTree.Builder(), BiomeTraitDenseTree.class);
         this.registerBiomeTrait(LibraryEx.getResource("sparse_tree"), new BiomeTraitSparseTree.Builder(), BiomeTraitSparseTree.class);
-        this.registerBiomeTrait(LibraryEx.getResource("big_mushroom"), new BiomeTraitBigMushroom.Builder(), BiomeTraitBigMushroom.class);
         this.registerBiomeTrait(LibraryEx.getResource("structure"), new BiomeTraitStructure.Builder(), BiomeTraitStructure.class);
     }
 

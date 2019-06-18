@@ -19,8 +19,8 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 
 public class BiomeTraitPatch extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToTarget;
     protected int patchWidth;
 
     protected BiomeTraitPatch(Builder builder)
@@ -112,8 +112,8 @@ public class BiomeTraitPatch extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToTarget;
+        private BlockState blockToSpawn;
+        private BlockState blockToTarget;
         private int patchWidth;
 
         public Builder()
@@ -123,13 +123,13 @@ public class BiomeTraitPatch extends BiomeTrait
             this.patchWidth = 4;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToTarget(IBlockState blockToTarget)
+        public Builder blockToTarget(BlockState blockToTarget)
         {
             this.blockToTarget = blockToTarget;
             return this;

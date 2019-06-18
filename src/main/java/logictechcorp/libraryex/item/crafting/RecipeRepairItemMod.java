@@ -18,28 +18,32 @@
 package logictechcorp.libraryex.item.crafting;
 
 import logictechcorp.libraryex.utility.RandomHelper;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
+public class RecipeRepairItemMod implements IRecipe<CraftingInventory>
 {
+    private ResourceLocation id;
     private ItemStack brokenStack;
     private Ingredient repairIngredient;
     private int repairAmount;
 
-    public RecipeRepairItemMod(ItemStack brokenStack, Ingredient repairIngredient, int repairAmount)
+    public RecipeRepairItemMod(ResourceLocation id, ItemStack brokenStack, Ingredient repairIngredient, int repairAmount)
     {
+        this.id = id;
         this.brokenStack = brokenStack;
         this.repairIngredient = repairIngredient;
         this.repairAmount = repairAmount;
     }
 
     @Override
-    public boolean matches(InventoryCrafting inventory, World world)
+    public boolean matches(CraftingInventory inventory, World world)
     {
         ItemStack brokenStack = ItemStack.EMPTY;
         ItemStack repairStack = ItemStack.EMPTY;
@@ -57,7 +61,7 @@ public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> imple
 
                 brokenStack = stack;
             }
-            else if(this.repairIngredient.apply(stack))
+            else if(this.repairIngredient.test(stack))
             {
                 if(!repairStack.isEmpty())
                 {
@@ -68,11 +72,11 @@ public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> imple
             }
         }
 
-        return !brokenStack.isEmpty() && brokenStack.getItemDamage() > 0 && !repairStack.isEmpty();
+        return !brokenStack.isEmpty() && brokenStack.getDamage() > 0 && !repairStack.isEmpty();
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inventory)
+    public ItemStack getCraftingResult(CraftingInventory inventory)
     {
         ItemStack brokenStack = ItemStack.EMPTY;
         ItemStack repairStack = ItemStack.EMPTY;
@@ -90,7 +94,7 @@ public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> imple
 
                 brokenStack = stack;
             }
-            else if(this.repairIngredient.apply(stack))
+            else if(this.repairIngredient.test(stack))
             {
                 if(!repairStack.isEmpty())
                 {
@@ -116,5 +120,23 @@ public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> imple
     public ItemStack getRecipeOutput()
     {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ResourceLocation getId()
+    {
+        return this.id;
+    }
+
+    @Override
+    public IRecipeSerializer<?> getSerializer()
+    {
+        return IRecipeSerializer.CRAFTING_SHAPELESS;
+    }
+
+    @Override
+    public IRecipeType<?> getType()
+    {
+        return IRecipeType.CRAFTING;
     }
 }

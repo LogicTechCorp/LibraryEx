@@ -18,12 +18,12 @@
 package logictechcorp.libraryex.potion;
 
 import logictechcorp.libraryex.api.IModData;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Potion;
 
-public class PotionMod extends PotionType
+public class PotionMod extends Potion
 {
-    public PotionMod(IModData data, String name, PotionEffect effect)
+    public PotionMod(IModData data, String name, EffectInstance effect)
     {
         super(data.getModId() + ":" + name, effect);
         this.setRegistryName(data.getModId() + ":" + name);

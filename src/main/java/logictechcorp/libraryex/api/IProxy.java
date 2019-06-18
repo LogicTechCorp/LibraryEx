@@ -19,11 +19,7 @@ package logictechcorp.libraryex.api;
 
 public interface IProxy
 {
-    void preInit();
-
-    void init();
-
-    void postInit();
+    void setupSidedListeners();
 
     void spawnParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
 }

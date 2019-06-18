@@ -20,20 +20,18 @@ package logictechcorp.libraryex.world.generation.trait;
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockOldLeaf;
-import net.minecraft.block.BlockOldLog;
-import net.minecraft.block.BlockPlanks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BiomeTraitAbstractTree extends BiomeTrait
 {
-    protected IBlockState logBlock;
-    protected IBlockState leafBlock;
-    protected IBlockState blockToTarget;
+    protected BlockState logBlock;
+    protected BlockState leafBlock;
+    protected BlockState blockToTarget;
     protected int minimumGrowthHeight;
     protected int maximumGrowthHeight;
 
@@ -85,40 +83,40 @@ public abstract class BiomeTraitAbstractTree extends BiomeTrait
 
     protected boolean isReplaceable(World world, BlockPos pos)
     {
-        IBlockState state = world.getBlockState(pos);
-        return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || this.canGrowInto(state.getBlock());
+        BlockState state = world.getBlockState(pos);
+        return state.getBlock().isAir(state, world, pos) || state.getBlock().isIn(BlockTags.LEAVES) || state.getBlock().isIn(BlockTags.LOGS) || this.canGrowInto(state.getBlock());
     }
 
     public abstract static class Builder extends BiomeTrait.Builder
     {
-        protected IBlockState logBlock;
-        protected IBlockState leafBlock;
-        protected IBlockState blockToTarget;
+        protected BlockState logBlock;
+        protected BlockState leafBlock;
+        protected BlockState blockToTarget;
         protected int minimumGrowthHeight;
         protected int maximumGrowthHeight;
 
         public Builder()
         {
-            this.logBlock = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
-            this.leafBlock = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK);
+            this.logBlock = Blocks.OAK_LOG.getDefaultState();
+            this.leafBlock = Blocks.OAK_LEAVES.getDefaultState();
             this.blockToTarget = Blocks.GRASS.getDefaultState();
             this.minimumGrowthHeight = 4;
             this.maximumGrowthHeight = 6;
         }
 
-        public Builder logBlock(IBlockState logBlock)
+        public Builder logBlock(BlockState logBlock)
         {
             this.logBlock = logBlock;
             return this;
         }
 
-        public Builder leafBlock(IBlockState leafBlock)
+        public Builder leafBlock(BlockState leafBlock)
         {
             this.leafBlock = leafBlock;
             return this;
         }
 
-        public Builder blockToTarget(IBlockState blockToTarget)
+        public Builder blockToTarget(BlockState blockToTarget)
         {
             this.blockToTarget = blockToTarget;
             return this;

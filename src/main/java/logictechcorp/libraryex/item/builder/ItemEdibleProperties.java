@@ -17,15 +17,16 @@
 
 package logictechcorp.libraryex.item.builder;
 
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.item.Item;
+import net.minecraft.potion.EffectInstance;
 
-public class ItemEdibleProperties extends ItemProperties
+public class ItemEdibleProperties extends Item.Properties
 {
     private int healAmount;
     private float saturation;
     private boolean isWolfFood;
     private boolean alwaysEdible;
-    private PotionEffect potionEffect;
+    private EffectInstance potionEffect;
     private float potionEffectProbability;
 
     public ItemEdibleProperties(int healAmount, float saturation, boolean isWolfFood)
@@ -35,7 +36,7 @@ public class ItemEdibleProperties extends ItemProperties
         this.isWolfFood = isWolfFood;
     }
 
-    public ItemEdibleProperties potionEffect(PotionEffect potionEffect, float probability)
+    public ItemEdibleProperties potionEffect(EffectInstance potionEffect, float probability)
     {
         this.potionEffect = potionEffect;
         this.potionEffectProbability = probability;
@@ -46,19 +47,6 @@ public class ItemEdibleProperties extends ItemProperties
     {
         this.alwaysEdible = true;
         return this;
-    }
-
-    @Override
-    public ItemEdibleProperties copy()
-    {
-        ItemEdibleProperties properties = (ItemEdibleProperties) super.copy();
-        properties.healAmount = this.healAmount;
-        properties.saturation = this.saturation;
-        properties.isWolfFood = this.isWolfFood;
-        properties.alwaysEdible = this.alwaysEdible;
-        properties.potionEffect = this.potionEffect;
-        properties.potionEffectProbability = this.potionEffectProbability;
-        return properties;
     }
 
     public int getHealAmount()
@@ -81,7 +69,7 @@ public class ItemEdibleProperties extends ItemProperties
         return this.alwaysEdible;
     }
 
-    public PotionEffect getPotionEffect()
+    public EffectInstance getPotionEffect()
     {
         return this.potionEffect;
     }

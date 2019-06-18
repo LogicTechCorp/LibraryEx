@@ -19,9 +19,9 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -30,9 +30,9 @@ import java.util.function.Consumer;
 
 public class BiomeTraitCluster extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToAttachTo;
-    protected EnumFacing direction;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToAttachTo;
+    protected Direction direction;
 
     protected BiomeTraitCluster(Builder builder)
     {
@@ -55,7 +55,7 @@ public class BiomeTraitCluster extends BiomeTrait
         super.readFromConfig(config);
         this.blockToSpawn = ConfigHelper.getBlockState(config, "blockToSpawn");
         this.blockToAttachTo = ConfigHelper.getBlockState(config, "blockToAttachTo");
-        this.direction = config.getEnumOrElse("direction", EnumFacing.DOWN);
+        this.direction = config.getEnumOrElse("direction", Direction.DOWN);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class BiomeTraitCluster extends BiomeTrait
                 {
                     int adjacentBlocks = 0;
 
-                    for(EnumFacing facing : EnumFacing.values())
+                    for(Direction facing : Direction.values())
                     {
                         if(world.getBlockState(newPos.offset(facing)).getBlock() == this.blockToSpawn.getBlock())
                         {
@@ -144,30 +144,30 @@ public class BiomeTraitCluster extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToAttachTo;
-        private EnumFacing direction;
+        private BlockState blockToSpawn;
+        private BlockState blockToAttachTo;
+        private Direction direction;
 
         public Builder()
         {
             this.blockToSpawn = Blocks.GLOWSTONE.getDefaultState();
             this.blockToAttachTo = Blocks.NETHERRACK.getDefaultState();
-            this.direction = EnumFacing.DOWN;
+            this.direction = Direction.DOWN;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToAttachTo(IBlockState blockToAttachTo)
+        public Builder blockToAttachTo(BlockState blockToAttachTo)
         {
             this.blockToAttachTo = blockToAttachTo;
             return this;
         }
 
-        public Builder direction(EnumFacing direction)
+        public Builder direction(Direction direction)
         {
             this.direction = direction;
             return this;

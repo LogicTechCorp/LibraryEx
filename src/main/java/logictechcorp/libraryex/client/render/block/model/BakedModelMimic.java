@@ -17,54 +17,60 @@
 
 package logictechcorp.libraryex.client.render.block.model;
 
-import logictechcorp.libraryex.block.BlockDynamic;
-import net.minecraft.block.state.IBlockState;
+import logictechcorp.libraryex.block.MimicBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraft.util.Direction;
+import net.minecraftforge.client.model.data.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.IModelData;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class BakedModelDynamic implements IBakedModel
+public class BakedModelMimic implements IDynamicBakedModel
 {
     private final IBakedModel originalModel;
-    private final BlockDynamic.TexturePlacement texturePlacement;
+    private final MimicBlock.MimicType mimicType;
 
-    public BakedModelDynamic(IBakedModel originalModel, BlockDynamic.TexturePlacement texturePlacement)
+    public BakedModelMimic(IBakedModel originalModel, MimicBlock.MimicType mimicType)
     {
         this.originalModel = originalModel;
-        this.texturePlacement = texturePlacement;
+        this.mimicType = mimicType;
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long random)
+    public List<BakedQuad> getQuads(BlockState state, Direction side, Random random, IModelData data)
     {
         List<BakedQuad> originalQuads = new ArrayList<>(this.originalModel.getQuads(state, side, random));
-        List<BakedQuad> dynamicQuads = new ArrayList<>(this.getDynamicModel(state).getQuads(state, side, random));
-        List<BakedQuad> quads;
+        List<BakedQuad> mimickedQuads = new ArrayList<>(this.getMimickedModel(data.getData(MimicBlock.MIMIC_PROP)).getQuads(state, side, random));
+        List<BakedQuad> retQuads;
 
-        if(this.texturePlacement == BlockDynamic.TexturePlacement.OVER)
+        if(this.mimicType == MimicBlock.MimicType.OVERLAY)
         {
-            quads = originalQuads;
-            quads.addAll(dynamicQuads);
+            retQuads = originalQuads;
+            retQuads.addAll(mimickedQuads);
+        }
+        else if(this.mimicType == MimicBlock.MimicType.UNDERLAY)
+        {
+            retQuads = mimickedQuads;
+            retQuads.addAll(originalQuads);
         }
         else
         {
-            quads = dynamicQuads;
-            quads.addAll(originalQuads);
+            retQuads = mimickedQuads;
         }
 
-        return quads;
+        return retQuads;
     }
 
     @Override
@@ -103,20 +109,13 @@ public class BakedModelDynamic implements IBakedModel
         return Pair.of(this, this.originalModel.handlePerspective(type).getRight());
     }
 
-    private IBakedModel getDynamicModel(IBlockState state)
+    private IBakedModel getMimickedModel(BlockState state)
     {
-        if(state instanceof IExtendedBlockState)
+        if(state != null)
         {
-            IExtendedBlockState extendedState = (IExtendedBlockState) state;
-            IBlockState stateMask = extendedState.getValue(BlockDynamic.DYNAMIC);
-
-            if(stateMask != null)
-            {
-                Minecraft mc = Minecraft.getMinecraft();
-                BlockRendererDispatcher dispatcher = mc.getBlockRendererDispatcher();
-                BlockModelShapes shapes = dispatcher.getBlockModelShapes();
-                return shapes.getModelForState(stateMask);
-            }
+            BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
+            BlockModelShapes shapes = dispatcher.getBlockModelShapes();
+            return shapes.getModel(state);
         }
 
         return this.originalModel;

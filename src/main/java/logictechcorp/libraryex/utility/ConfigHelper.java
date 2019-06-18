@@ -18,32 +18,29 @@
 package logictechcorp.libraryex.utility;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemEnchantedBook;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ConfigHelper
 {
-    public static IBlockState getBlockState(Config config, String path)
+    public static BlockState getBlockState(Config config, String path)
     {
         if(config.contains(path))
         {
@@ -62,29 +59,7 @@ public class ConfigHelper
 
             if(block != null && block != Blocks.AIR)
             {
-                IBlockState state = block.getDefaultState();
-
-                if(config.contains(path + ".properties"))
-                {
-                    Config properties = config.get(path + ".properties");
-
-                    for(Config.Entry entry : properties.entrySet())
-                    {
-                        IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
-
-                        if(property != null)
-                        {
-                            Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue());
-
-                            if(propertyValue != null)
-                            {
-                                state = state.withProperty(property, propertyValue);
-                            }
-                        }
-                    }
-                }
-
-                return state;
+                return block.getDefaultState();
             }
         }
 
@@ -103,7 +78,7 @@ public class ConfigHelper
 
                 if(item != null && item != Items.AIR)
                 {
-                    stack = new ItemStack(item, 1, config.getOrElse(path + ".meta", 0));
+                    stack = new ItemStack(item, 1);
                 }
             }
             else if(config.get(path + ".itemBlock") instanceof String)
@@ -112,28 +87,7 @@ public class ConfigHelper
 
                 if(block != null && block != Blocks.AIR)
                 {
-                    IBlockState state = block.getDefaultState();
-                    if(config.contains(path + ".properties"))
-                    {
-                        Config propertyConfig = config.get(path + ".properties");
-
-                        for(Config.Entry entry : propertyConfig.entrySet())
-                        {
-                            IProperty property = BlockStateHelper.getProperty(state, entry.getKey());
-
-                            if(property != null)
-                            {
-                                Comparable propertyValue = BlockStateHelper.getPropertyValue(property, entry.getValue());
-
-                                if(propertyValue != null)
-                                {
-                                    state = state.withProperty(property, propertyValue);
-                                }
-                            }
-                        }
-                    }
-
-                    stack = new ItemStack(block, 1, block.getMetaFromState(state));
+                    stack = new ItemStack(block, 1);
                 }
             }
 
@@ -165,7 +119,7 @@ public class ConfigHelper
 
                 if(config.contains(path + ".displayName"))
                 {
-                    stack.setStackDisplayName(config.get(path + ".displayName"));
+                    stack.setDisplayName(new TranslationTextComponent(config.get(path + ".displayName")));
                 }
 
                 List<String> loreList = config.get(path + ".lore");
@@ -173,17 +127,17 @@ public class ConfigHelper
                 if(loreList != null && loreList.size() > 0)
                 {
                     NBTHelper.ensureTagExists(stack);
-                    NBTTagList loreTagList = new NBTTagList();
+                    ListNBT loreTagList = new ListNBT();
 
                     for(String lore : loreList)
                     {
-                        loreTagList.appendTag(new NBTTagString(lore));
+                        loreTagList.add(new StringNBT(lore));
                     }
 
-                    NBTTagCompound displayCompound = new NBTTagCompound();
-                    displayCompound.setTag("Lore", loreTagList);
-                    NBTTagCompound compound = new NBTTagCompound();
-                    compound.setTag("display", displayCompound);
+                    CompoundNBT displayCompound = new CompoundNBT();
+                    displayCompound.put("Lore", loreTagList);
+                    CompoundNBT compound = new CompoundNBT();
+                    compound.put("display", displayCompound);
                     NBTHelper.setTagIfNotExistent(stack, compound);
                 }
 
@@ -193,7 +147,7 @@ public class ConfigHelper
                 {
                     for(Config enchantmentConfig : enchantments)
                     {
-                        Enchantment enchantment = Enchantment.getEnchantmentByLocation(enchantmentConfig.get("enchantment"));
+                        Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(enchantmentConfig.get("enchantment")));
 
                         if(enchantment != null)
                         {
@@ -219,9 +173,9 @@ public class ConfigHelper
                                 enchantmentConfig.set("maxEnchantmentLevel", enchantmentLevel);
                             }
 
-                            if(stack.getItem() instanceof ItemEnchantedBook)
+                            if(stack.getItem() instanceof EnchantedBookItem)
                             {
-                                ItemEnchantedBook.addEnchantment(stack, new EnchantmentData(enchantment, enchantmentLevel));
+                                EnchantedBookItem.addEnchantment(stack, new EnchantmentData(enchantment, enchantmentLevel));
                             }
                             else
                             {
@@ -239,120 +193,64 @@ public class ConfigHelper
         return ItemStack.EMPTY;
     }
 
-    public static void setBlockState(Config config, String path, IBlockState state)
+    public static void setBlockState(Config config, String path, BlockState state)
     {
-        if(state != null)
-        {
-            config.set(path + ".block", state.getBlock().getRegistryName().toString());
-
-            if(state != state.getBlock().getDefaultState())
-            {
-                for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
-                {
-                    config.set(path + ".properties." + entry.getKey().getName(), entry.getValue().toString().toLowerCase());
-                }
-            }
-        }
+        config.set(path + ".block", state.getBlock().getRegistryName().toString());
     }
 
     public static void setItemStackComplex(Config config, String path, ItemStack stack)
     {
-        if(stack != null)
+        config.set(path + (stack.getItem() instanceof BlockItem ? ".itemBlock" : "item"), stack.getItem().getRegistryName().toString());
+        config.set(path + ".count", stack.getCount());
+
+        CompoundNBT display = stack.getChildTag("display");
+
+        if(display != null)
         {
-            Item item = stack.getItem();
-
-            if(item instanceof ItemBlock)
+            if(display.contains("Name", 8))
             {
-                Config propertyConfig = ModJsonConfigFormat.newConfig();
-                IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
-
-                for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
-                {
-                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
-                }
-
-                config.set(path + ".itemBlock", stack.getItem().getRegistryName().toString());
-                config.set(path + ".properties", propertyConfig);
-            }
-            else
-            {
-                config.set(path + ".item", stack.getItem().getRegistryName().toString());
-                config.set(path + ".meta", stack.getMetadata());
+                config.set(path + ".displayName", stack.getDisplayName());
             }
 
-            config.set(path + ".count", stack.getCount());
+            List<String> lore = new ArrayList<>();
 
-            NBTTagCompound display = stack.getSubCompound("display");
-
-            if(display != null)
+            if(display.getTagId("Lore") == 9)
             {
-                if(display.hasKey("Name", 8))
+                ListNBT loreList = display.getList("Lore", 8);
+
+                if(!loreList.isEmpty())
                 {
-                    config.set(path + ".displayName", stack.getDisplayName());
-                }
-
-                List<String> lore = new ArrayList<>();
-
-                if(display.getTagId("Lore") == 9)
-                {
-                    NBTTagList loreList = display.getTagList("Lore", 8);
-
-                    if(!loreList.isEmpty())
+                    for(int i = 0; i < loreList.size(); i++)
                     {
-                        for(int i = 0; i < loreList.tagCount(); i++)
-                        {
-                            lore.add(loreList.getStringTagAt(i));
-                        }
+                        lore.add(loreList.getString(i));
                     }
                 }
-
-                if(lore.size() > 0)
-                {
-                    config.set(path + ".lore", lore);
-                }
             }
 
-            if(stack.isItemEnchanted())
+            if(lore.size() > 0)
             {
-                List<Config> enchantmentConfigs = new ArrayList<>();
-
-                for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
-                {
-                    Config enchantmentConfig = ModJsonConfigFormat.newConfig();
-                    enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
-                    enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
-                    enchantmentConfigs.add(enchantmentConfig);
-                }
-
-                config.set(path + ".enchantments", enchantmentConfigs);
+                config.set(path + ".lore", lore);
             }
+        }
+
+        if(stack.isEnchanted())
+        {
+            List<Config> enchantmentConfigs = new ArrayList<>();
+
+            for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
+            {
+                Config enchantmentConfig = JsonFormat.newConfig(LinkedHashMap::new);
+                enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
+                enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
+                enchantmentConfigs.add(enchantmentConfig);
+            }
+
+            config.set(path + ".enchantments", enchantmentConfigs);
         }
     }
 
     public static void setItemStackSimple(Config config, String path, ItemStack stack)
     {
-        if(stack != null)
-        {
-            Item item = stack.getItem();
-
-            if(item instanceof ItemBlock)
-            {
-                Config propertyConfig = ModJsonConfigFormat.newConfig();
-                IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
-
-                for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
-                {
-                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
-                }
-
-                config.set(path + ".itemBlock", stack.getItem().getRegistryName().toString());
-                config.set(path + ".properties", propertyConfig);
-            }
-            else
-            {
-                config.set(path + ".item", stack.getItem().getRegistryName().toString());
-                config.set(path + ".meta", stack.getMetadata());
-            }
-        }
+        config.set(path + (stack.getItem() instanceof BlockItem ? ".itemBlock" : "item"), stack.getItem().getRegistryName().toString());
     }
 }

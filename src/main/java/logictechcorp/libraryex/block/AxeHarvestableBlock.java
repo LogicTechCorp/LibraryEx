@@ -17,24 +17,23 @@
 
 package logictechcorp.libraryex.block;
 
-public enum HarvestLevel
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
+
+public class AxeHarvestableBlock extends Block
 {
-    WOOD(0),
-    STONE(1),
-    IRON(2),
-    GOLD(0),
-    DIAMOND(3),
-    OBSIDIAN(4);
-
-    private int level;
-
-    HarvestLevel(int level)
+    public AxeHarvestableBlock(Block.Properties properties)
     {
-        this.level = level;
+        super(properties);
     }
 
-    public int getLevel()
+    @Override
+    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player)
     {
-        return this.level;
+        return player.getHeldItemMainhand().getItem() instanceof AxeItem;
     }
 }

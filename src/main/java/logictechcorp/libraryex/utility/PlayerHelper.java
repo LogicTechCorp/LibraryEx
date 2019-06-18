@@ -17,19 +17,19 @@
 
 package logictechcorp.libraryex.utility;
 
-import com.google.common.base.Predicates;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EntitySelectors;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 public class PlayerHelper
 {
-    public static RayTraceResult getRayTracedEntity(EntityPlayer player, World world, float partialTicks)
+    public static EntityRayTraceResult getRayTracedEntity(PlayerEntity player, World world, float partialTicks)
     {
         if(player != null)
         {
@@ -37,14 +37,14 @@ public class PlayerHelper
             {
 
                 boolean creative = player.isCreative();
-                double reachDistance = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+                double reachDistance = player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
 
                 if(!creative)
                 {
                     reachDistance -= 0.5F;
                 }
 
-                Vec3d playerEyePosition = player.getPositionEyes(partialTicks);
+                Vec3d playerEyePosition = player.getEyePosition(partialTicks);
                 boolean flag = false;
                 double modifiedReachDistance = reachDistance;
 
@@ -66,25 +66,25 @@ public class PlayerHelper
                 Entity pointedEntity = null;
                 Vec3d resultHit = null;
                 double modifiedReachDistanceTest = modifiedReachDistance;
-                RayTraceResult result = null;
+                EntityRayTraceResult result = null;
 
-                for(Entity entity : world.getEntitiesInAABBexcluding(player, player.getEntityBoundingBox().expand(playerLook.x * reachDistance, playerLook.y * reachDistance, playerLook.z * reachDistance).grow(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, entity -> entity != null && entity.canBeCollidedWith())))
+                for(Entity entity : world.getEntitiesInAABBexcluding(player, player.getBoundingBox().expand(playerLook.x * reachDistance, playerLook.y * reachDistance, playerLook.z * reachDistance).grow(1.0D, 1.0D, 1.0D), EntityPredicates.NOT_SPECTATING.and(entity -> entity != null && entity.canBeCollidedWith())))
                 {
-                    AxisAlignedBB entityBoundingBox = entity.getEntityBoundingBox().grow((double) entity.getCollisionBorderSize());
-                    RayTraceResult testResult = entityBoundingBox.calculateIntercept(playerEyePosition, playerLookReach);
+                    AxisAlignedBB entityBoundingBox = entity.getBoundingBox().grow((double) entity.getCollisionBorderSize());
+                    Optional<Vec3d> testResult = entityBoundingBox.rayTrace(playerEyePosition, playerLookReach);
 
                     if(entityBoundingBox.contains(playerEyePosition))
                     {
                         if(modifiedReachDistanceTest >= 0.0D)
                         {
                             pointedEntity = entity;
-                            resultHit = testResult == null ? playerEyePosition : testResult.hitVec;
+                            resultHit = testResult.orElse(playerEyePosition);
                             modifiedReachDistanceTest = 0.0D;
                         }
                     }
-                    else if(testResult != null)
+                    else if(testResult.isPresent())
                     {
-                        double distanceToResult = playerEyePosition.distanceTo(testResult.hitVec);
+                        double distanceToResult = playerEyePosition.distanceTo(testResult.get());
 
                         if(distanceToResult < modifiedReachDistanceTest || modifiedReachDistanceTest == 0.0D)
                         {
@@ -93,13 +93,13 @@ public class PlayerHelper
                                 if(modifiedReachDistanceTest == 0.0D)
                                 {
                                     pointedEntity = entity;
-                                    resultHit = testResult.hitVec;
+                                    resultHit = testResult.get();
                                 }
                             }
                             else
                             {
                                 pointedEntity = entity;
-                                resultHit = testResult.hitVec;
+                                resultHit = testResult.get();
                                 modifiedReachDistanceTest = distanceToResult;
                             }
                         }
@@ -108,13 +108,12 @@ public class PlayerHelper
 
                 if(pointedEntity != null && flag && playerEyePosition.distanceTo(resultHit) > 3.0D)
                 {
-                    pointedEntity = null;
-                    result = new RayTraceResult(RayTraceResult.Type.MISS, resultHit, null, new BlockPos(resultHit));
+                    result = new EntityRayTraceResult(pointedEntity, resultHit);
                 }
 
                 if(pointedEntity != null && (modifiedReachDistanceTest < modifiedReachDistance || result == null))
                 {
-                    result = new RayTraceResult(pointedEntity, resultHit);
+                    result = new EntityRayTraceResult(pointedEntity, resultHit);
                 }
 
                 return result;

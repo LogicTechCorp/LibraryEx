@@ -18,26 +18,26 @@
 package logictechcorp.libraryex.utility;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class NBTHelper
 {
-    public static NBTTagCompound ensureTagExists(ItemStack stack)
+    public static CompoundNBT ensureTagExists(ItemStack stack)
     {
-        return setTagIfNotExistent(stack, new NBTTagCompound());
+        return setTagIfNotExistent(stack, new CompoundNBT());
     }
 
-    public static NBTTagCompound setTagIfNotExistent(ItemStack stack, NBTTagCompound compound)
+    public static CompoundNBT setTagIfNotExistent(ItemStack stack, CompoundNBT compound)
     {
-        if(stack.getTagCompound() == null)
+        if(stack.getTag() == null)
         {
-            stack.setTagCompound(compound);
+            stack.setTag(compound);
         }
         else if(!compound.isEmpty())
         {
-            stack.getTagCompound().merge(compound);
+            stack.getTag().merge(compound);
         }
 
-        return stack.getTagCompound();
+        return stack.getTag();
     }
 }

@@ -19,8 +19,8 @@ package logictechcorp.libraryex.api;
 
 import logictechcorp.libraryex.api.internal.iface.ILibraryExAPI;
 import logictechcorp.libraryex.api.internal.impl.LibraryExAPIStub;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingContext;
 
 public final class LibraryExAPI
 {
@@ -37,7 +37,7 @@ public final class LibraryExAPI
 
     public static void setInstance(ILibraryExAPI instance)
     {
-        ModContainer mod = Loader.instance().activeModContainer();
+        ModContainer mod = ModLoadingContext.get().getActiveContainer();
 
         if(mod != null && mod.getModId().equals("libraryex"))
         {

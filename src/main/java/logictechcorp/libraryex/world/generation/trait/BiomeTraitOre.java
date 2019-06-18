@@ -19,9 +19,9 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.block.state.pattern.BlockMatcher;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.pattern.BlockMatcher;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -31,8 +31,8 @@ import java.util.function.Consumer;
 
 public class BiomeTraitOre extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToReplace;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToReplace;
     protected int veinSize;
 
     protected BiomeTraitOre(Builder builder)
@@ -119,7 +119,7 @@ public class BiomeTraitOre extends BiomeTrait
                                 if(d12 * d12 + d13 * d13 + d14 * d14 < 1.0D)
                                 {
                                     BlockPos newPos = new BlockPos(l1, i2, j2);
-                                    IBlockState state = world.getBlockState(newPos);
+                                    BlockState state = world.getBlockState(newPos);
 
                                     if(state.getBlock().isReplaceableOreGen(state, world, newPos, BlockMatcher.forBlock(this.blockToReplace.getBlock())) && state == this.blockToReplace)
                                     {
@@ -138,8 +138,8 @@ public class BiomeTraitOre extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToReplace;
+        private BlockState blockToSpawn;
+        private BlockState blockToReplace;
         private int veinSize;
 
         public Builder()
@@ -149,13 +149,13 @@ public class BiomeTraitOre extends BiomeTrait
             this.veinSize = 7;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToReplace(IBlockState blockToReplace)
+        public Builder blockToReplace(BlockState blockToReplace)
         {
             this.blockToReplace = blockToReplace;
             return this;

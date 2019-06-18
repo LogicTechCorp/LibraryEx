@@ -18,18 +18,17 @@
 package logictechcorp.libraryex.utility;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 public class WorldHelper
 {
-    public static RayTraceResult rayTraceFromEntity(World world, Entity entity, boolean countNonSolidBlock, double range)
+    public static BlockRayTraceResult rayTraceFromEntity(World world, Entity entity, double range, RayTraceContext.BlockMode blockMode, RayTraceContext.FluidMode fluidMode)
     {
         float f = 1.0F;
         float f1 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * f;
@@ -37,44 +36,52 @@ public class WorldHelper
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) f;
         double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double) f;
 
-        if(!world.isRemote && entity instanceof EntityPlayer)
+        if(!world.isRemote && entity instanceof PlayerEntity)
         {
             d1 += 1.62D;
         }
 
         double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double) f;
-        Vec3d vec3 = new Vec3d(d0, d1, d2);
+        Vec3d vec = new Vec3d(d0, d1, d2);
         float f3 = MathHelper.cos(-f2 * 0.017453292F - (float) Math.PI);
         float f4 = MathHelper.sin(-f2 * 0.017453292F - (float) Math.PI);
         float f5 = -MathHelper.cos(-f1 * 0.017453292F);
         float f6 = MathHelper.sin(-f1 * 0.017453292F);
         float f7 = f4 * f5;
         float f8 = f3 * f5;
-        double d3 = range;
+        double adjustedRange = range;
 
-        if(entity instanceof EntityPlayerMP)
+        if(entity instanceof ServerPlayerEntity)
         {
-            d3 = ((EntityPlayerMP) entity).interactionManager.player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+            adjustedRange = ((ServerPlayerEntity) entity).interactionManager.player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
         }
 
-        Vec3d vec31 = vec3.add((double) f7 * d3, (double) f6 * d3, (double) f8 * d3);
-        return world.rayTraceBlocks(vec3, vec31, countNonSolidBlock, !countNonSolidBlock, countNonSolidBlock);
+        Vec3d adjustedVec = vec.add((double) f7 * adjustedRange, (double) f6 * adjustedRange, (double) f8 * adjustedRange);
+        return world.rayTraceBlocks(new RayTraceContext(vec, adjustedVec, blockMode, fluidMode, entity));
     }
 
     public static boolean isDaytime(World world)
     {
-        long time = world.getWorldTime();
+        long time = world.getDayTime();
         return time >= 1000 && time < 13000;
     }
 
     public static boolean isChunkLoaded(World world, ChunkPos chunkPos)
     {
-        Chunk chunk = world.getChunkProvider().getLoadedChunk(chunkPos.x, chunkPos.z);
-        return chunk != null && chunk.isLoaded();
+        Chunk chunk = world.getChunkProvider().getChunk(chunkPos.x, chunkPos.z, false);
+        return chunk != null && chunk.isModified();
     }
 
     public static String getSaveDirectory(World world)
     {
-        return world.getSaveHandler().getWorldDirectory().toString();
+        MinecraftServer server = world.getServer();
+        String worldName = world.getWorldInfo().getWorldName();
+
+        if(server != null)
+        {
+            return server.getActiveAnvilConverter().getSaveLoader(worldName, server).getWorldDirectory().toString();
+        }
+
+        return FMLPaths.GAMEDIR.get().toString();
     }
 }

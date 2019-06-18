@@ -17,35 +17,27 @@
 
 package logictechcorp.libraryex.item.builder;
 
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemArmor;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.IArmorMaterial;
+import net.minecraft.item.Item;
 
-public class ItemArmorProperties extends ItemProperties
+public class ItemArmorProperties extends Item.Properties
 {
-    private ItemArmor.ArmorMaterial armorMaterial;
-    private EntityEquipmentSlot equipmentSlot;
+    private IArmorMaterial armorMaterial;
+    private EquipmentSlotType equipmentSlot;
 
-    public ItemArmorProperties(ItemArmor.ArmorMaterial armorMaterial, EntityEquipmentSlot equipmentSlot)
+    public ItemArmorProperties(IArmorMaterial armorMaterial, EquipmentSlotType equipmentSlot)
     {
         this.armorMaterial = armorMaterial;
         this.equipmentSlot = equipmentSlot;
     }
 
-    @Override
-    public ItemArmorProperties copy()
-    {
-        ItemArmorProperties properties = (ItemArmorProperties) super.copy();
-        properties.armorMaterial = this.armorMaterial;
-        properties.equipmentSlot = this.equipmentSlot;
-        return properties;
-    }
-
-    public ItemArmor.ArmorMaterial getArmorMaterial()
+    public IArmorMaterial getArmorMaterial()
     {
         return this.armorMaterial;
     }
 
-    public EntityEquipmentSlot getEquipmentSlot()
+    public EquipmentSlotType getEquipmentSlot()
     {
         return this.equipmentSlot;
     }

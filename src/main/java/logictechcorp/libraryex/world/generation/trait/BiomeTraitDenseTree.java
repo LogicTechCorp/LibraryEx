@@ -18,8 +18,9 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import logictechcorp.libraryex.utility.RandomHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -60,10 +61,10 @@ public class BiomeTraitDenseTree extends BiomeTraitAbstractTree
 
         if(posY >= 1 && posY + height + 1 < 256)
         {
-            IBlockState state = world.getBlockState(pos.down());
+            BlockState state = world.getBlockState(pos.down());
             BlockPos downPos = pos.down();
 
-            if(!(this.blockToTarget == state && pos.getY() < world.getHeight() - height - 1))
+            if(!(this.blockToTarget == state && pos.getY() < world.getActualHeight() - height - 1))
             {
                 return false;
             }
@@ -78,7 +79,7 @@ public class BiomeTraitDenseTree extends BiomeTraitAbstractTree
                 this.onPlantGrow(world, downPos.south(), pos);
                 this.onPlantGrow(world, downPos.south().east(), pos);
 
-                EnumFacing facing = EnumFacing.Plane.HORIZONTAL.random(random);
+                Direction facing = Direction.Plane.HORIZONTAL.random(random);
                 int adjustedHeight = height - random.nextInt(4);
                 int bonusHeight = 2 - random.nextInt(3);
                 int posXOffset = posX;
@@ -98,7 +99,7 @@ public class BiomeTraitDenseTree extends BiomeTraitAbstractTree
                     BlockPos offsetPos = new BlockPos(posXOffset, posYLocal, posZOffset);
                     state = world.getBlockState(offsetPos);
 
-                    if(state.getBlock().isAir(state, world, offsetPos) || state.getBlock().isLeaves(state, world, offsetPos))
+                    if(state.getBlock().isAir(state, world, offsetPos) || state.getBlock().isIn(BlockTags.LEAVES))
                     {
                         this.placeLogAt(world, offsetPos);
                         this.placeLogAt(world, offsetPos.east());
@@ -191,14 +192,14 @@ public class BiomeTraitDenseTree extends BiomeTraitAbstractTree
 
     protected void onPlantGrow(World world, BlockPos pos, BlockPos source)
     {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         state.getBlock().onPlantGrow(state, world, pos, source);
     }
 
     private void placeLeafAt(World world, int x, int y, int z)
     {
         BlockPos pos = new BlockPos(x, y, z);
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
 
         if(state.getBlock().isAir(state, world, pos))
         {

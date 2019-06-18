@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.world.biome.data;
 
 import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
@@ -25,20 +26,16 @@ import logictechcorp.libraryex.api.world.biome.data.IBiomeDataAPI;
 import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
+import logictechcorp.libraryex.utility.EntityHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraft.world.biome.Biomes;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
@@ -52,8 +49,8 @@ public class BiomeData implements IBiomeData
     protected boolean isSubBiomeData;
     protected boolean generateBiome;
     protected boolean generateDefaultBiomeFeatures;
-    protected Map<String, IBlockState> blocks;
-    protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
+    protected Map<String, BlockState> blocks;
+    protected Map<EntityClassification, List<Biome.SpawnListEntry>> entities;
     protected Map<String, List<IBiomeTrait>> biomeTraits;
     protected List<IBiomeData> subBiomeData;
 
@@ -99,7 +96,7 @@ public class BiomeData implements IBiomeData
 
         if(!(config.get("blocks") instanceof Config))
         {
-            config.set("blocks", ModJsonConfigFormat.newConfig());
+            config.set("blocks", JsonFormat.newConfig(LinkedHashMap::new));
         }
 
         Config blocks = config.get("blocks");
@@ -107,7 +104,7 @@ public class BiomeData implements IBiomeData
 
         for(Config.Entry entry : blocks.entrySet())
         {
-            IBlockState state = ConfigHelper.getBlockState(config, "blocks." + entry.getKey());
+            BlockState state = ConfigHelper.getBlockState(config, "blocks." + entry.getKey());
 
             if(state != null)
             {
@@ -124,12 +121,12 @@ public class BiomeData implements IBiomeData
         Iterator entityConfigIter = ((List) config.get("entities")).iterator();
         this.entities.clear();
 
-        for(EnumCreatureType type : EnumCreatureType.values())
+        for(EntityClassification type : EntityClassification.values())
         {
             entryLoop:
-            for(Biome.SpawnListEntry entry : this.biome.getSpawnableList(type))
+            for(Biome.SpawnListEntry entry : this.biome.getSpawns(type))
             {
-                ResourceLocation registryKey = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
+                ResourceLocation registryKey = ForgeRegistries.ENTITIES.getKey(entry.entityType);
                 boolean containsEntry = false;
 
                 while(entityConfigIter.hasNext())
@@ -150,8 +147,8 @@ public class BiomeData implements IBiomeData
                     }
                 }
 
-                Config entityConfig = ModJsonConfigFormat.newConfig();
-                entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
+                Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
+                entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(entry.entityType));
                 entityConfig.add("spawnWeight", entry.itemWeight);
                 entityConfig.add("minimumGroupCount", entry.minGroupCount);
                 entityConfig.add("maximumGroupCount", entry.maxGroupCount);
@@ -164,25 +161,15 @@ public class BiomeData implements IBiomeData
 
         for(Config entityConfig : entities)
         {
-            EntityEntry entityEntry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityConfig.get("entity")));
+            EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityConfig.get("entity")));
 
-            if(entityEntry != null && config.getOrElse("spawn", true))
+            if(entityType != null && config.getOrElse("spawn", true))
             {
-                Class<? extends Entity> cls = entityEntry.getEntityClass();
-                EnumCreatureType creatureType = null;
+                EntityClassification entityClass = entityType.getClassification();
 
-                for(EnumCreatureType type : EnumCreatureType.values())
+                if(entityType.getClassification() != EntityClassification.MISC)
                 {
-                    if(type.getCreatureClass().isAssignableFrom(cls))
-                    {
-                        creatureType = type;
-                        break;
-                    }
-                }
-
-                if(creatureType != null && EntityLiving.class.isAssignableFrom(cls))
-                {
-                    this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, config.getOrElse("biomeGenerationWeight", 10), config.getOrElse("minGroupCount", 1), config.getOrElse("maxGroupCount", 4)));
+                    this.entities.computeIfAbsent(entityClass, k -> new ArrayList<>()).add(new Biome.SpawnListEntry(entityType, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
                 }
             }
         }
@@ -207,7 +194,7 @@ public class BiomeData implements IBiomeData
 
                 if(this.generateBiome)
                 {
-                    String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATE.getIdentifier());
+                    String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATION.getIdentifier());
 
                     if(generationStage != null)
                     {
@@ -215,7 +202,7 @@ public class BiomeData implements IBiomeData
                     }
                     else
                     {
-                        this.biomeTraits.computeIfAbsent(GenerationStage.POST_DECORATE.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
+                        this.biomeTraits.computeIfAbsent(GenerationStage.DECORATION.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
                     }
                 }
             }
@@ -255,9 +242,9 @@ public class BiomeData implements IBiomeData
         config.add("isSubBiome", this.isSubBiomeData);
         config.add("generateBiome", this.generateBiome);
         config.add("generateDefaultBiomeFeatures", this.generateDefaultBiomeFeatures);
-        Config blockConfigs = ModJsonConfigFormat.newConfig();
+        Config blockConfigs = JsonFormat.newConfig(LinkedHashMap::new);
 
-        for(Map.Entry<String, IBlockState> entry : this.blocks.entrySet())
+        for(Map.Entry<String, BlockState> entry : this.blocks.entrySet())
         {
             ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
         }
@@ -265,15 +252,15 @@ public class BiomeData implements IBiomeData
         config.add("blocks", blockConfigs);
         List<Config> entityConfigs = new ArrayList<>();
 
-        for(EnumCreatureType type : EnumCreatureType.values())
+        for(EntityClassification type : EntityClassification.values())
         {
             for(Biome.SpawnListEntry entry : this.getBiomeEntities(type))
             {
-                ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
+                ResourceLocation entityRegistryName = EntityHelper.getEntityLocation(entry.entityType);
 
                 if(entityRegistryName != null)
                 {
-                    Config entityConfig = ModJsonConfigFormat.newConfig();
+                    Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
                     entityConfig.add("entity", entityRegistryName.toString());
                     entityConfig.add("entitySpawnWeight", entry.itemWeight);
                     entityConfig.add("minimumGroupCount", entry.minGroupCount);
@@ -293,7 +280,7 @@ public class BiomeData implements IBiomeData
 
             for(IBiomeTrait biomeTrait : entry.getValue())
             {
-                Config biomeTraitConfig = ModJsonConfigFormat.newConfig();
+                Config biomeTraitConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 biomeTrait.writeToConfig(biomeTraitConfig);
                 biomeTraitConfig.add("generationStage", generatorStage);
                 biomeTraitConfigs.add(biomeTraitConfig);
@@ -349,9 +336,9 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public IBlockState getBiomeBlock(IBiomeBlock biomeBlock, IBlockState fallback)
+    public BlockState getBiomeBlock(IBiomeBlock biomeBlock, BlockState fallback)
     {
-        IBlockState value = this.blocks.get(biomeBlock.getIdentifier());
+        BlockState value = this.blocks.get(biomeBlock.getIdentifier());
 
         if(value == null)
         {
@@ -363,13 +350,13 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public Map<String, IBlockState> getBiomeBlocks()
+    public Map<String, BlockState> getBiomeBlocks()
     {
         return this.blocks;
     }
 
     @Override
-    public List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType)
+    public List<Biome.SpawnListEntry> getBiomeEntities(EntityClassification creatureType)
     {
         return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }

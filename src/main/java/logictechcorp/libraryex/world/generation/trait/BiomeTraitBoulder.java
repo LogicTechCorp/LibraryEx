@@ -19,8 +19,8 @@ package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 
 public class BiomeTraitBoulder extends BiomeTrait
 {
-    protected IBlockState blockToSpawn;
-    protected IBlockState blockToTarget;
+    protected BlockState blockToSpawn;
+    protected BlockState blockToTarget;
     protected int boulderRadius;
 
     protected BiomeTraitBoulder(Builder builder)
@@ -82,7 +82,7 @@ public class BiomeTraitBoulder extends BiomeTrait
                         break airCheckLabel;
                     }
 
-                    IBlockState state = world.getBlockState(pos.down());
+                    BlockState state = world.getBlockState(pos.down());
 
                     if(this.blockToTarget != state)
                     {
@@ -102,7 +102,7 @@ public class BiomeTraitBoulder extends BiomeTrait
                     int posZ = this.boulderRadius + random.nextInt(2);
                     float distance = (float) (posX + posY + posZ) * 0.333F + 0.5F;
 
-                    for(BlockPos posLocal : BlockPos.getAllInBox(pos.add(-posX, -posY, -posZ), pos.add(posX, posY, posZ)))
+                    for(BlockPos posLocal : BlockPos.getAllInBoxMutable(pos.add(-posX, -posY, -posZ), pos.add(posX, posY, posZ)))
                     {
                         if(posLocal.distanceSq(pos) <= (double) (distance * distance))
                         {
@@ -122,8 +122,8 @@ public class BiomeTraitBoulder extends BiomeTrait
 
     public static class Builder extends BiomeTrait.Builder
     {
-        private IBlockState blockToSpawn;
-        private IBlockState blockToTarget;
+        private BlockState blockToSpawn;
+        private BlockState blockToTarget;
         private int boulderRadius;
 
         public Builder()
@@ -133,13 +133,13 @@ public class BiomeTraitBoulder extends BiomeTrait
             this.boulderRadius = 4;
         }
 
-        public Builder blockToSpawn(IBlockState blockToSpawn)
+        public Builder blockToSpawn(BlockState blockToSpawn)
         {
             this.blockToSpawn = blockToSpawn;
             return this;
         }
 
-        public Builder blockToTarget(IBlockState blockToTarget)
+        public Builder blockToTarget(BlockState blockToTarget)
         {
             this.blockToTarget = blockToTarget;
             return this;

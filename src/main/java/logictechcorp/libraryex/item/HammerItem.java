@@ -15,32 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.multiblock;
+package logictechcorp.libraryex.item;
 
+import logictechcorp.libraryex.item.builder.ItemToolProperties;
 import logictechcorp.libraryex.utility.BlockHelper;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
+import net.minecraft.util.math.BlockPos;
 
-public class PatternElementOre extends PatternElement
+public class HammerItem extends PickaxeItem
 {
-    private String[] ores;
-
-    PatternElementOre(IBlockState state, char identifier, String... ores)
+    public HammerItem(ItemToolProperties properties)
     {
-        super(state, identifier);
-        this.ores = ores;
+        super(properties.getToolMaterial(), properties.getAttackDamage(), properties.getAttackSpeed(), properties);
     }
 
     @Override
-    public boolean matches(IBlockState state)
+    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, PlayerEntity player)
     {
-        for(String ore : this.ores)
-        {
-            if(BlockHelper.isOreDict(state.getBlock(), ore))
-            {
-                return true;
-            }
-        }
-
-        return super.matches(state);
+        return BlockHelper.mine3x3(player.getEntityWorld(), stack, pos, player);
     }
 }

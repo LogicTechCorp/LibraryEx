@@ -20,58 +20,45 @@
 
 package logictechcorp.libraryex.block;
 
-import logictechcorp.libraryex.block.property.BlockProperties;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.EnumProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 
-public abstract class BlockModPortal extends BlockMod
+public abstract class ModPortalBlock extends Block
 {
-    public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.create("axis", EnumFacing.Axis.class);
+    public static final EnumProperty<Direction.Axis> AXIS = EnumProperty.create("axis", Direction.Axis.class);
 
-    private static final AxisAlignedBB X_AABB = new AxisAlignedBB(0.375D, 0.0D, 0.0D, 0.625D, 1.0D, 1.0D);
-    private static final AxisAlignedBB Y_AABB = new AxisAlignedBB(0.0D, 0.375D, 0.0D, 1.0D, 0.625D, 1.0D);
-    private static final AxisAlignedBB Z_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.375D, 1.0D, 1.0D, 0.625D);
+    protected static final VoxelShape X_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 6.0D, 16.0D, 16.0D, 10.0D);
+    protected static final VoxelShape Y_SHAPE = Block.makeCuboidShape(0.0D, 6.0D, 0.0D, 16.0D, 10.0D, 16.0D);
+    protected static final VoxelShape Z_SHAPE = Block.makeCuboidShape(6.0D, 0.0D, 0.0D, 10.0D, 16.0D, 16.0D);
 
-    public BlockModPortal(ResourceLocation registryName, BlockProperties properties)
+    public ModPortalBlock(Block.Properties properties)
     {
-        super(registryName, properties);
+        super(properties);
+        this.setDefaultState(this.stateContainer.getBaseState().with(AXIS, Direction.Axis.Y));
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getRenderLayer()
-    {
-        return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side)
-    {
-        return world.getBlockState(pos.offset(side)).getBlock() != this;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState stateIn, World world, BlockPos pos, Random random)
+    @OnlyIn(Dist.CLIENT)
+    public void animateTick(BlockState state, World world, BlockPos pos, Random random)
     {
         if(random.nextInt(100) == 0)
         {
@@ -99,142 +86,102 @@ public abstract class BlockModPortal extends BlockMod
                 speedZ = (double) (random.nextFloat() * 2.0F * (float) multiplier);
             }
 
-            world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, speedX, speedY, speedZ);
+            world.addParticle(ParticleTypes.PORTAL, posX, posY, posZ, speedX, speedY, speedZ);
         }
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state)
+    public void tick(BlockState state, World world, BlockPos pos, Random random)
     {
-        return false;
-    }
+        Direction.Axis axis = state.get(AXIS);
 
-    @Override
-    public boolean isFullCube(IBlockState state)
-    {
-        return false;
-    }
-
-    @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random random)
-    {
-        EnumFacing.Axis axis = state.getValue(AXIS);
-
-        if(axis == EnumFacing.Axis.X)
+        if(axis == Direction.Axis.X)
         {
             if(world.isAirBlock(pos.down()) || world.isAirBlock(pos.up()) || world.isAirBlock(pos.north()) || world.isAirBlock(pos.south()))
             {
-                world.setBlockToAir(pos);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
         }
-        else if(axis == EnumFacing.Axis.Y)
+        else if(axis == Direction.Axis.Y)
         {
             if(world.isAirBlock(pos.north()) || world.isAirBlock(pos.south()) || world.isAirBlock(pos.west()) || world.isAirBlock(pos.east()))
             {
-                world.setBlockToAir(pos);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
         }
-        else if(axis == EnumFacing.Axis.Z)
+        else if(axis == Direction.Axis.Z)
         {
             if(world.isAirBlock(pos.down()) || world.isAirBlock(pos.up()) || world.isAirBlock(pos.west()) || world.isAirBlock(pos.east()))
             {
-                world.setBlockToAir(pos);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
         }
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState newState, boolean bool)
     {
-        switch(state.getValue(AXIS))
-        {
-            case X:
-                return X_AABB;
-            case Y:
-            default:
-                return Y_AABB;
-            case Z:
-                return Z_AABB;
-        }
-
+        world.getPendingBlockTicks().scheduleTick(pos, this, 2);
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess world, BlockPos pos)
+    public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos fromPos)
     {
-        return NULL_AABB;
-    }
+        Direction.Axis axis = state.get(AXIS);
 
-    @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state)
-    {
-        world.scheduleUpdate(pos, this, 2);
-    }
-
-    @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos)
-    {
-        EnumFacing.Axis axis = state.getValue(AXIS);
-
-        if(axis == EnumFacing.Axis.X)
+        if(axis == Direction.Axis.X)
         {
             if(pos.west().equals(fromPos) || pos.east().equals(fromPos))
             {
                 if(world.getBlockState(fromPos).getBlock() == this)
                 {
-                    world.setBlockToAir(fromPos);
+                    return Blocks.AIR.getDefaultState();
                 }
             }
         }
-        else if(axis == EnumFacing.Axis.Y)
+        else if(axis == Direction.Axis.Y)
         {
             if(pos.down().equals(fromPos) || pos.up().equals(fromPos))
             {
                 if(world.getBlockState(fromPos).getBlock() == this)
                 {
-                    world.setBlockToAir(fromPos);
+                    return Blocks.AIR.getDefaultState();
                 }
             }
         }
-        else if(axis == EnumFacing.Axis.Z)
+        else if(axis == Direction.Axis.Z)
         {
             if(pos.north().equals(fromPos) || pos.south().equals(fromPos))
             {
                 if(world.getBlockState(fromPos).getBlock() == this)
                 {
-                    world.setBlockToAir(fromPos);
+                    return Blocks.AIR.getDefaultState();
                 }
             }
         }
 
-        world.scheduleUpdate(pos, this, 1);
+        return super.updatePostPlacement(state, facing, facingState, world, pos, fromPos);
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
-    {
-        return ItemStack.EMPTY;
-    }
+    public abstract void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity);
 
     @Override
-    public abstract void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity);
-
-    @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot)
+    public BlockState rotate(BlockState state, Rotation rot)
     {
         switch(rot)
         {
             case COUNTERCLOCKWISE_90:
             case CLOCKWISE_90:
 
-                switch(state.getValue(AXIS))
+                switch(state.get(AXIS))
                 {
                     case X:
-                        return state.withProperty(AXIS, EnumFacing.Axis.Z);
+                        return state.with(AXIS, Direction.Axis.Z);
                     case Y:
-                        return state.withProperty(AXIS, EnumFacing.Axis.Y);
+                        return state.with(AXIS, Direction.Axis.Y);
                     case Z:
-                        return state.withProperty(AXIS, EnumFacing.Axis.X);
+                        return state.with(AXIS, Direction.Axis.X);
                     default:
                         return state;
                 }
@@ -245,41 +192,83 @@ public abstract class BlockModPortal extends BlockMod
     }
 
     @Override
-    public int getMetaFromState(IBlockState state)
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
-        return getMetaForAxis(state.getValue(AXIS));
+        builder.add(AXIS);
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta)
+    @OnlyIn(Dist.CLIENT)
+    public BlockRenderLayer getRenderLayer()
     {
-        return this.getDefaultState().withProperty(AXIS, EnumFacing.Axis.values()[meta]);
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
-    protected BlockStateContainer createBlockState()
+    @OnlyIn(Dist.CLIENT)
+    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state)
     {
-        return new BlockStateContainer(this, AXIS);
+        return ItemStack.EMPTY;
     }
 
-    public static int getMetaForAxis(EnumFacing.Axis axis)
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
     {
-        return axis == EnumFacing.Axis.X ? 0 : axis == EnumFacing.Axis.Y ? 1 : 2;
+        switch(state.get(AXIS))
+        {
+            case X:
+                return X_SHAPE;
+            case Y:
+            default:
+                return Y_SHAPE;
+            case Z:
+                return Z_SHAPE;
+        }
+    }
+
+    public static int getMetaForAxis(Direction.Axis axis)
+    {
+        return axis == Direction.Axis.X ? 0 : axis == Direction.Axis.Y ? 1 : 2;
+    }
+
+    public abstract boolean isPortalIgniter(World world, BlockPos pos);
+
+    public abstract boolean isPortalPart(World world, BlockPos pos);
+
+    private void addNeighborBlocks(BlockPos pos, Direction.Axis axis, Queue<BlockPos> neighbors)
+    {
+        for(Direction direction : Direction.values())
+        {
+            if(axis == Direction.Axis.X && (direction == Direction.EAST || direction == Direction.WEST))
+            {
+                continue;
+            }
+            else if(axis == Direction.Axis.Y && (direction == Direction.DOWN || direction == Direction.UP))
+            {
+                continue;
+            }
+            else if(axis == Direction.Axis.Z && (direction == Direction.NORTH || direction == Direction.SOUTH))
+            {
+                continue;
+            }
+
+            neighbors.add(pos.offset(direction));
+        }
     }
 
     public boolean trySpawnPortal(World world, BlockPos pos)
     {
-        for(EnumFacing.Axis axis : EnumFacing.Axis.values())
+        for(Direction.Axis axis : Direction.Axis.values())
         {
-            for(EnumFacing facing : EnumFacing.values())
+            for(Direction direction : Direction.values())
             {
-                Queue<BlockPos> portalBlocks = this.findPortalBlocks(world, pos.offset(facing), axis);
+                Queue<BlockPos> portalBlocks = this.getPortalBlocks(world, pos.offset(direction), axis);
 
                 if(portalBlocks.size() > 0)
                 {
                     for(BlockPos newPos : portalBlocks)
                     {
-                        world.setBlockState(newPos, this.getDefaultState().withProperty(AXIS, axis));
+                        world.setBlockState(newPos, this.getDefaultState().with(AXIS, axis));
                     }
 
                     return true;
@@ -290,7 +279,7 @@ public abstract class BlockModPortal extends BlockMod
         return false;
     }
 
-    private Queue<BlockPos> findPortalBlocks(World world, BlockPos pos, EnumFacing.Axis axis)
+    private Queue<BlockPos> getPortalBlocks(World world, BlockPos pos, Direction.Axis axis)
     {
         Queue<BlockPos> portalBlocks = new ArrayDeque<>();
         Queue<BlockPos> toProcess = new ArrayDeque<>();
@@ -340,7 +329,7 @@ public abstract class BlockModPortal extends BlockMod
         return portalBlocks;
     }
 
-    private int getNeighborBlocks(World world, BlockPos pos, Queue<BlockPos> portalBlocks, EnumFacing.Axis axis)
+    private int getNeighborBlocks(World world, BlockPos pos, Queue<BlockPos> portalBlocks, Direction.Axis axis)
     {
         int sides = 0;
         Queue<BlockPos> neighbors = new ArrayDeque<>();
@@ -357,29 +346,4 @@ public abstract class BlockModPortal extends BlockMod
 
         return sides;
     }
-
-    private void addNeighborBlocks(BlockPos pos, EnumFacing.Axis axis, Queue<BlockPos> neighbors)
-    {
-        for(EnumFacing facing : EnumFacing.values())
-        {
-            if(axis == EnumFacing.Axis.X && (facing == EnumFacing.EAST || facing == EnumFacing.WEST))
-            {
-                continue;
-            }
-            else if(axis == EnumFacing.Axis.Y && (facing == EnumFacing.DOWN || facing == EnumFacing.UP))
-            {
-                continue;
-            }
-            else if(axis == EnumFacing.Axis.Z && (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH))
-            {
-                continue;
-            }
-
-            neighbors.add(pos.offset(facing));
-        }
-    }
-
-    public abstract boolean isPortalIgniter(World world, BlockPos pos);
-
-    public abstract boolean isPortalPart(World world, BlockPos pos);
 }

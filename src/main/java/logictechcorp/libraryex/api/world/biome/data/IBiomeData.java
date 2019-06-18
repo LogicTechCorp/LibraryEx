@@ -21,8 +21,8 @@ import com.electronwill.nightconfig.core.Config;
 import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
 import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.world.biome.Biome;
 
 import java.util.List;
@@ -86,14 +86,14 @@ public interface IBiomeData
      * @param fallback The block to fallback to if the biome doesn't have a block for the type.
      * @return A block that makes up the associated biome.
      */
-    IBlockState getBiomeBlock(IBiomeBlock type, IBlockState fallback);
+    BlockState getBiomeBlock(IBiomeBlock type, BlockState fallback);
 
     /**
      * Called to get a map containing the biome blocks and their identifiers.
      *
      * @return A map containing the biome blocks and their identifiers.
      */
-    Map<String, IBlockState> getBiomeBlocks();
+    Map<String, BlockState> getBiomeBlocks();
 
     /**
      * Called to get a list of entities that spawn in the associated biome.
@@ -101,7 +101,7 @@ public interface IBiomeData
      * @param creatureType The type of entity to get the list for.
      * @return A list of entities that spawn in the associated biome.
      */
-    List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType);
+    List<Biome.SpawnListEntry> getBiomeEntities(EntityClassification creatureType);
 
     /**
      * Called to get a list of biome traits that generate in the associated biome.

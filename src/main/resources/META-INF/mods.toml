@@ -1,0 +1,17 @@
+modLoader="javafml"
+loaderVersion="[26,)"
+issueTrackerURL="https://github.com/LogicTechCorp/LibraryEx/issues"
+[[mods]]
+modId="libraryex"
+version="${file.jarVersion}"
+displayName="LibraryEx"
+displayURL="https://minecraft.curseforge.com/projects/libraryex"
+logoFile="assets/libraryex/logo.png"
+authors="LogicTechCorp"
+description="A library for mods that add expansions, explorations, and experiences to Minecraft."
+[[dependencies.libraryex]]
+    modId="forge"
+    mandatory=false
+    versionRange="[26,)"
+    ordering="NONE"
+    side="BOTH"

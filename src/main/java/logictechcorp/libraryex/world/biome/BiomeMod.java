@@ -19,18 +19,19 @@ package logictechcorp.libraryex.world.biome;
 
 import logictechcorp.libraryex.api.IModData;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.world.biome.Biome;
 
 public abstract class BiomeMod<T extends IBiomeData> extends Biome
 {
-    public BiomeMod(IModData data, BiomeProperties properties, String name)
+    public BiomeMod(IModData data, Biome.Builder builder, String name)
     {
-        super(properties);
+        super(builder);
         this.setRegistryName(data.getModId() + ":" + name);
-        this.spawnableMonsterList.clear();
-        this.spawnableCreatureList.clear();
-        this.spawnableWaterCreatureList.clear();
-        this.spawnableCaveCreatureList.clear();
+        this.getSpawns(EntityClassification.MONSTER).clear();
+        this.getSpawns(EntityClassification.CREATURE).clear();
+        this.getSpawns(EntityClassification.WATER_CREATURE).clear();
+        this.getSpawns(EntityClassification.AMBIENT).clear();
     }
 
     public abstract T getBiomeData();

@@ -17,13 +17,13 @@
 
 package logictechcorp.libraryex.api;
 
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 
 public interface IModData
 {
     String getModId();
 
-    CreativeTabs getCreativeTab();
+    ItemGroup getItemGroup();
 
     boolean writeRecipesToJson();
 }

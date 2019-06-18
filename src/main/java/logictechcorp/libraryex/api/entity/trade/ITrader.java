@@ -17,10 +17,10 @@
 
 package logictechcorp.libraryex.api.entity.trade;
 
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.INpc;
+import net.minecraft.entity.INPC;
+import net.minecraft.entity.merchant.IMerchant;
 
-public interface ITrader extends INpc, IMerchant
+public interface ITrader extends INPC, IMerchant
 {
     boolean useAlternateTexture();
 }
