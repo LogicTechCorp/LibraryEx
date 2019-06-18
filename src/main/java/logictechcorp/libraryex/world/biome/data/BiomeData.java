@@ -182,7 +182,7 @@ public class BiomeData implements IBiomeData
 
                 if(creatureType != null && EntityLiving.class.isAssignableFrom(cls))
                 {
-                    this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, config.getOrElse("biomeGenerationWeight", 10), config.getOrElse("minGroupCount", 1), config.getOrElse("maxGroupCount", 4)));
+                    this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
                 }
             }
         }
@@ -207,7 +207,7 @@ public class BiomeData implements IBiomeData
 
                 if(this.generateBiome)
                 {
-                    String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATE.getIdentifier());
+                    String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATION.getIdentifier());
 
                     if(generationStage != null)
                     {
@@ -215,7 +215,7 @@ public class BiomeData implements IBiomeData
                     }
                     else
                     {
-                        this.biomeTraits.computeIfAbsent(GenerationStage.POST_DECORATE.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
+                        this.biomeTraits.computeIfAbsent(GenerationStage.DECORATION.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
                     }
                 }
             }

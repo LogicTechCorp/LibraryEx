@@ -21,12 +21,11 @@ import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 
 public enum GenerationStage implements IGeneratorStage
 {
-    PRE_DECORATE("pre_decorate"),
-    DECORATE("decorate"),
-    POST_DECORATE("post_decorate"),
-    PRE_ORE("pre_ore"),
+    TERRAIN_ALTERATION("terrain_alteration"),
+    DECORATION("decoration"),
+    PLANT_DECORATION("plant_decoration"),
     ORE("ore"),
-    POST_ORE("post_ore");
+    STRUCTURE("structure");
 
     private String identifier;
 
