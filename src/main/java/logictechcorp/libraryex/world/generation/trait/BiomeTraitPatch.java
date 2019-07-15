@@ -36,6 +36,9 @@ public class BiomeTraitPatch extends BiomeTrait
     protected BiomeTraitPatch(Builder builder)
     {
         super(builder);
+        this.blockToSpawn = builder.blockToSpawn;
+        this.blockToTarget = builder.blockToTarget;
+        this.patchWidth = builder.patchWidth;
     }
 
     public static BiomeTraitPatch create(Consumer<Builder> consumer)

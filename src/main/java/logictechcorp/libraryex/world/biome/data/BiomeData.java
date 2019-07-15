@@ -165,11 +165,11 @@ public class BiomeData implements IBiomeData
 
             if(entityType != null && config.getOrElse("spawn", true))
             {
-                EntityClassification entityClass = entityType.getClassification();
+                EntityClassification classification = entityType.getClassification();
 
                 if(entityType.getClassification() != EntityClassification.MISC)
                 {
-                    this.entities.computeIfAbsent(entityClass, k -> new ArrayList<>()).add(new Biome.SpawnListEntry(entityType, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
+                    this.entities.computeIfAbsent(classification, k -> new ArrayList<>()).add(new Biome.SpawnListEntry(entityType, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
                 }
             }
         }
@@ -252,9 +252,9 @@ public class BiomeData implements IBiomeData
         config.add("blocks", blockConfigs);
         List<Config> entityConfigs = new ArrayList<>();
 
-        for(EntityClassification type : EntityClassification.values())
+        for(EntityClassification classification : EntityClassification.values())
         {
-            for(Biome.SpawnListEntry entry : this.getBiomeEntities(type))
+            for(Biome.SpawnListEntry entry : this.getBiomeEntities(classification))
             {
                 ResourceLocation entityRegistryName = EntityHelper.getEntityLocation(entry.entityType);
 
@@ -356,9 +356,9 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public List<Biome.SpawnListEntry> getBiomeEntities(EntityClassification creatureType)
+    public List<Biome.SpawnListEntry> getBiomeEntities(EntityClassification classification)
     {
-        return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
+        return this.entities.computeIfAbsent(classification, k -> this.biome.getSpawns(classification));
     }
 
     @Override
