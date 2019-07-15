@@ -18,12 +18,13 @@
 package logictechcorp.libraryex.trade;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;
 
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 public class Trade extends MerchantRecipe
@@ -119,7 +120,7 @@ public class Trade extends MerchantRecipe
 
     public Config getAsConfig()
     {
-        Config tradeConfig = ModJsonConfigFormat.newConfig();
+        Config tradeConfig = JsonFormat.newConfig(LinkedHashMap::new);
         ConfigHelper.setItemStackSimple(tradeConfig, "output", this.output.getItemStack());
 
         if(!tradeConfig.contains("output.minCount"))

@@ -18,7 +18,7 @@
 package logictechcorp.libraryex.utility;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
+import com.electronwill.nightconfig.json.JsonFormat;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -38,6 +38,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -263,7 +264,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = ModJsonConfigFormat.newConfig();
+                Config propertyConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
@@ -318,7 +319,7 @@ public class ConfigHelper
 
                 for(Map.Entry<Enchantment, Integer> enchantment : EnchantmentHelper.getEnchantments(stack).entrySet())
                 {
-                    Config enchantmentConfig = ModJsonConfigFormat.newConfig();
+                    Config enchantmentConfig = JsonFormat.newConfig(LinkedHashMap::new);
                     enchantmentConfig.set("enchantment", enchantment.getKey().getRegistryName().toString());
                     enchantmentConfig.set("enchantmentLevel", enchantment.getValue());
                     enchantmentConfigs.add(enchantmentConfig);
@@ -337,7 +338,7 @@ public class ConfigHelper
 
             if(item instanceof ItemBlock)
             {
-                Config propertyConfig = ModJsonConfigFormat.newConfig();
+                Config propertyConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 IBlockState state = ((ItemBlock) item).getBlock().getStateFromMeta(stack.getMetadata());
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())

@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.world.biome.data;
 
 import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
@@ -25,7 +26,6 @@ import logictechcorp.libraryex.api.world.biome.data.IBiomeDataAPI;
 import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
-import logictechcorp.libraryex.config.ModJsonConfigFormat;
 import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
 import net.minecraft.block.state.IBlockState;
@@ -99,7 +99,7 @@ public class BiomeData implements IBiomeData
 
         if(!(config.get("blocks") instanceof Config))
         {
-            config.set("blocks", ModJsonConfigFormat.newConfig());
+            config.set("blocks", JsonFormat.newConfig(LinkedHashMap::new));
         }
 
         Config blocks = config.get("blocks");
@@ -150,7 +150,7 @@ public class BiomeData implements IBiomeData
                     }
                 }
 
-                Config entityConfig = ModJsonConfigFormat.newConfig();
+                Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
                 entityConfig.add("spawnWeight", entry.itemWeight);
                 entityConfig.add("minimumGroupCount", entry.minGroupCount);
@@ -255,7 +255,7 @@ public class BiomeData implements IBiomeData
         config.add("isSubBiome", this.isSubBiomeData);
         config.add("generateBiome", this.generateBiome);
         config.add("generateDefaultBiomeFeatures", this.generateDefaultBiomeFeatures);
-        Config blockConfigs = ModJsonConfigFormat.newConfig();
+        Config blockConfigs = JsonFormat.newConfig(LinkedHashMap::new);
 
         for(Map.Entry<String, IBlockState> entry : this.blocks.entrySet())
         {
@@ -273,7 +273,7 @@ public class BiomeData implements IBiomeData
 
                 if(entityRegistryName != null)
                 {
-                    Config entityConfig = ModJsonConfigFormat.newConfig();
+                    Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
                     entityConfig.add("entity", entityRegistryName.toString());
                     entityConfig.add("entitySpawnWeight", entry.itemWeight);
                     entityConfig.add("minimumGroupCount", entry.minGroupCount);
@@ -293,7 +293,7 @@ public class BiomeData implements IBiomeData
 
             for(IBiomeTrait biomeTrait : entry.getValue())
             {
-                Config biomeTraitConfig = ModJsonConfigFormat.newConfig();
+                Config biomeTraitConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 biomeTrait.writeToConfig(biomeTraitConfig);
                 biomeTraitConfig.add("generationStage", generatorStage);
                 biomeTraitConfigs.add(biomeTraitConfig);
@@ -371,7 +371,7 @@ public class BiomeData implements IBiomeData
     @Override
     public List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType)
     {
-        return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
+        return this.entities.computeIfAbsent(creatureType, k -> this.biome.getSpawnableList(creatureType));
     }
 
     @Override

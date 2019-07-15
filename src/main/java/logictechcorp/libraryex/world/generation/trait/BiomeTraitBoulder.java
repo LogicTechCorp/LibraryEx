@@ -36,6 +36,9 @@ public class BiomeTraitBoulder extends BiomeTrait
     protected BiomeTraitBoulder(Builder builder)
     {
         super(builder);
+        this.blockToSpawn = builder.blockToSpawn;
+        this.blockToTarget = builder.blockToTarget;
+        this.boulderRadius = builder.boulderRadius;
     }
 
     public static BiomeTraitBoulder create(Consumer<Builder> consumer)
