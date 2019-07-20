@@ -153,19 +153,19 @@ public class BiomeTraitStructure extends BiomeTrait
 
             if(this.structureType == StructureType.GROUND)
             {
-                spawnPos = StructureHelper.getGroundPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                spawnPos = StructureHelper.getGroundPos(world, pos, structureSize, this.clearancePercentage);
             }
             else if(this.structureType == StructureType.AIR)
             {
-                spawnPos = StructureHelper.getAirPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                spawnPos = StructureHelper.getAirPos(world, pos, structureSize, this.clearancePercentage);
             }
             else if(this.structureType == StructureType.BURIED)
             {
-                spawnPos = StructureHelper.getBuriedPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                spawnPos = StructureHelper.getBuriedPos(world, pos, structureSize, this.clearancePercentage);
             }
             else if(this.structureType == StructureType.CEILING)
             {
-                spawnPos = StructureHelper.getCeilingPos(world, pos, placementSettings, structureSize, this.clearancePercentage);
+                spawnPos = StructureHelper.getCeilingPos(world, pos, structureSize, this.clearancePercentage);
             }
 
             if(spawnPos != null && spawnPos.getY() >= this.minimumGenerationHeight && spawnPos.getY() <= this.maximumGenerationHeight)
@@ -253,10 +253,11 @@ public class BiomeTraitStructure extends BiomeTrait
         {
             this.structures = Collections.singletonList(new ResourceLocation("minecraft:missing_no"));
             this.structureType = StructureType.GROUND;
-            this.mirror = null;
-            this.rotation = null;
+            this.mirror = Mirror.NONE;
+            this.rotation = Rotation.NONE;
             this.ignoredBlock = Blocks.STRUCTURE_VOID;
-            this.clearancePercentage = 75.0D;
+            this.clearancePercentage = 0.75D;
+            this.orientRandomly = true;
         }
 
         public Builder structures(List<ResourceLocation> structures)
