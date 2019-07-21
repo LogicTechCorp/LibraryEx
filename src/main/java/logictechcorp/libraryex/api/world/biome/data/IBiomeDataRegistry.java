@@ -65,7 +65,7 @@ public interface IBiomeDataRegistry
     /**
      * Called to get a map containing biome data and their biome entry instance.
      *
-     * @return A map containing biome data and their biome entry instance.
+     * @return A map containing biome data registry names and their biome entry instance.
      */
-    Map<IBiomeData, BiomeManager.BiomeEntry> getBiomeEntries();
+    Map<ResourceLocation, BiomeManager.BiomeEntry> getBiomeEntries();
 }

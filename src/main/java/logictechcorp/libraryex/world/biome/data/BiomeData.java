@@ -23,6 +23,7 @@ import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeDataAPI;
+import logictechcorp.libraryex.api.world.biome.data.IBiomeDataRegistry;
 import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
@@ -66,7 +67,6 @@ public class BiomeData implements IBiomeData
         else
         {
             this.biome = Biomes.PLAINS;
-            generateBiome = false;
         }
 
         this.biomeGenerationWeight = biomeGenerationWeight;
@@ -92,7 +92,25 @@ public class BiomeData implements IBiomeData
     @Override
     public void readFromConfig(IBiomeDataAPI biomeDataAPI, Config config)
     {
+        ResourceLocation biomeRegistryName = new ResourceLocation(config.getOrElse("biome", "missing:no"));
+
+        if(ForgeRegistries.BIOMES.containsKey(biomeRegistryName))
+        {
+            this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
+        }
+
+        if(this.biome == null)
+        {
+            this.biome = Biomes.PLAINS;
+        }
+
         this.biomeGenerationWeight = config.getOrElse("biomeGenerationWeight", this.biomeGenerationWeight);
+
+        if(this.biomeGenerationWeight <= 0)
+        {
+            this.biomeGenerationWeight = 10;
+        }
+
         this.isSubBiomeData = config.getOrElse("isSubBiome", false);
         this.generateBiome = config.getOrElse("generateBiome", true);
         this.generateDefaultBiomeFeatures = config.getOrElse("generateDefaultBiomeFeatures", true);
@@ -238,10 +256,11 @@ public class BiomeData implements IBiomeData
             for(String subBiomeName : subBiomeNames)
             {
                 Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(subBiomeName));
+                IBiomeDataRegistry biomeDataRegistry = biomeDataAPI.getBiomeDataRegistry();
 
-                if(biome != null)
+                if(biome != null && biomeDataRegistry.hasBiomeData(biome))
                 {
-                    this.subBiomeData.add(biomeDataAPI.getBiomeDataRegistry().getBiomeData(biome));
+                    this.subBiomeData.add(biomeDataRegistry.getBiomeData(biome));
                 }
             }
         }
