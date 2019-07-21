@@ -63,14 +63,7 @@ public class RecipeHelper
             throw new IllegalArgumentException("Too many ingredients for shapeless recipe!");
         }
 
-        IRecipe recipe = new ShapelessRecipes(data.getModId(), output, ingredients).setRegistryName(generateRegistryName(data, output));
-
-        if(data.writeRecipesToJson())
-        {
-            writeRecipeJson(recipe);
-        }
-
-        return recipe;
+        return new ShapelessRecipes(data.getModId(), output, ingredients).setRegistryName(generateRegistryName(data, output));
     }
 
     private static IRecipe createShapedRecipe(IModData data, ItemStack output, Object... inputs)
@@ -116,14 +109,7 @@ public class RecipeHelper
         key.put(" ", Ingredient.EMPTY);
 
         NonNullList<Ingredient> ingredients = deserializeIngredients(pattern.toArray(new String[0]), key, width, height);
-        IRecipe recipe = new ShapedRecipes(data.getModId(), width, height, ingredients, output).setRegistryName(generateRegistryName(data, output));
-
-        if(data.writeRecipesToJson())
-        {
-            writeRecipeJson(recipe);
-        }
-
-        return recipe;
+        return new ShapedRecipes(data.getModId(), width, height, ingredients, output).setRegistryName(generateRegistryName(data, output));
     }
 
     private static IRecipe createRepairRecipe(IModData data, ItemStack output, Object input, int repairAmount)

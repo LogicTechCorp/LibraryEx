@@ -43,7 +43,8 @@ public class EntityHelper
     public static String getEntityLocation(EntityLivingBase entity)
     {
         Class<? extends EntityLivingBase> cls = entity.getClass();
-        return ENTITY_RESOURCE_LOCATION_CACHE.computeIfAbsent(cls, k -> {
+        return ENTITY_RESOURCE_LOCATION_CACHE.computeIfAbsent(cls, k ->
+        {
             ResourceLocation location = EntityList.getKey(k);
             return location != null ? location.toString() : null;
         });
