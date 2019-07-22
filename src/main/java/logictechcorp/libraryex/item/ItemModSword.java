@@ -32,8 +32,6 @@ public class ItemModSword extends ItemSword
         super(properties.getToolMaterial());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(properties.getMaxDamage());
-        this.setMaxStackSize(properties.getMaxStackSize());
         this.setContainerItem(properties.getContainerItem());
         this.setCreativeTab(properties.getCreativeTab());
         this.rarity = properties.getRarity();

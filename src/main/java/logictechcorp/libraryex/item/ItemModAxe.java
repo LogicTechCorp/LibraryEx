@@ -32,12 +32,8 @@ public class ItemModAxe extends ItemAxe
         super(properties.getToolMaterial(), properties.getAttackDamage(), properties.getAttackSpeed());
         this.setRegistryName(registryName);
         this.setTranslationKey(registryName.toString());
-        this.setMaxDamage(properties.getMaxDamage());
-        this.setMaxStackSize(properties.getMaxStackSize());
         this.setContainerItem(properties.getContainerItem());
         this.setCreativeTab(properties.getCreativeTab());
-        this.attackDamage = properties.getAttackDamage();
-        this.attackSpeed = properties.getAttackSpeed();
         this.rarity = properties.getRarity();
 
         if(!properties.isRepairable())

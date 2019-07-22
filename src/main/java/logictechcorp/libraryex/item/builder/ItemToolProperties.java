@@ -30,16 +30,23 @@ public class ItemToolProperties extends ItemProperties
         this.toolMaterial = toolMaterial;
     }
 
-    public ItemToolProperties attackDamage(float attackDamage)
+    public ItemToolProperties(Item.ToolMaterial toolMaterial, float attackDamage, float attackSpeed)
     {
+        this.toolMaterial = toolMaterial;
         this.attackDamage = attackDamage;
-        return this;
+        this.attackSpeed = attackSpeed;
     }
 
-    public ItemToolProperties attackSpeed(float attackSpeed)
+    @Override
+    public ItemProperties maxStackSize(int maxStackSize)
     {
-        this.attackSpeed = attackSpeed;
-        return this;
+        return super.maxStackSize(1);
+    }
+
+    @Override
+    public ItemProperties maxDamage(int maxDamage)
+    {
+        return super.maxDamage(this.toolMaterial.getMaxUses());
     }
 
     @Override
