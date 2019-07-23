@@ -132,6 +132,7 @@ public class BiomeData implements IBiomeData
         }
 
         Config blocks = config.get("blocks");
+        this.blocks.clear();
 
         for(Config.Entry entry : blocks.entrySet())
         {
@@ -150,6 +151,7 @@ public class BiomeData implements IBiomeData
 
         List<Config> entities = new ArrayList<>();
         Iterator entityConfigIter = ((List) config.get("entities")).iterator();
+        this.entities.clear();
 
         for(EnumCreatureType type : EnumCreatureType.values())
         {
@@ -221,6 +223,7 @@ public class BiomeData implements IBiomeData
 
         List<Config> biomeTraits = new ArrayList<>();
         List<Config> biomeTraitConfigs = config.get("traits");
+        this.biomeTraits.clear();
 
         for(Config biomeTraitConfig : biomeTraitConfigs)
         {
@@ -259,6 +262,7 @@ public class BiomeData implements IBiomeData
             }
 
             List<String> subBiomeNames = config.get("subBiomes");
+            this.subBiomeData.clear();
 
             for(String subBiomeName : subBiomeNames)
             {
@@ -288,12 +292,17 @@ public class BiomeData implements IBiomeData
             ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
         }
 
-        config.add("blocks", blockConfigs);
+        config.set("blocks", blockConfigs);
         List<Config> entityConfigs = new ArrayList<>();
 
         for(EnumCreatureType type : EnumCreatureType.values())
         {
-            for(Biome.SpawnListEntry entry : this.getBiomeEntities(type))
+            if(!this.entities.containsKey(type))
+            {
+                this.entities.put(type, new ArrayList<>(this.biome.getSpawnableList(type)));
+            }
+
+            for(Biome.SpawnListEntry entry : this.entities.get(type))
             {
                 ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
 
@@ -301,7 +310,7 @@ public class BiomeData implements IBiomeData
                 {
                     Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
                     entityConfig.add("entity", entityRegistryName.toString());
-                    entityConfig.add("entitySpawnWeight", entry.itemWeight);
+                    entityConfig.add("spawnWeight", entry.itemWeight);
                     entityConfig.add("minimumGroupCount", entry.minGroupCount);
                     entityConfig.add("maximumGroupCount", entry.maxGroupCount);
                     entityConfig.add("spawn", true);
@@ -310,7 +319,7 @@ public class BiomeData implements IBiomeData
             }
         }
 
-        config.add("entities", entityConfigs);
+        config.set("entities", entityConfigs);
         List<Config> biomeTraitConfigs = new ArrayList<>();
 
         for(Map.Entry<String, List<IBiomeTrait>> entry : this.biomeTraits.entrySet())
@@ -326,7 +335,7 @@ public class BiomeData implements IBiomeData
             }
         }
 
-        config.add("traits", biomeTraitConfigs);
+        config.set("traits", biomeTraitConfigs);
 
         if(!this.isSubBiomeData)
         {
@@ -340,17 +349,13 @@ public class BiomeData implements IBiomeData
                 }
             }
 
-            config.add("subBiomes", subBiomeNames);
+            config.set("subBiomes", subBiomeNames);
         }
     }
 
     @Override
     public void resetToDefaults(IBiomeDataAPI biomeDataAPI)
     {
-        this.blocks.clear();
-        this.entities.clear();
-        this.biomeTraits.clear();
-        this.subBiomeData.clear();
         this.readFromConfig(biomeDataAPI, this.defaultConfig);
     }
 
