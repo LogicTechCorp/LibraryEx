@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.world.biome.data;
 
 import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
@@ -57,6 +58,7 @@ public class BiomeData implements IBiomeData
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entities;
     protected Map<String, List<IBiomeTrait>> biomeTraits;
     protected List<IBiomeData> subBiomeData;
+    private Config defaultConfig;
 
     public BiomeData(Biome biome, int biomeGenerationWeight, boolean isSubBiomeData, boolean generateBiome, boolean generateDefaultBiomeFeatures)
     {
@@ -77,6 +79,8 @@ public class BiomeData implements IBiomeData
         this.entities = new HashMap<>();
         this.biomeTraits = new HashMap<>();
         this.subBiomeData = new ArrayList<>();
+        this.defaultConfig = InMemoryFormat.withUniversalSupport().createConfig();
+        this.updateDefaults();
     }
 
     public BiomeData(ResourceLocation biomeRegistryName, int biomeGenerationWeight, boolean isSubBiomeData, boolean generateBiome, boolean generateDefaultBiomeFeatures)
@@ -87,6 +91,13 @@ public class BiomeData implements IBiomeData
     public BiomeData(ResourceLocation biomeRegistryName)
     {
         this(biomeRegistryName, 10, false, true, true);
+    }
+
+    @Override
+    public void updateDefaults()
+    {
+        this.defaultConfig.clear();
+        this.writeToConfig(this.defaultConfig);
     }
 
     @Override
@@ -121,7 +132,6 @@ public class BiomeData implements IBiomeData
         }
 
         Config blocks = config.get("blocks");
-        this.blocks.clear();
 
         for(Config.Entry entry : blocks.entrySet())
         {
@@ -140,7 +150,6 @@ public class BiomeData implements IBiomeData
 
         List<Config> entities = new ArrayList<>();
         Iterator entityConfigIter = ((List) config.get("entities")).iterator();
-        this.entities.clear();
 
         for(EnumCreatureType type : EnumCreatureType.values())
         {
@@ -212,7 +221,6 @@ public class BiomeData implements IBiomeData
 
         List<Config> biomeTraits = new ArrayList<>();
         List<Config> biomeTraitConfigs = config.get("traits");
-        this.biomeTraits.clear();
 
         for(Config biomeTraitConfig : biomeTraitConfigs)
         {
@@ -251,7 +259,6 @@ public class BiomeData implements IBiomeData
             }
 
             List<String> subBiomeNames = config.get("subBiomes");
-            this.subBiomeData.clear();
 
             for(String subBiomeName : subBiomeNames)
             {
@@ -335,6 +342,16 @@ public class BiomeData implements IBiomeData
 
             config.add("subBiomes", subBiomeNames);
         }
+    }
+
+    @Override
+    public void resetToDefaults(IBiomeDataAPI biomeDataAPI)
+    {
+        this.blocks.clear();
+        this.entities.clear();
+        this.biomeTraits.clear();
+        this.subBiomeData.clear();
+        this.readFromConfig(biomeDataAPI, this.defaultConfig);
     }
 
     @Override

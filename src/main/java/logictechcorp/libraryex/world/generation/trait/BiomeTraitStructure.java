@@ -25,6 +25,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -229,7 +230,11 @@ public class BiomeTraitStructure extends BiomeTrait
                 if(entity != null)
                 {
                     entity.setPosition(dataPos.getX() + 0.5F, dataPos.getY(), dataPos.getZ() + 0.5F);
-                    world.spawnEntity(entity);
+
+                    if(world.spawnEntity(entity) && entity instanceof EntityLiving)
+                    {
+                        ((EntityLiving) entity).onInitialSpawn(world.getDifficultyForLocation(dataPos), null);
+                    }
                 }
             }
             else

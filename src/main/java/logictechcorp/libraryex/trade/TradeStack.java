@@ -50,7 +50,7 @@ public class TradeStack
 
     public TradeStack(Block block, int meta, int minCount, int maxCount)
     {
-        this(new ItemStack(block, 0, meta), minCount, maxCount);
+        this(new ItemStack(block, 1, meta), minCount, maxCount);
     }
 
     public TradeStack(Block block, int minCount, int maxCount)
