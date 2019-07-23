@@ -407,7 +407,7 @@ public class BiomeData implements IBiomeData
     @Override
     public List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType)
     {
-        return this.entities.computeIfAbsent(creatureType, k -> this.biome.getSpawnableList(creatureType));
+        return this.entities.computeIfAbsent(creatureType, k -> new ArrayList<>());
     }
 
     @Override
