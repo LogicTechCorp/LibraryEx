@@ -31,14 +31,14 @@ import java.util.Map;
 public interface IBiomeData
 {
     /**
-     * Called to update the default values for this biome data.
+     * Called to write the current state of the biome data to its default config.
      * <p>
      * This should be called after the default values have been changed by a modder.
      * <p>
-     * This should not be called when a server is running because the default values
-     * may be edited by a player.
+     * This should not be called after the biome data has been configured from an
+     * external config because it may contain player edits.
      */
-    void updateDefaults();
+    void writeToDefaultConfig();
 
     /**
      * Called when the server is starting.
@@ -62,11 +62,11 @@ public interface IBiomeData
     /**
      * Called after {@link #writeToConfig}.
      * <p>
-     * This is called to reset this biome data's values to their defaults.
+     * This is called to read the biome data from its default config.
      *
-     * @param biomeDataAPI The biome data api that this biome data is registered to.
+     * @param biomeDataAPI The biome data api that the biome data is registered to.
      */
-    void resetToDefaults(IBiomeDataAPI biomeDataAPI);
+    void readFromDefaultConfig(IBiomeDataAPI biomeDataAPI);
 
     /**
      * Called to check if the associated biome's default features should generate.
@@ -83,11 +83,11 @@ public interface IBiomeData
     boolean isSubBiomeData();
 
     /**
-     * Called to check if the associated biome should generate.
+     * Called to check if the associated biome is enabled.
      *
-     * @return Whether the associated biome should generate.
+     * @return Whether the associated biome is enabled.
      */
-    boolean generateBiome();
+    boolean isBiomeEnabled();
 
     /**
      * Called to get the biome associated with this data.

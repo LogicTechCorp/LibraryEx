@@ -53,14 +53,14 @@ public class BiomeData implements IBiomeData
     protected int generationWeight;
     protected boolean useDefaultDecorations;
     protected boolean isSubBiome;
-    protected boolean generateBiome;
+    protected boolean isEnabled;
     protected Map<String, IBlockState> biomeBlocks;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
     protected Map<String, List<IBiomeTrait>> biomeTraits;
     protected List<IBiomeData> subBiomeData;
     private Config defaultConfig;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean generateBiome)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
         if(biome != null)
         {
@@ -73,19 +73,19 @@ public class BiomeData implements IBiomeData
 
         this.generationWeight = generationWeight;
         this.useDefaultDecorations = useDefaultDecorations;
-        this.generateBiome = generateBiome;
+        this.isEnabled = isEnabled;
         this.isSubBiome = isSubBiome;
         this.biomeBlocks = new HashMap<>();
         this.entitySpawns = new HashMap<>();
         this.biomeTraits = new HashMap<>();
         this.subBiomeData = new ArrayList<>();
         this.defaultConfig = InMemoryFormat.withUniversalSupport().createConfig();
-        this.updateDefaults();
+        this.writeToDefaultConfig();
     }
 
-    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean generateBiome)
+    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
-        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, generateBiome);
+        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, isEnabled);
     }
 
     public BiomeData(ResourceLocation biomeRegistryName)
@@ -94,7 +94,7 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public void updateDefaults()
+    public void writeToDefaultConfig()
     {
         this.defaultConfig.clear();
         this.writeToConfig(this.defaultConfig);
@@ -123,20 +123,20 @@ public class BiomeData implements IBiomeData
         }
 
         this.useDefaultDecorations = config.getOrElse("useDefaultDecorations", true);
-        this.isSubBiome = config.getOrElse("isSubBiomeData", false);
-        this.generateBiome = config.getOrElse("generate", true);
+        this.isSubBiome = config.getOrElse("isSubBiome", false);
+        this.isEnabled = config.getOrElse("isEnabled", true);
 
-        if(!(config.get("biomeBlocks") instanceof Config))
+        if(!(config.get("blocks") instanceof Config))
         {
-            config.set("biomeBlocks", JsonFormat.newConfig(LinkedHashMap::new));
+            config.set("blocks", JsonFormat.newConfig(LinkedHashMap::new));
         }
 
-        Config blocks = config.get("biomeBlocks");
+        Config blocks = config.get("blocks");
         this.biomeBlocks.clear();
 
         for(Config.Entry entry : blocks.entrySet())
         {
-            IBlockState state = ConfigHelper.getBlockState(config, "biomeBlocks." + entry.getKey());
+            IBlockState state = ConfigHelper.getBlockState(config, "blocks." + entry.getKey());
 
             if(state != null)
             {
@@ -144,13 +144,13 @@ public class BiomeData implements IBiomeData
             }
         }
 
-        if(!(config.get("entitySpawns") instanceof List))
+        if(!(config.get("entities") instanceof List))
         {
-            config.set("entitySpawns", new ArrayList<Config>());
+            config.set("entities", new ArrayList<Config>());
         }
 
         List<Config> entities = new ArrayList<>();
-        Iterator entityConfigIter = ((List) config.get("entitySpawns")).iterator();
+        Iterator entityConfigIter = ((List) config.get("entities")).iterator();
         this.entitySpawns.clear();
 
         for(EnumCreatureType type : EnumCreatureType.values())
@@ -189,7 +189,7 @@ public class BiomeData implements IBiomeData
             }
         }
 
-        config.set("entitySpawns", entities);
+        config.set("entities", entities);
 
         for(Config entityConfig : entities)
         {
@@ -234,18 +234,15 @@ public class BiomeData implements IBiomeData
                 IBiomeTrait biomeTrait = biomeTraitBuilder.create();
                 biomeTrait.readFromConfig(biomeTraitConfig);
 
-                if(this.generateBiome)
-                {
-                    String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATION.getIdentifier());
+                String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATION.getIdentifier());
 
-                    if(generationStage != null)
-                    {
-                        this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(biomeTrait);
-                    }
-                    else
-                    {
-                        this.biomeTraits.computeIfAbsent(GenerationStage.DECORATION.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
-                    }
+                if(generationStage != null)
+                {
+                    this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(biomeTrait);
+                }
+                else
+                {
+                    this.biomeTraits.computeIfAbsent(GenerationStage.DECORATION.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
                 }
             }
 
@@ -283,8 +280,8 @@ public class BiomeData implements IBiomeData
         config.add("biome", this.biome.getRegistryName().toString());
         config.add("generationWeight", this.generationWeight);
         config.add("useDefaultDecorations", this.useDefaultDecorations);
-        config.add("isSubBiomeData", this.isSubBiome);
-        config.add("generate", this.generateBiome);
+        config.add("isSubBiome", this.isSubBiome);
+        config.add("isEnabled", this.isEnabled);
         Config blockConfigs = JsonFormat.newConfig(LinkedHashMap::new);
 
         for(Map.Entry<String, IBlockState> entry : this.biomeBlocks.entrySet())
@@ -292,7 +289,7 @@ public class BiomeData implements IBiomeData
             ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
         }
 
-        config.set("biomeBlocks", blockConfigs);
+        config.set("blocks", blockConfigs);
         List<Config> entityConfigs = new ArrayList<>();
 
         for(EnumCreatureType type : EnumCreatureType.values())
@@ -319,7 +316,7 @@ public class BiomeData implements IBiomeData
             }
         }
 
-        config.set("entitySpawns", entityConfigs);
+        config.set("entities", entityConfigs);
         List<Config> biomeTraitConfigs = new ArrayList<>();
 
         for(Map.Entry<String, List<IBiomeTrait>> entry : this.biomeTraits.entrySet())
@@ -354,7 +351,7 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public void resetToDefaults(IBiomeDataAPI biomeDataAPI)
+    public void readFromDefaultConfig(IBiomeDataAPI biomeDataAPI)
     {
         this.readFromConfig(biomeDataAPI, this.defaultConfig);
     }
@@ -384,9 +381,9 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public boolean generateBiome()
+    public boolean isBiomeEnabled()
     {
-        return this.generateBiome;
+        return this.isEnabled;
     }
 
     @Override
