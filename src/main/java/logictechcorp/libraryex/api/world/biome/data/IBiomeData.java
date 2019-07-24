@@ -69,6 +69,13 @@ public interface IBiomeData
     void resetToDefaults(IBiomeDataAPI biomeDataAPI);
 
     /**
+     * Called to check if the associated biome's default features should generate.
+     *
+     * @return Whether the associated biome's default features should generate.
+     */
+    boolean useDefaultBiomeDecorations();
+
+    /**
      * Returns true if this data represents a sub biome.
      *
      * @return True if this data represents a sub biome.
@@ -83,13 +90,6 @@ public interface IBiomeData
     boolean generateBiome();
 
     /**
-     * Called to check if the associated biome's default biomeTraits should generate.
-     *
-     * @return Whether the associated biome's default biomeTraits should generate.
-     */
-    boolean generateDefaultBiomeFeatures();
-
-    /**
      * Called to get the biome associated with this data.
      *
      * @return The biome associated with this data.
@@ -97,9 +97,9 @@ public interface IBiomeData
     Biome getBiome();
 
     /**
-     * Called to get the generation biomeGenerationWeight of the associated biome.
+     * Called to get the generation weight of the associated biome.
      *
-     * @return The generation biomeGenerationWeight of the associated biome.
+     * @return The generation weight of the associated biome.
      */
     int getBiomeGenerationWeight();
 
@@ -125,7 +125,7 @@ public interface IBiomeData
      * @param creatureType The type of entity to get the list for.
      * @return A list of entities that spawn in the associated biome.
      */
-    List<Biome.SpawnListEntry> getBiomeEntities(EnumCreatureType creatureType);
+    List<Biome.SpawnListEntry> getEntitySpawns(EnumCreatureType creatureType);
 
     /**
      * Called to get a list of biome traits that generate in the associated biome.
@@ -143,9 +143,9 @@ public interface IBiomeData
     List<IBiomeData> getSubBiomeData();
 
     /**
-     * Called to get the biome data config's relative save file.
+     * Called to get this biome data's relative config path.
      *
-     * @return The biome data config's relative save file.
+     * @return This biome data's relative config path.
      */
-    String getRelativeSaveFile();
+    String getRelativeConfigPath();
 }
