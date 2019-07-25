@@ -58,7 +58,7 @@ public class BiomeData implements IBiomeData
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
     protected Map<String, List<IBiomeTrait>> biomeTraits;
     protected List<IBiomeData> subBiomeData;
-    private Config defaultConfig;
+    protected Config defaultConfig;
 
     public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
