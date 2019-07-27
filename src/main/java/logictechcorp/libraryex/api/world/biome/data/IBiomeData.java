@@ -18,8 +18,8 @@
 package logictechcorp.libraryex.api.world.biome.data;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
-import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
+import logictechcorp.libraryex.api.world.biome.BiomeBlockType;
+import logictechcorp.libraryex.api.world.generation.GenerationStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
@@ -30,6 +30,37 @@ import java.util.Map;
 
 public interface IBiomeData
 {
+    /**
+     * Called to add a biome block to the biome data.
+     *
+     * @param blockType The biome block type for the block that is to be added.
+     * @param state     The block that is to be added.
+     */
+    void addBiomeBlock(BiomeBlockType blockType, IBlockState state);
+
+    /**
+     * Called to add an entity spawn to the biome data.
+     *
+     * @param creatureType   The type of entity to be added.
+     * @param spawnListEntry The entity spawn that is to be added.
+     */
+    void addEntitySpawn(EnumCreatureType creatureType, Biome.SpawnListEntry spawnListEntry);
+
+    /**
+     * Called to add a biome trait to the biome data.
+     *
+     * @param generationStage The generation stage for the biome trait that is to be added.
+     * @param biomeTrait      The biome trait that is to be added.
+     */
+    void addBiomeTrait(GenerationStage generationStage, IBiomeTrait biomeTrait);
+
+    /**
+     * Called to add a sub biome to the biome data.
+     *
+     * @param biomeData The biome wrapper for the sub biome that is to be added.
+     */
+    void addSubBiome(IBiomeData biomeData);
+
     /**
      * Called to write the current state of the biome data to its default config.
      * <p>
@@ -80,14 +111,14 @@ public interface IBiomeData
      *
      * @return True if this data represents a sub biome.
      */
-    boolean isSubBiomeData();
+    boolean isSubBiome();
 
     /**
      * Called to check if the associated biome is enabled.
      *
      * @return Whether the associated biome is enabled.
      */
-    boolean isBiomeEnabled();
+    boolean isEnabled();
 
     /**
      * Called to get the biome associated with this data.
@@ -101,23 +132,30 @@ public interface IBiomeData
      *
      * @return The generation weight of the associated biome.
      */
-    int getBiomeGenerationWeight();
+    int getGenerationWeight();
 
     /**
      * Called to get a block that makes up the associated biome.
      *
-     * @param type     The type of block to get.
-     * @param fallback The block to fallback to if the biome doesn't have a block for the type.
+     * @param blockType The type of block to get.
      * @return A block that makes up the associated biome.
      */
-    IBlockState getBiomeBlock(IBiomeBlock type, IBlockState fallback);
+    IBlockState getBiomeBlock(BiomeBlockType blockType);
 
     /**
      * Called to get a map containing the biome blocks and their identifiers.
      *
-     * @return A map containing the biome blocks and their identifiers.
+     * @return A map containing the biome blocks and their types.
      */
-    Map<String, IBlockState> getBiomeBlocks();
+    Map<BiomeBlockType, IBlockState> getBiomeBlocks();
+
+    /**
+     * Called to get a list of biome traits that generate in the associated biome.
+     *
+     * @param generationStage The stage to get the list for.
+     * @return A list of biome traits that generate in the associated biome.
+     */
+    List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage);
 
     /**
      * Called to get a list of entities that spawn in the associated biome.
@@ -128,19 +166,11 @@ public interface IBiomeData
     List<Biome.SpawnListEntry> getEntitySpawns(EnumCreatureType creatureType);
 
     /**
-     * Called to get a list of biome traits that generate in the associated biome.
-     *
-     * @param generationStage The stage to get the list for.
-     * @return A list of biome traits that generate in the associated biome.
-     */
-    List<IBiomeTrait> getBiomeTraits(IGeneratorStage generationStage);
-
-    /**
      * Called to get a list of sub biomes that can generate in the associated biome.
      *
      * @return A list of sub biomes that can generate in the associated biome.
      */
-    List<IBiomeData> getSubBiomeData();
+    List<IBiomeData> getSubBiomes();
 
     /**
      * Called to get this biome data's relative config path.

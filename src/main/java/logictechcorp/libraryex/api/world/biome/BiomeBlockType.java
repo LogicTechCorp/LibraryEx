@@ -15,27 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.world.generation;
+package logictechcorp.libraryex.api.world.biome;
 
-import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
-
-public enum GenerationStage implements IGeneratorStage
+public enum BiomeBlockType
 {
-    TERRAIN_ALTERATION("terrain_alteration"),
-    DECORATION("decoration"),
-    PLANT_DECORATION("plant_decoration"),
-    ORE("ore"),
-    STRUCTURE("structure");
+    SURFACE_BLOCK("surfaceBlock"),
+    SUBSURFACE_BLOCK("subsurfaceBlock"),
+    CAVE_CEILING_BLOCK("caveCeilingBlock"),
+    CAVE_WALL_BLOCK("caveWallBlock"),
+    CAVE_FLOOR_BLOCK("caveFloorBlock"),
+    FLUID_BLOCK("fluidBlock");
 
     private String identifier;
 
-    GenerationStage(String identifier)
+    BiomeBlockType(String identifier)
     {
         this.identifier = identifier;
     }
 
+    public static BiomeBlockType getFromIdentifier(String identifier)
+    {
+        for(BiomeBlockType type : BiomeBlockType.values())
+        {
+            if(type.toString().equals(identifier))
+            {
+                return type;
+            }
+        }
+
+        return SURFACE_BLOCK;
+    }
+
     @Override
-    public String getIdentifier()
+    public String toString()
     {
         return this.identifier;
     }

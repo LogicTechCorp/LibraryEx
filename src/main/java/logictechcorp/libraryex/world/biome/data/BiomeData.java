@@ -21,15 +21,14 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
-import logictechcorp.libraryex.api.world.biome.IBiomeBlock;
+import logictechcorp.libraryex.api.world.biome.BiomeBlockType;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeDataAPI;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeDataRegistry;
-import logictechcorp.libraryex.api.world.generation.IGeneratorStage;
+import logictechcorp.libraryex.api.world.generation.GenerationStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
 import logictechcorp.libraryex.utility.ConfigHelper;
-import logictechcorp.libraryex.world.generation.GenerationStage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -54,10 +53,10 @@ public class BiomeData implements IBiomeData
     protected boolean useDefaultDecorations;
     protected boolean isSubBiome;
     protected boolean isEnabled;
-    protected Map<String, IBlockState> biomeBlocks;
+    protected Map<BiomeBlockType, IBlockState> biomeBlocks;
+    protected Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
     protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
-    protected Map<String, List<IBiomeTrait>> biomeTraits;
-    protected List<IBiomeData> subBiomeData;
+    protected List<IBiomeData> subBiomes;
     protected Config defaultConfig;
 
     public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
@@ -75,10 +74,10 @@ public class BiomeData implements IBiomeData
         this.useDefaultDecorations = useDefaultDecorations;
         this.isEnabled = isEnabled;
         this.isSubBiome = isSubBiome;
-        this.biomeBlocks = new HashMap<>();
-        this.entitySpawns = new HashMap<>();
-        this.biomeTraits = new HashMap<>();
-        this.subBiomeData = new ArrayList<>();
+        this.biomeBlocks = new EnumMap<>(BiomeBlockType.class);
+        this.biomeTraits = new EnumMap<>(GenerationStage.class);
+        this.entitySpawns = new EnumMap<>(EnumCreatureType.class);
+        this.subBiomes = new ArrayList<>();
         this.defaultConfig = InMemoryFormat.withUniversalSupport().createConfig();
         this.writeToDefaultConfig();
     }
@@ -91,6 +90,30 @@ public class BiomeData implements IBiomeData
     public BiomeData(ResourceLocation biomeRegistryName)
     {
         this(biomeRegistryName, 10, true, false, true);
+    }
+
+    @Override
+    public void addBiomeBlock(BiomeBlockType blockType, IBlockState state)
+    {
+        this.biomeBlocks.put(blockType, state);
+    }
+
+    @Override
+    public void addEntitySpawn(EnumCreatureType creatureType, Biome.SpawnListEntry spawnListEntry)
+    {
+        this.entitySpawns.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(spawnListEntry);
+    }
+
+    @Override
+    public void addBiomeTrait(GenerationStage generationStage, IBiomeTrait biomeTrait)
+    {
+        this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(biomeTrait);
+    }
+
+    @Override
+    public void addSubBiome(IBiomeData biomeData)
+    {
+        this.subBiomes.add(biomeData);
     }
 
     @Override
@@ -140,7 +163,7 @@ public class BiomeData implements IBiomeData
 
             if(state != null)
             {
-                this.biomeBlocks.put(entry.getKey(), state);
+                this.biomeBlocks.put(BiomeBlockType.getFromIdentifier(entry.getKey()), state);
             }
         }
 
@@ -233,17 +256,7 @@ public class BiomeData implements IBiomeData
             {
                 IBiomeTrait biomeTrait = biomeTraitBuilder.create();
                 biomeTrait.readFromConfig(biomeTraitConfig);
-
-                String generationStage = biomeTraitConfig.getOrElse("generationStage", GenerationStage.DECORATION.getIdentifier());
-
-                if(generationStage != null)
-                {
-                    this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>()).add(biomeTrait);
-                }
-                else
-                {
-                    this.biomeTraits.computeIfAbsent(GenerationStage.DECORATION.getIdentifier(), k -> new ArrayList<>()).add(biomeTrait);
-                }
+                this.biomeTraits.computeIfAbsent(GenerationStage.getFromIdentifier(biomeTraitConfig.get("generationStage")), k -> new ArrayList<>()).add(biomeTrait);
             }
 
             biomeTraits.add(biomeTraitConfig);
@@ -259,7 +272,7 @@ public class BiomeData implements IBiomeData
             }
 
             List<String> subBiomeNames = config.get("subBiomes");
-            this.subBiomeData.clear();
+            this.subBiomes.clear();
 
             for(String subBiomeName : subBiomeNames)
             {
@@ -268,7 +281,7 @@ public class BiomeData implements IBiomeData
 
                 if(biome != null && biomeDataRegistry.hasBiomeData(biome))
                 {
-                    this.subBiomeData.add(biomeDataRegistry.getBiomeData(biome));
+                    this.subBiomes.add(biomeDataRegistry.getBiomeData(biome));
                 }
             }
         }
@@ -284,9 +297,9 @@ public class BiomeData implements IBiomeData
         config.add("isEnabled", this.isEnabled);
         Config blockConfigs = JsonFormat.newConfig(LinkedHashMap::new);
 
-        for(Map.Entry<String, IBlockState> entry : this.biomeBlocks.entrySet())
+        for(Map.Entry<BiomeBlockType, IBlockState> entry : this.biomeBlocks.entrySet())
         {
-            ConfigHelper.setBlockState(blockConfigs, entry.getKey(), entry.getValue());
+            ConfigHelper.setBlockState(blockConfigs, entry.getKey().toString(), entry.getValue());
         }
 
         config.set("blocks", blockConfigs);
@@ -319,15 +332,13 @@ public class BiomeData implements IBiomeData
         config.set("entities", entityConfigs);
         List<Config> biomeTraitConfigs = new ArrayList<>();
 
-        for(Map.Entry<String, List<IBiomeTrait>> entry : this.biomeTraits.entrySet())
+        for(Map.Entry<GenerationStage, List<IBiomeTrait>> entry : this.biomeTraits.entrySet())
         {
-            String generatorStage = entry.getKey();
-
             for(IBiomeTrait biomeTrait : entry.getValue())
             {
                 Config biomeTraitConfig = JsonFormat.newConfig(LinkedHashMap::new);
                 biomeTrait.writeToConfig(biomeTraitConfig);
-                biomeTraitConfig.add("generationStage", generatorStage);
+                biomeTraitConfig.add("generationStage", entry.getKey().toString());
                 biomeTraitConfigs.add(biomeTraitConfig);
             }
         }
@@ -338,7 +349,7 @@ public class BiomeData implements IBiomeData
         {
             List<String> subBiomeNames = new ArrayList<>();
 
-            for(IBiomeData biomeData : this.subBiomeData)
+            for(IBiomeData biomeData : this.subBiomes)
             {
                 if(biomeData.getBiome().getRegistryName() != null)
                 {
@@ -363,7 +374,7 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public int getBiomeGenerationWeight()
+    public int getGenerationWeight()
     {
         return this.generationWeight;
     }
@@ -375,35 +386,33 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public boolean isSubBiomeData()
+    public boolean isSubBiome()
     {
         return this.isSubBiome;
     }
 
     @Override
-    public boolean isBiomeEnabled()
+    public boolean isEnabled()
     {
         return this.isEnabled;
     }
 
     @Override
-    public IBlockState getBiomeBlock(IBiomeBlock biomeBlock, IBlockState fallback)
+    public IBlockState getBiomeBlock(BiomeBlockType biomeBlock)
     {
-        IBlockState value = this.biomeBlocks.get(biomeBlock.getIdentifier());
-
-        if(value == null)
-        {
-            this.biomeBlocks.put(biomeBlock.getIdentifier(), fallback);
-            return fallback;
-        }
-
-        return value;
+        return this.biomeBlocks.get(biomeBlock);
     }
 
     @Override
-    public Map<String, IBlockState> getBiomeBlocks()
+    public Map<BiomeBlockType, IBlockState> getBiomeBlocks()
     {
         return this.biomeBlocks;
+    }
+
+    @Override
+    public List<IBiomeTrait> getBiomeTraits(GenerationStage generationStage)
+    {
+        return this.biomeTraits.computeIfAbsent(generationStage, k -> new ArrayList<>());
     }
 
     @Override
@@ -413,15 +422,9 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public List<IBiomeTrait> getBiomeTraits(IGeneratorStage generationStage)
+    public List<IBiomeData> getSubBiomes()
     {
-        return this.biomeTraits.computeIfAbsent(generationStage.getIdentifier(), k -> new ArrayList<>());
-    }
-
-    @Override
-    public List<IBiomeData> getSubBiomeData()
-    {
-        return this.subBiomeData;
+        return this.subBiomes;
     }
 
     @Override
