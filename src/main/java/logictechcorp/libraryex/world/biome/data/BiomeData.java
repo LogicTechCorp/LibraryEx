@@ -23,7 +23,6 @@ import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.BiomeBlockType;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeDataAPI;
 import logictechcorp.libraryex.api.world.biome.data.IBiomeDataRegistry;
 import logictechcorp.libraryex.api.world.generation.GenerationStage;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
@@ -48,18 +47,19 @@ import java.util.*;
  */
 public class BiomeData implements IBiomeData
 {
-    protected Biome biome;
+    protected final Biome biome;
     protected int generationWeight;
     protected boolean useDefaultDecorations;
     protected boolean isSubBiome;
     protected boolean isEnabled;
-    protected Map<BiomeBlockType, IBlockState> biomeBlocks;
-    protected Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
-    protected Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
-    protected List<IBiomeData> subBiomes;
-    protected Config defaultConfig;
+    protected final boolean isPlayerCreated;
+    protected final Map<BiomeBlockType, IBlockState> biomeBlocks;
+    protected final Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
+    protected final Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
+    protected final List<IBiomeData> subBiomes;
+    protected final Config defaultConfig;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled, boolean isPlayerCreated)
     {
         if(biome != null)
         {
@@ -74,6 +74,7 @@ public class BiomeData implements IBiomeData
         this.useDefaultDecorations = useDefaultDecorations;
         this.isEnabled = isEnabled;
         this.isSubBiome = isSubBiome;
+        this.isPlayerCreated = isPlayerCreated;
         this.biomeBlocks = new EnumMap<>(BiomeBlockType.class);
         this.biomeTraits = new EnumMap<>(GenerationStage.class);
         this.entitySpawns = new EnumMap<>(EnumCreatureType.class);
@@ -82,14 +83,19 @@ public class BiomeData implements IBiomeData
         this.writeToDefaultConfig();
     }
 
-    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
-        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, isEnabled);
+        this(biome, generationWeight, useDefaultDecorations, isSubBiome, isEnabled, false);
     }
 
-    public BiomeData(ResourceLocation biomeRegistryName)
+    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled, boolean isPlayerCreated)
     {
-        this(biomeRegistryName, 10, true, false, true);
+        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, isEnabled, isPlayerCreated);
+    }
+
+    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
+    {
+        this(biomeRegistryName, generationWeight, useDefaultDecorations, isSubBiome, isEnabled, false);
     }
 
     @Override
@@ -119,25 +125,16 @@ public class BiomeData implements IBiomeData
     @Override
     public void writeToDefaultConfig()
     {
-        this.defaultConfig.clear();
-        this.writeToConfig(this.defaultConfig);
+        if(!this.isPlayerCreated)
+        {
+            this.defaultConfig.clear();
+            this.writeToConfig(this.defaultConfig);
+        }
     }
 
     @Override
-    public void readFromConfig(IBiomeDataAPI biomeDataAPI, Config config)
+    public void readFromConfig(IBiomeDataRegistry biomeDataRegistry, Config config)
     {
-        ResourceLocation biomeRegistryName = new ResourceLocation(config.getOrElse("biome", "missing:no"));
-
-        if(ForgeRegistries.BIOMES.containsKey(biomeRegistryName))
-        {
-            this.biome = ForgeRegistries.BIOMES.getValue(biomeRegistryName);
-        }
-
-        if(this.biome == null)
-        {
-            this.biome = Biomes.PLAINS;
-        }
-
         this.generationWeight = config.getOrElse("generationWeight", this.generationWeight);
 
         if(this.generationWeight <= 0)
@@ -277,7 +274,6 @@ public class BiomeData implements IBiomeData
             for(String subBiomeName : subBiomeNames)
             {
                 Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(subBiomeName));
-                IBiomeDataRegistry biomeDataRegistry = biomeDataAPI.getBiomeDataRegistry();
 
                 if(biome != null && biomeDataRegistry.hasBiomeData(biome))
                 {
@@ -362,9 +358,12 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public void readFromDefaultConfig(IBiomeDataAPI biomeDataAPI)
+    public void readFromDefaultConfig(IBiomeDataRegistry biomeDataRegistry)
     {
-        this.readFromConfig(biomeDataAPI, this.defaultConfig);
+        if(!this.isPlayerCreated)
+        {
+            this.readFromConfig(biomeDataRegistry, this.defaultConfig);
+        }
     }
 
     @Override
@@ -395,6 +394,12 @@ public class BiomeData implements IBiomeData
     public boolean isEnabled()
     {
         return this.isEnabled;
+    }
+
+    @Override
+    public boolean isPlayerCreated()
+    {
+        return this.isPlayerCreated;
     }
 
     @Override

@@ -76,10 +76,10 @@ public interface IBiomeData
      * <p>
      * This is used to configure this biome data from a config.
      *
-     * @param biomeDataAPI The biome data api that this biome data is registered to.
+     * @param biomeDataRegistry The biome data registry that this biome data is registered to.
      * @param config       The config that belongs to the biome data.
      */
-    void readFromConfig(IBiomeDataAPI biomeDataAPI, Config config);
+    void readFromConfig(IBiomeDataRegistry biomeDataRegistry, Config config);
 
     /**
      * Called when the server is stopping.
@@ -95,9 +95,9 @@ public interface IBiomeData
      * <p>
      * This is called to read the biome data from its default config.
      *
-     * @param biomeDataAPI The biome data api that the biome data is registered to.
+     * @param biomeDataRegistry The biome data registry that the biome data is registered to.
      */
-    void readFromDefaultConfig(IBiomeDataAPI biomeDataAPI);
+    void readFromDefaultConfig(IBiomeDataRegistry biomeDataRegistry);
 
     /**
      * Called to check if the associated biome's default features should generate.
@@ -119,6 +119,13 @@ public interface IBiomeData
      * @return Whether the associated biome is enabled.
      */
     boolean isEnabled();
+
+    /**
+     * Called to check if the biome data was created by a player.
+     *
+     * @return Whether the biome data was created by a player.
+     */
+    boolean isPlayerCreated();
 
     /**
      * Called to get the biome associated with this data.
