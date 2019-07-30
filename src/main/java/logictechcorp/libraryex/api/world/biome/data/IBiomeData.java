@@ -62,22 +62,12 @@ public interface IBiomeData
     void addSubBiome(IBiomeData biomeData);
 
     /**
-     * Called to write the current state of the biome data to its default config.
-     * <p>
-     * This should be called after the default values have been changed by a modder.
-     * <p>
-     * This should not be called after the biome data has been configured from an
-     * external config because it may contain player edits.
-     */
-    void writeToDefaultConfig();
-
-    /**
      * Called when the server is starting.
      * <p>
      * This is used to configure this biome data from a config.
      *
      * @param biomeDataRegistry The biome data registry that this biome data is registered to.
-     * @param config       The config that belongs to the biome data.
+     * @param config            The config that belongs to the biome data.
      */
     void readFromConfig(IBiomeDataRegistry biomeDataRegistry, Config config);
 
@@ -89,15 +79,6 @@ public interface IBiomeData
      * @param config The config that belongs to the biome data.
      */
     void writeToConfig(Config config);
-
-    /**
-     * Called after {@link #writeToConfig}.
-     * <p>
-     * This is called to read the biome data from its default config.
-     *
-     * @param biomeDataRegistry The biome data registry that the biome data is registered to.
-     */
-    void readFromDefaultConfig(IBiomeDataRegistry biomeDataRegistry);
 
     /**
      * Called to check if the associated biome's default features should generate.
@@ -119,13 +100,6 @@ public interface IBiomeData
      * @return Whether the associated biome is enabled.
      */
     boolean isEnabled();
-
-    /**
-     * Called to check if the biome data was created by a player.
-     *
-     * @return Whether the biome data was created by a player.
-     */
-    boolean isPlayerCreated();
 
     /**
      * Called to get the biome associated with this data.
@@ -178,11 +152,4 @@ public interface IBiomeData
      * @return A list of sub biomes that can generate in the associated biome.
      */
     List<IBiomeData> getSubBiomes();
-
-    /**
-     * Called to get this biome data's relative config path.
-     *
-     * @return This biome data's relative config path.
-     */
-    String getRelativeConfigPath();
 }

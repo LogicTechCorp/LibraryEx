@@ -17,8 +17,8 @@
 
 package logictechcorp.libraryex.api;
 
-import logictechcorp.libraryex.api.internal.iface.ILibraryExAPI;
-import logictechcorp.libraryex.api.internal.impl.LibraryExAPIStub;
+import logictechcorp.libraryex.api.internal.ILibraryExAPI;
+import logictechcorp.libraryex.api.internal.LibraryExAPIStub;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 

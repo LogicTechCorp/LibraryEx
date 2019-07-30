@@ -15,23 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.internal.iface;
+package logictechcorp.libraryex.api.internal;
 
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 
-public interface ILibraryExAPI
+public final class LibraryExAPIStub implements ILibraryExAPI
 {
-    /**
-     * Returns false if the actual mod is loaded.
-     *
-     * @return Whether this API instance is created by the mod.
-     */
-    boolean isStub();
+    public static final ILibraryExAPI INSTANCE = new LibraryExAPIStub();
 
-    /**
-     * Returns the biome trait registry.
-     *
-     * @return The biome trait registry.
-     */
-    IBiomeTraitRegistry getBiomeTraitRegistry();
+    private LibraryExAPIStub()
+    {
+    }
+
+    @Override
+    public boolean isStub()
+    {
+        return true;
+    }
+
+    @Override
+    public IBiomeTraitRegistry getBiomeTraitRegistry()
+    {
+        return BiomeTraitRegistryStub.INSTANCE;
+    }
 }

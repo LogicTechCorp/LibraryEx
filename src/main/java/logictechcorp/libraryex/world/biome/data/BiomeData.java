@@ -18,7 +18,6 @@
 package logictechcorp.libraryex.world.biome.data;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.InMemoryFormat;
 import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.world.biome.BiomeBlockType;
@@ -52,14 +51,12 @@ public class BiomeData implements IBiomeData
     protected boolean useDefaultDecorations;
     protected boolean isSubBiome;
     protected boolean isEnabled;
-    protected final boolean isPlayerCreated;
     protected final Map<BiomeBlockType, IBlockState> biomeBlocks;
     protected final Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
     protected final Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
     protected final List<IBiomeData> subBiomes;
-    protected final Config defaultConfig;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled, boolean isPlayerCreated)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
         if(biome != null)
         {
@@ -74,28 +71,15 @@ public class BiomeData implements IBiomeData
         this.useDefaultDecorations = useDefaultDecorations;
         this.isEnabled = isEnabled;
         this.isSubBiome = isSubBiome;
-        this.isPlayerCreated = isPlayerCreated;
         this.biomeBlocks = new EnumMap<>(BiomeBlockType.class);
         this.biomeTraits = new EnumMap<>(GenerationStage.class);
         this.entitySpawns = new EnumMap<>(EnumCreatureType.class);
         this.subBiomes = new ArrayList<>();
-        this.defaultConfig = InMemoryFormat.withUniversalSupport().createConfig();
-        this.writeToDefaultConfig();
-    }
-
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
-    {
-        this(biome, generationWeight, useDefaultDecorations, isSubBiome, isEnabled, false);
-    }
-
-    public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled, boolean isPlayerCreated)
-    {
-        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, isEnabled, isPlayerCreated);
     }
 
     public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
     {
-        this(biomeRegistryName, generationWeight, useDefaultDecorations, isSubBiome, isEnabled, false);
+        this(ForgeRegistries.BIOMES.getValue(biomeRegistryName), generationWeight, useDefaultDecorations, isSubBiome, isEnabled);
     }
 
     @Override
@@ -120,16 +104,6 @@ public class BiomeData implements IBiomeData
     public void addSubBiome(IBiomeData biomeData)
     {
         this.subBiomes.add(biomeData);
-    }
-
-    @Override
-    public void writeToDefaultConfig()
-    {
-        if(!this.isPlayerCreated)
-        {
-            this.defaultConfig.clear();
-            this.writeToConfig(this.defaultConfig);
-        }
     }
 
     @Override
@@ -358,15 +332,6 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public void readFromDefaultConfig(IBiomeDataRegistry biomeDataRegistry)
-    {
-        if(!this.isPlayerCreated)
-        {
-            this.readFromConfig(biomeDataRegistry, this.defaultConfig);
-        }
-    }
-
-    @Override
     public Biome getBiome()
     {
         return this.biome;
@@ -397,12 +362,6 @@ public class BiomeData implements IBiomeData
     }
 
     @Override
-    public boolean isPlayerCreated()
-    {
-        return this.isPlayerCreated;
-    }
-
-    @Override
     public IBlockState getBiomeBlock(BiomeBlockType biomeBlock)
     {
         return this.biomeBlocks.get(biomeBlock);
@@ -430,11 +389,5 @@ public class BiomeData implements IBiomeData
     public List<IBiomeData> getSubBiomes()
     {
         return this.subBiomes;
-    }
-
-    @Override
-    public String getRelativeConfigPath()
-    {
-        return "biomes/" + this.biome.getRegistryName().toString().replace(":", "/") + ".json";
     }
 }

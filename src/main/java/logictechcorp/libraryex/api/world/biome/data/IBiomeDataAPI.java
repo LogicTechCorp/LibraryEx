@@ -25,11 +25,4 @@ public interface IBiomeDataAPI
      * @return The biome data registry.
      */
     IBiomeDataRegistry getBiomeDataRegistry();
-
-    /**
-     * Returns The biome data manager.
-     *
-     * @return The biome data manager
-     */
-    IBiomeDataManager getBiomeDataManager();
 }

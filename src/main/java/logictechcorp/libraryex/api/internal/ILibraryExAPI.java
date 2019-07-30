@@ -15,24 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.world.biome.data;
+package logictechcorp.libraryex.api.internal;
 
-import net.minecraftforge.event.world.WorldEvent;
+import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 
-public interface IBiomeDataManager
+public interface ILibraryExAPI
 {
     /**
-     * Reads biome data configs from disk and then configures them.
+     * Returns false if the actual mod is loaded.
      *
-     * @param event To ensure that this is only called after the server has started.
+     * @return Whether this API instance is created by the mod.
      */
-
-    void readBiomeDataConfigs(WorldEvent.Load event);
+    boolean isStub();
 
     /**
-     * Writes biome data configs to disk.
+     * Returns the biome trait registry.
      *
-     * @param event To ensure that this is only called before the server has stopped.
+     * @return The biome trait registry.
      */
-    void writeBiomeDataConfigs(WorldEvent.Unload event);
+    IBiomeTraitRegistry getBiomeTraitRegistry();
 }
