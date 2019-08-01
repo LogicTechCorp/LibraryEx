@@ -20,6 +20,7 @@ package logictechcorp.libraryex;
 import logictechcorp.libraryex.api.LibraryExAPI;
 import logictechcorp.libraryex.api.internal.ILibraryExAPI;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
+import logictechcorp.libraryex.world.generation.trait.BiomeTraitRegistry;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;

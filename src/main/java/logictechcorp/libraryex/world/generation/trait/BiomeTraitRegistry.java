@@ -15,21 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.world.generation.trait;
 
+import logictechcorp.libraryex.LibraryEx;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
 import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
-import logictechcorp.libraryex.world.generation.trait.*;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-final class BiomeTraitRegistry implements IBiomeTraitRegistry
+public final class BiomeTraitRegistry implements IBiomeTraitRegistry
 {
+    //NOT for use by modders. Please access using the api.
     public static final IBiomeTraitRegistry INSTANCE = new BiomeTraitRegistry();
+
     private final Map<Class<? extends IBiomeTrait>, ResourceLocation> biomeTraitNames = new HashMap<>();
     private final Map<ResourceLocation, IBiomeTraitBuilder> biomeTraitBuilders = new HashMap<>();
 
