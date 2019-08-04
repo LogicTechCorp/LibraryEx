@@ -36,7 +36,6 @@ import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.*;
@@ -75,6 +74,14 @@ public class BiomeData implements IBiomeData
         this.biomeTraits = new EnumMap<>(GenerationStage.class);
         this.entitySpawns = new EnumMap<>(EnumCreatureType.class);
         this.subBiomes = new ArrayList<>();
+
+        for(EnumCreatureType creatureType : EnumCreatureType.values())
+        {
+            for(Biome.SpawnListEntry entry : this.biome.getSpawnableList(creatureType))
+            {
+                this.addEntitySpawn(creatureType, entry);
+            }
+        }
     }
 
     public BiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
@@ -143,47 +150,8 @@ public class BiomeData implements IBiomeData
             config.set("entities", new ArrayList<Config>());
         }
 
-        List<Config> entities = new ArrayList<>();
-        Iterator entityConfigIter = ((List) config.get("entities")).iterator();
+        List<Config> entities = config.get("entities");
         this.entitySpawns.clear();
-
-        for(EnumCreatureType type : EnumCreatureType.values())
-        {
-            entryLoop:
-            for(Biome.SpawnListEntry entry : this.biome.getSpawnableList(type))
-            {
-                ResourceLocation registryKey = ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass));
-                boolean containsEntry = false;
-
-                while(entityConfigIter.hasNext())
-                {
-                    Config entityConfig = (Config) entityConfigIter.next();
-
-                    if(registryKey != null && entityConfig.get("entity") instanceof String && ((String) entityConfig.get("entity")).equalsIgnoreCase(registryKey.toString()))
-                    {
-                        containsEntry = true;
-                    }
-
-                    entities.add(entityConfig);
-                    entityConfigIter.remove();
-
-                    if(containsEntry)
-                    {
-                        continue entryLoop;
-                    }
-                }
-
-                Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
-                entityConfig.add("entity", ForgeRegistries.ENTITIES.getKey(EntityRegistry.getEntry(entry.entityClass)).toString());
-                entityConfig.add("spawnWeight", entry.itemWeight);
-                entityConfig.add("minimumGroupCount", entry.minGroupCount);
-                entityConfig.add("maximumGroupCount", entry.maxGroupCount);
-                entityConfig.add("spawn", true);
-                entities.add(entityConfig);
-            }
-        }
-
-        config.set("entities", entities);
 
         for(Config entityConfig : entities)
         {
@@ -192,20 +160,14 @@ public class BiomeData implements IBiomeData
             if(entityEntry != null && config.getOrElse("spawn", true))
             {
                 Class<? extends Entity> cls = entityEntry.getEntityClass();
-                EnumCreatureType creatureType = null;
 
-                for(EnumCreatureType type : EnumCreatureType.values())
+                for(EnumCreatureType creatureType : EnumCreatureType.values())
                 {
-                    if(type.getCreatureClass().isAssignableFrom(cls))
+                    if(EntityLiving.class.isAssignableFrom(cls) && creatureType.getCreatureClass().isAssignableFrom(cls))
                     {
-                        creatureType = type;
+                        this.addEntitySpawn(creatureType, new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
                         break;
                     }
-                }
-
-                if(creatureType != null && EntityLiving.class.isAssignableFrom(cls))
-                {
-                    this.entitySpawns.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
                 }
             }
         }
@@ -227,7 +189,7 @@ public class BiomeData implements IBiomeData
             {
                 IBiomeTrait biomeTrait = biomeTraitBuilder.create();
                 biomeTrait.readFromConfig(biomeTraitConfig);
-                this.biomeTraits.computeIfAbsent(GenerationStage.getFromIdentifier(biomeTraitConfig.get("generationStage")), k -> new ArrayList<>()).add(biomeTrait);
+                this.addBiomeTrait(GenerationStage.getFromIdentifier(biomeTraitConfig.get("generationStage")), biomeTrait);
             }
 
             biomeTraits.add(biomeTraitConfig);
