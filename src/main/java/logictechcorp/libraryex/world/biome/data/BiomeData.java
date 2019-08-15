@@ -157,7 +157,7 @@ public class BiomeData implements IBiomeData
         {
             EntityEntry entityEntry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityConfig.get("entity")));
 
-            if(entityEntry != null && config.getOrElse("spawn", true))
+            if(entityEntry != null)
             {
                 Class<? extends Entity> cls = entityEntry.getEntityClass();
 
@@ -165,7 +165,16 @@ public class BiomeData implements IBiomeData
                 {
                     if(EntityLiving.class.isAssignableFrom(cls) && creatureType.getCreatureClass().isAssignableFrom(cls))
                     {
-                        this.addEntitySpawn(creatureType, new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, entityConfig.getOrElse("spawnWeight", 10), entityConfig.getOrElse("minimumGroupCount", 1), entityConfig.getOrElse("maximumGroupCount", 4)));
+                        int spawnWeight = entityConfig.getOrElse("spawnWeight", 10);
+                        int minimumGroupCount = entityConfig.getOrElse("minimumGroupCount", 1);
+                        int maximumGroupCount = entityConfig.getOrElse("maximumGroupCount", 4);
+
+                        if(spawnWeight < 0)
+                        {
+                            spawnWeight = 0;
+                        }
+
+                        this.addEntitySpawn(creatureType, new Biome.SpawnListEntry((Class<? extends EntityLiving>) cls, spawnWeight, minimumGroupCount, maximumGroupCount));
                         break;
                     }
                 }
@@ -255,7 +264,6 @@ public class BiomeData implements IBiomeData
                     entityConfig.add("spawnWeight", entry.itemWeight);
                     entityConfig.add("minimumGroupCount", entry.minGroupCount);
                     entityConfig.add("maximumGroupCount", entry.maxGroupCount);
-                    entityConfig.add("spawn", true);
                     entityConfigs.add(entityConfig);
                 }
             }

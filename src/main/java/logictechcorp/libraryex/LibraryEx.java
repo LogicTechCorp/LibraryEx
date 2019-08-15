@@ -35,7 +35,7 @@ import java.io.File;
 public class LibraryEx implements ILibraryExAPI
 {
     static final String NAME = "LibraryEx";
-    static final String VERSION = "1.0.9";
+    static final String VERSION = "1.0.10";
     static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.4.2768,);";
 
     public static final String MOD_ID = "libraryex";
