@@ -53,6 +53,7 @@ public class BiomeData implements IBiomeData
     protected final Map<BiomeBlockType, IBlockState> biomeBlocks;
     protected final Map<GenerationStage, List<IBiomeTrait>> biomeTraits;
     protected final Map<EnumCreatureType, List<Biome.SpawnListEntry>> entitySpawns;
+    protected final List<Biome.SpawnListEntry> disabledEntitySpawns;
     protected final List<IBiomeData> subBiomes;
 
     public BiomeData(Biome biome, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome, boolean isEnabled)
@@ -73,6 +74,7 @@ public class BiomeData implements IBiomeData
         this.biomeBlocks = new EnumMap<>(BiomeBlockType.class);
         this.biomeTraits = new EnumMap<>(GenerationStage.class);
         this.entitySpawns = new EnumMap<>(EnumCreatureType.class);
+        this.disabledEntitySpawns = new ArrayList<>();
         this.subBiomes = new ArrayList<>();
 
         for(EnumCreatureType creatureType : EnumCreatureType.values())
@@ -98,7 +100,14 @@ public class BiomeData implements IBiomeData
     @Override
     public void addEntitySpawn(EnumCreatureType creatureType, Biome.SpawnListEntry spawnListEntry)
     {
-        this.entitySpawns.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(spawnListEntry);
+        if(spawnListEntry.itemWeight <= 0)
+        {
+            this.disabledEntitySpawns.add(spawnListEntry);
+        }
+        else
+        {
+            this.entitySpawns.computeIfAbsent(creatureType, k -> new ArrayList<>()).add(spawnListEntry);
+        }
     }
 
     @Override
@@ -266,6 +275,21 @@ public class BiomeData implements IBiomeData
                     entityConfig.add("maximumGroupCount", entry.maxGroupCount);
                     entityConfigs.add(entityConfig);
                 }
+            }
+        }
+
+        for(Biome.SpawnListEntry entry : this.disabledEntitySpawns)
+        {
+            ResourceLocation entityRegistryName = EntityList.getKey(entry.entityClass);
+
+            if(entityRegistryName != null)
+            {
+                Config entityConfig = JsonFormat.newConfig(LinkedHashMap::new);
+                entityConfig.add("entity", entityRegistryName.toString());
+                entityConfig.add("spawnWeight", entry.itemWeight);
+                entityConfig.add("minimumGroupCount", entry.minGroupCount);
+                entityConfig.add("maximumGroupCount", entry.maxGroupCount);
+                entityConfigs.add(entityConfig);
             }
         }
 
