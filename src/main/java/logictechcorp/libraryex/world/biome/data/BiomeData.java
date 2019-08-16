@@ -161,6 +161,7 @@ public class BiomeData implements IBiomeData
 
         List<Config> entities = config.get("entities");
         this.entitySpawns.clear();
+        this.disabledEntitySpawns.clear();
 
         for(Config entityConfig : entities)
         {
