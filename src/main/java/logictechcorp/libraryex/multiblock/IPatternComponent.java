@@ -15,25 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.multiblock;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public interface IPatternComponent
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
+    Type getType();
 
-    public LibraryEx()
+    enum Type
     {
-    }
-
-    public static ResourceLocation getResource(String name)
-    {
-        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
+        ROW,
+        LAYER,
+        ELEMENT
     }
 }

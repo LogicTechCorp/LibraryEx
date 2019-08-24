@@ -20,8 +20,6 @@
 
 package logictechcorp.libraryex.multiblock;
 
-import logictechcorp.libraryex.api.tileentity.multiblock.IPatternComponent;
-
 public class PatternRow implements IPatternComponent
 {
     private String sections;

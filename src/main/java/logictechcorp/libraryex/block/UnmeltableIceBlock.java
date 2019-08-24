@@ -15,25 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.block;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.block.BreakableBlock;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public class UnmeltableIceBlock extends BreakableBlock
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    public LibraryEx()
+    public UnmeltableIceBlock(Properties properties)
     {
+        super(properties);
     }
 
-    public static ResourceLocation getResource(String name)
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public BlockRenderLayer getRenderLayer()
     {
-        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
+        return BlockRenderLayer.TRANSLUCENT;
     }
 }

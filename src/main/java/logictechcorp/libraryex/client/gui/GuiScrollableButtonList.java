@@ -17,25 +17,25 @@
 
 package logictechcorp.libraryex.client.gui;
 
-import logictechcorp.libraryex.api.client.gui.IGuiButtonPressed;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiListExtended;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.widget.list.AbstractList;
+import net.minecraft.client.gui.widget.list.ExtendedList;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class GuiScrollableButtonList extends GuiListExtended
+@OnlyIn(Dist.CLIENT)
+public class GuiScrollableButtonList extends ExtendedList
 {
     private final List<GuiScrollableButtonData> guiScrollableButtonData;
-    private final IGuiButtonPressed guiButtonPressed;
-    private final List<GuiScrollableButtonEntry> guiScrollableButtons = new ArrayList<>();
+    private final Button.IPressable guiButtonPressed;
+    private final List<Entry> guiScrollableButtons = new ArrayList<>();
 
-    public GuiScrollableButtonList(Minecraft mc, int width, int height, int top, int bottom, List<GuiScrollableButtonData> guiScrollableButtonData, IGuiButtonPressed guiButtonPressed)
+    public GuiScrollableButtonList(Minecraft mc, int width, int height, int top, int bottom, List<GuiScrollableButtonData> guiScrollableButtonData, Button.IPressable guiButtonPressed)
     {
         super(mc, width, height, top, bottom, 25);
         this.centerListVertically = true;
@@ -50,62 +50,62 @@ public class GuiScrollableButtonList extends GuiListExtended
         {
             GuiScrollableButtonData guiScrollableButtonDataCurrent = this.guiScrollableButtonData.get(i);
             GuiScrollableButtonData guiScrollableButtonDataNext = i < this.guiScrollableButtonData.size() - 1 ? this.guiScrollableButtonData.get(i + 1) : null;
-            Gui guiCurrent = this.createButton(guiScrollableButtonDataCurrent, 0);
-            Gui guiNext = this.createButton(guiScrollableButtonDataNext, 160);
-            GuiScrollableButtonEntry guiScrollableButtonEntry = new GuiScrollableButtonEntry(guiCurrent, guiNext);
+            AbstractGui guiCurrent = this.createButton(guiScrollableButtonDataCurrent);
+            AbstractGui guiNext = this.createButton(guiScrollableButtonDataNext);
+            Entry guiScrollableButtonEntry = new Entry(guiCurrent, guiNext);
             this.guiScrollableButtons.add(guiScrollableButtonEntry);
         }
     }
 
-    private Gui createButton(GuiScrollableButtonData data, int x)
+    private AbstractGui createButton(GuiScrollableButtonData data)
     {
         if(data != null)
         {
-            return new GuiScrollableButton(data.getId(), this.width / 2 - 155 + x, 0, data.getText(), this.guiButtonPressed);
+            return new Button(this.width / 2 - 155 + data.getXPlacement(), 0, 200, 20, data.getText(), this.guiButtonPressed);
         }
 
         return null;
     }
 
     @Override
-    public int getListWidth()
+    public int getRowWidth()
     {
         return 400;
     }
 
     @Override
-    protected int getScrollBarX()
+    protected int getScrollbarPosition()
     {
-        return super.getScrollBarX() + 32;
+        return super.getScrollbarPosition() + 32;
     }
 
     @Override
-    public GuiScrollableButtonEntry getListEntry(int index)
+    public Entry getEntry(int index)
     {
         return this.guiScrollableButtons.get(index);
     }
 
     @Override
-    protected int getSize()
+    protected int getItemCount()
     {
         return this.guiScrollableButtons.size();
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static class GuiScrollableButtonData
     {
-        private final int id;
+        private final int xPlacement;
         private final String text;
 
-        public GuiScrollableButtonData(int id, String text)
+        public GuiScrollableButtonData(int xPlacement, String text)
         {
-            this.id = id;
+            this.xPlacement = xPlacement;
             this.text = text;
         }
 
-        public int getId()
+        public int getXPlacement()
         {
-            return this.id;
+            return this.xPlacement;
         }
 
         public String getText()
@@ -114,78 +114,67 @@ public class GuiScrollableButtonList extends GuiListExtended
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    private static class GuiScrollableButtonEntry implements IGuiListEntry
+    @OnlyIn(Dist.CLIENT)
+    private static class Entry extends AbstractList.AbstractListEntry<Entry>
     {
-        private final Minecraft minecraft = Minecraft.getMinecraft();
-        private final Gui guiCurrent;
-        private final Gui guiNext;
+        private final AbstractGui guiCurrent;
+        private final AbstractGui guiNext;
 
-        private GuiScrollableButtonEntry(Gui guiCurrent, Gui guiNext)
+        private Entry(AbstractGui guiCurrent, AbstractGui guiNext)
         {
             this.guiCurrent = guiCurrent;
             this.guiNext = guiNext;
         }
 
         @Override
-        public void drawEntry(int slotIndex, int x, int y, int width, int height, int mouseX, int mouseY, boolean isSelected, float partialTicks)
+        public void render(int slotIndex, int x, int y, int width, int height, int mouseX, int mouseY, boolean isSelected, float partialTicks)
         {
-            this.renderComponent(this.guiCurrent, y, mouseX, mouseY, false, partialTicks);
-            this.renderComponent(this.guiNext, y, mouseX, mouseY, false, partialTicks);
+            this.renderComponent(this.guiCurrent, y, mouseX, mouseY, partialTicks);
+            this.renderComponent(this.guiNext, y, mouseX, mouseY, partialTicks);
         }
 
-        private void renderComponent(Gui gui, int y, int mouseX, int mouseY, boolean updated, float partialTicks)
+        private void renderComponent(AbstractGui gui, int y, int mouseX, int mouseY, float partialTicks)
         {
-            if(gui instanceof GuiButton)
+            if(gui instanceof Button)
             {
-                GuiButton guiButton = (GuiButton) gui;
+                Button guiButton = (Button) gui;
                 guiButton.y = y;
-
-                if(!updated)
-                {
-                    guiButton.drawButton(this.minecraft, mouseX, mouseY, partialTicks);
-                }
+                guiButton.render(mouseX, mouseY, partialTicks);
             }
         }
 
         @Override
-        public void updatePosition(int slotIndex, int x, int y, float partialTicks)
+        public boolean mouseClicked(double mouseX, double mouseY, int index)
         {
-            this.renderComponent(this.guiCurrent, y, 0, 0, true, partialTicks);
-            this.renderComponent(this.guiNext, y, 0, 0, true, partialTicks);
-        }
-
-        @Override
-        public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
-        {
-            boolean pressedPrimaryButton = this.pressButton(this.guiCurrent, mouseX, mouseY);
-            boolean pressedSecondaryButton = this.pressButton(this.guiNext, mouseX, mouseY);
+            boolean pressedPrimaryButton = this.pressButton(this.guiCurrent, mouseX, mouseY, index);
+            boolean pressedSecondaryButton = this.pressButton(this.guiNext, mouseX, mouseY, index);
             return pressedPrimaryButton || pressedSecondaryButton;
         }
 
-        private boolean pressButton(Gui gui, int mouseX, int mouseY)
+        private boolean pressButton(AbstractGui gui, double mouseX, double mouseY, int index)
         {
-            if(!(gui instanceof GuiButton))
+            if(!(gui instanceof Button))
             {
                 return false;
             }
 
-            return ((GuiButton) gui).mousePressed(this.minecraft, mouseX, mouseY);
+            return ((Button) gui).mouseClicked(mouseX, mouseY, index);
         }
 
         @Override
-        public void mouseReleased(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
+        public boolean mouseReleased(double mouseX, double mouseY, int index)
         {
-            this.releaseComponent(this.guiCurrent, mouseX, mouseY);
-            this.releaseComponent(this.guiNext, mouseX, mouseY);
+            return this.releaseComponent(this.guiCurrent, mouseX, mouseY, index) | this.releaseComponent(this.guiNext, mouseX, mouseY, index);
         }
 
-        private void releaseComponent(Gui gui, int mouseX, int mouseY)
+        private boolean releaseComponent(AbstractGui gui, double mouseX, double mouseY, int index)
         {
-            if(gui instanceof GuiButton)
+            if(gui instanceof Button)
             {
-                ((GuiButton) gui).mouseReleased(mouseX, mouseY);
+                return ((Button) gui).mouseReleased(mouseX, mouseY, index);
             }
+
+            return false;
         }
     }
 }

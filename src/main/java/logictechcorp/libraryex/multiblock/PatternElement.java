@@ -20,21 +20,20 @@
 
 package logictechcorp.libraryex.multiblock;
 
-import logictechcorp.libraryex.api.tileentity.multiblock.IPatternComponent;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
 public class PatternElement implements IPatternComponent
 {
-    private IBlockState state;
+    private BlockState state;
     private char identifier;
 
-    PatternElement(IBlockState state, char identifier)
+    PatternElement(BlockState state, char identifier)
     {
         this.state = state;
         this.identifier = identifier;
     }
 
-    public boolean matches(IBlockState state)
+    public boolean matches(BlockState state)
     {
         return state == this.state;
     }
@@ -45,7 +44,7 @@ public class PatternElement implements IPatternComponent
         return Type.ELEMENT;
     }
 
-    public IBlockState getBlockState()
+    public BlockState getBlockState()
     {
         return this.state;
     }

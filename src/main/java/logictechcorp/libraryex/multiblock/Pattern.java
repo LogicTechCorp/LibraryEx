@@ -20,9 +20,10 @@
 
 package logictechcorp.libraryex.multiblock;
 
-import logictechcorp.libraryex.api.tileentity.multiblock.IPatternComponent;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -73,7 +74,7 @@ public class Pattern
         return new PatternLayer(rows);
     }
 
-    public static PatternElement createElement(IBlockState state, char identifier)
+    public static PatternElement createElement(BlockState state, char identifier)
     {
         if(state == AIR_ELEMENT.getBlockState() || identifier == AIR_ELEMENT.getIdentifier())
         {
@@ -87,7 +88,7 @@ public class Pattern
         return new PatternElement(state, identifier);
     }
 
-    public static PatternElementOre createElement(IBlockState state, char identifier, String... ores)
+    public static PatternElementTag createElement(BlockState state, char identifier, Tag<Block>... tags)
     {
         if(state == AIR_ELEMENT.getBlockState() || identifier == AIR_ELEMENT.getIdentifier())
         {
@@ -98,7 +99,7 @@ public class Pattern
             throw new InvalidParameterException("Tried to create a PatternElement with invalid parameters");
         }
 
-        return new PatternElementOre(state, identifier, ores);
+        return new PatternElementTag(state, identifier, tags);
     }
 
     public boolean placeInWorld(World world, BlockPos pos, boolean replaceExtraneousBlocks)
@@ -131,7 +132,7 @@ public class Pattern
                     {
                         if(replaceExtraneousBlocks)
                         {
-                            world.setBlockToAir(adjustedPos);
+                            world.setBlockState(adjustedPos, Blocks.AIR.getDefaultState());
                         }
 
                         continue;

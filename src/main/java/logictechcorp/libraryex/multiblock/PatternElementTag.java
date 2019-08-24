@@ -15,25 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.multiblock;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.tags.Tag;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public class PatternElementTag extends PatternElement
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
+    private Tag<Block>[] tags;
 
-    public LibraryEx()
+    PatternElementTag(BlockState state, char identifier, Tag<Block>... tags)
     {
+        super(state, identifier);
+        this.tags = tags;
     }
 
-    public static ResourceLocation getResource(String name)
+    @Override
+    public boolean matches(BlockState state)
     {
-        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
+        for(Tag<Block> tag : this.tags)
+        {
+            if(state.isIn(tag))
+            {
+                return true;
+            }
+        }
+
+        return super.matches(state);
     }
 }

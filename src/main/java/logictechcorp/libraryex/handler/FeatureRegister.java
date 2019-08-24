@@ -15,25 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.handler;
 
-import net.minecraft.util.ResourceLocation;
+import logictechcorp.libraryex.LibraryEx;
+import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+@Mod.EventBusSubscriber(modid = LibraryEx.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class FeatureRegister
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    public LibraryEx()
+    @SubscribeEvent
+    public static void onFeatureRegister(RegistryEvent.Register<Feature<?>> event)
     {
-    }
-
-    public static ResourceLocation getResource(String name)
-    {
-        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
+        event.getRegistry().registerAll(
+                new BiomeDataFeatureWrapper(BiomeDataFeatureWrapper.Config::deserialize).setRegistryName("biome_data_feature_wrapper")
+        );
     }
 }

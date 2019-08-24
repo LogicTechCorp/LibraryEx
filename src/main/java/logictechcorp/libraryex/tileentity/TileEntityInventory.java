@@ -17,17 +17,18 @@
 
 package logictechcorp.libraryex.tileentity;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -38,55 +39,49 @@ public abstract class TileEntityInventory extends TileEntity
     protected ItemStackHandler inventory;
     protected Random random;
 
-    public TileEntityInventory(int size)
+    public TileEntityInventory(TileEntityType tileEntityType, int size)
     {
+        super(tileEntityType);
         this.inventory = new ItemStackHandler(size);
         this.random = new Random();
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    public CompoundNBT write(CompoundNBT compound)
     {
-        return oldState.getBlock() != newSate.getBlock();
-    }
-
-    @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
-        super.writeToNBT(compound);
-        compound.setTag("Inventory", this.inventory.serializeNBT());
+        super.write(compound);
+        compound.put("Inventory", this.inventory.serializeNBT());
         return compound;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(CompoundNBT compound)
     {
-        super.readFromNBT(compound);
-        this.inventory.deserializeNBT(compound.getCompoundTag("Inventory"));
+        super.read(compound);
+        this.inventory.deserializeNBT(compound.getCompound("Inventory"));
     }
 
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
+    public SUpdateTileEntityPacket getUpdatePacket()
     {
-        return new SPacketUpdateTileEntity(this.pos, 0, this.writeToNBT(new NBTTagCompound()));
+        return new SUpdateTileEntityPacket(this.pos, 0, this.write(new CompoundNBT()));
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet)
     {
-        this.readFromNBT(packet.getNbtCompound());
+        this.read(packet.getNbtCompound());
     }
 
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction direction)
     {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-    }
+        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            return (LazyOptional<T>) LazyOptional.of(() -> this.inventory);
+        }
 
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing)
-    {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) this.inventory : null;
+        return LazyOptional.empty();
     }
 
     public void dropInventoryItems(World world, BlockPos pos)
@@ -110,15 +105,11 @@ public abstract class TileEntityInventory extends TileEntity
 
         while(!stack.isEmpty())
         {
-            EntityItem entityItem = new EntityItem(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.splitStack(this.random.nextInt(21) + 10));
-            entityItem.motionX = this.random.nextGaussian() * 0.05000000074505806D;
-            entityItem.motionY = this.random.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D;
-            entityItem.motionZ = this.random.nextGaussian() * 0.05000000074505806D;
-            world.spawnEntity(entityItem);
+            ItemEntity entityItem = new ItemEntity(world, pos.getX() + offsetX, pos.getY() + offsetY, pos.getZ() + offsetZ, stack.split(this.random.nextInt(21) + 10));
+            entityItem.setMotion(this.random.nextGaussian() * 0.05000000074505806D, this.random.nextGaussian() * 0.05000000074505806D + 0.20000000298023224D, this.random.nextGaussian() * 0.05000000074505806D);
+            world.addEntity(entityItem);
         }
     }
-
-    public abstract boolean acceptsItemStack(ItemStack stack);
 
     public ItemStackHandler getInventory()
     {

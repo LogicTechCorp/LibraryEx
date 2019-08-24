@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.block;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public class AxeHarvestableBlock extends Block
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    public LibraryEx()
+    public AxeHarvestableBlock(Block.Properties properties)
     {
+        super(properties);
     }
 
-    public static ResourceLocation getResource(String name)
+    @Override
+    public boolean canHarvestBlock(BlockState state, IBlockReader world, BlockPos pos, PlayerEntity player)
     {
-        return new ResourceLocation(LibraryEx.MOD_ID + ":" + name);
+        return player.getHeldItemMainhand().getItem() instanceof AxeItem;
     }
 }
