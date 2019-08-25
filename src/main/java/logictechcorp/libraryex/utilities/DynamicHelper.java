@@ -31,18 +31,17 @@ public class DynamicHelper
 {
     public static <T> Biome.SpawnListEntry deserializeSpawnListEntry(Dynamic<T> dynamic)
     {
-        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(dynamic.get("entity").asString("minecraft:pig")));
-        int spawnWeight = dynamic.get("spawnWeight").asInt(10);
-        int minimumGroupCount = dynamic.get("minimumGroupCount").asInt(1);
-        int maximumGroupCount = dynamic.get("maximumGroupCount").asInt(4);
+        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(dynamic.get("Name").asString("minecraft:pig")));
+        int spawnWeight = dynamic.get("spawn_weight").asInt(10);
+        int minimumGroupCount = dynamic.get("minimum_group_count").asInt(1);
+        int maximumGroupCount = dynamic.get("maximum_group_count").asInt(4);
         return new Biome.SpawnListEntry(entityType, spawnWeight, minimumGroupCount, maximumGroupCount);
     }
 
     public static <T> ConfiguredFeature<?> deserializeConfiguredFeature(Dynamic<T> dynamic)
     {
-        Dynamic featureDynamic = dynamic.get("feature").orElseEmptyMap();
-        Dynamic placementDynamic = dynamic.get("placement").orElseEmptyMap();
-
+        Dynamic<T> featureDynamic = dynamic.get("feature").orElseEmptyMap();
+        Dynamic<T> placementDynamic = dynamic.get("placement").orElseEmptyMap();
         Feature feature = ForgeRegistries.FEATURES.getValue(new ResourceLocation(featureDynamic.get("Name").asString("minecraft:random_selector")));
         Placement placement = ForgeRegistries.DECORATORS.getValue(new ResourceLocation(placementDynamic.get("Name").asString("minecraft:nope")));
         return Biome.createDecoratedFeature(feature, feature.createConfig(featureDynamic), placement, placement.createConfig(placementDynamic));

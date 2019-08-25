@@ -132,24 +132,27 @@ public class TriplePlantBlock extends BushBlock
         return PlantType.Nether;
     }
 
-    public void placeAt(World world, Random random, BlockPos pos)
+    public void placeAt(IWorld world, Random random, BlockPos pos)
     {
-        int height = random.nextInt(3) + 1;
+        if(world.getBlockState(pos.down()).getBlock() != this)
+        {
+            int height = random.nextInt(3) + 1;
 
-        if(height == 1)
-        {
-            world.setBlockState(pos, this.getDefaultState().with(PART, Part.TOP));
-        }
-        else if(height == 2)
-        {
-            world.setBlockState(pos.up(), this.getDefaultState().with(PART, Part.TOP));
-            world.setBlockState(pos, this.getDefaultState().with(PART, Part.MIDDLE));
-        }
-        else
-        {
-            world.setBlockState(pos.up(2), this.getDefaultState().with(PART, Part.TOP));
-            world.setBlockState(pos.up(), this.getDefaultState().with(PART, Part.MIDDLE));
-            world.setBlockState(pos, this.getDefaultState().with(PART, Part.BOTTOM));
+            if(height == 1)
+            {
+                world.setBlockState(pos, this.getDefaultState().with(PART, Part.TOP), 3);
+            }
+            else if(height == 2)
+            {
+                world.setBlockState(pos.up(), this.getDefaultState().with(PART, Part.TOP), 3);
+                world.setBlockState(pos, this.getDefaultState().with(PART, Part.MIDDLE), 3);
+            }
+            else
+            {
+                world.setBlockState(pos.up(2), this.getDefaultState().with(PART, Part.TOP), 3);
+                world.setBlockState(pos.up(), this.getDefaultState().with(PART, Part.MIDDLE), 3);
+                world.setBlockState(pos, this.getDefaultState().with(PART, Part.BOTTOM), 3);
+            }
         }
     }
 

@@ -19,10 +19,12 @@ package logictechcorp.libraryex.handler;
 
 import logictechcorp.libraryex.LibraryEx;
 import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
+import logictechcorp.libraryex.world.generation.feature.TriplePlantFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = LibraryEx.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class FeatureRegister
@@ -30,8 +32,12 @@ public class FeatureRegister
     @SubscribeEvent
     public static void onFeatureRegister(RegistryEvent.Register<Feature<?>> event)
     {
-        event.getRegistry().registerAll(
-                new BiomeDataFeatureWrapper(BiomeDataFeatureWrapper.Config::deserialize).setRegistryName("biome_data_feature_wrapper")
-        );
+        registerFeature("biome_data_feature_wrapper", new BiomeDataFeatureWrapper(BiomeDataFeatureWrapper.Config::deserialize));
+        registerFeature("triple_plant", new TriplePlantFeature(TriplePlantFeature.Config::deserialize));
+    }
+
+    private static void registerFeature(String name, Feature<?> feature)
+    {
+        ForgeRegistries.FEATURES.register(feature.setRegistryName(name));
     }
 }

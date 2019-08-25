@@ -18,32 +18,27 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.mojang.datafixers.Dynamic;
+import logictechcorp.libraryex.LibraryEx;
+import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.placement.IPlacementConfig;
+import net.minecraft.world.gen.placement.Placement;
+import net.minecraftforge.fml.RegistryObject;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public abstract class BiomeData
+public class BiomeData
 {
-    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, false)
-    {
-        @Override
-        public void configureBiome()
-        {
-        }
-
-        @Override
-        public void resetBiome()
-        {
-        }
-    };
+    private static final RegistryObject<Feature<BiomeDataFeatureWrapper.Config>> featureWrapper = RegistryObject.of(LibraryEx.MOD_ID + ":biome_data_feature_wrapper", () -> (Class<Feature<?>>) (Object) Feature.class);
+    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, false);
 
     protected final Biome biome;
     protected int generationWeight;
@@ -68,9 +63,72 @@ public abstract class BiomeData
         this.subBiomes = new ArrayList<>();
     }
 
-    public abstract void configureBiome();
+    public void configureBiome()
+    {
+        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
+        {
+            this.defaultFeatures.computeIfAbsent(stage, k -> new ArrayList<>());
+            List<ConfiguredFeature<?>> features = this.biome.getFeatures(stage);
 
-    public abstract void resetBiome();
+            for(ConfiguredFeature feature : features)
+            {
+                this.defaultFeatures.get(stage).add(feature);
+            }
+
+            if(!this.useDefaultFeatures)
+            {
+                features.clear();
+            }
+        }
+
+        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
+        {
+            List<ConfiguredFeature<?>> features = this.customFeatures.get(stage);
+
+            if(features != null)
+            {
+                this.biome.addFeature(stage, Biome.createDecoratedFeature(featureWrapper.orElse(null), new BiomeDataFeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+            }
+        }
+    }
+
+    public void resetBiome()
+    {
+        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
+        {
+            Iterator<ConfiguredFeature<?>> features = this.biome.getFeatures(stage).iterator();
+
+            while(features.hasNext())
+            {
+                ConfiguredFeature<?> feature = features.next();
+                IFeatureConfig featureConfig = feature.config;
+
+                if(featureConfig instanceof DecoratedFeatureConfig)
+                {
+                    DecoratedFeatureConfig decoratedFeatureConfig = (DecoratedFeatureConfig) featureConfig;
+
+                    if(decoratedFeatureConfig.feature.feature instanceof BiomeDataFeatureWrapper)
+                    {
+                        features.remove();
+                    }
+                }
+            }
+        }
+
+        if(!this.useDefaultFeatures)
+        {
+            for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
+            {
+                this.defaultFeatures.computeIfAbsent(stage, k -> new ArrayList<>());
+                List<ConfiguredFeature<?>> features = this.defaultFeatures.get(stage);
+
+                for(ConfiguredFeature feature : features)
+                {
+                    this.biome.addFeature(stage, feature);
+                }
+            }
+        }
+    }
 
     public void addBiomeBlock(BlockType blockType, BlockState blockState)
     {
