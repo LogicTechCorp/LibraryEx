@@ -75,15 +75,18 @@ public class BiomeDataManager extends JsonReloadListener
         {
             try
             {
-                Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(location.getPath().replace("/", ":")));
+                IResource resource = resourceManager.getResource(this.getPreparedPath(location));
+                InputStream inputStream = resource.getInputStream();
+                Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, JSONUtils.fromJson(GSON, reader, JsonObject.class));
+                IOUtils.closeQuietly(reader);
+                IOUtils.closeQuietly(resource);
+
+                Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(dynamic.get("biome").asString("")));
 
                 if(biome != null)
                 {
                     ResourceLocation biomeName = biome.getRegistryName();
-                    IResource resource = resourceManager.getResource(this.getPreparedPath(location));
-                    InputStream inputStream = resource.getInputStream();
-                    Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                    Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, JSONUtils.fromJson(GSON, reader, JsonObject.class));
 
                     if(dynamic.getValue() == null)
                     {
@@ -92,29 +95,29 @@ public class BiomeDataManager extends JsonReloadListener
                     else
                     {
                         int generationWeight = dynamic.get("generation_weight").asInt(10);
-                        boolean useDefaultFeatures = dynamic.get("use_default_features").asBoolean(true);
-                        boolean isSubBiome = dynamic.get("is_sub_biome").asBoolean(false);
-                        Map<BiomeData.BlockType, BlockState> blocks = dynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
-                        List<Biome.SpawnListEntry> entities = dynamic.get("entities").asList(DynamicHelper::deserializeSpawnListEntry);
-                        Map<Dynamic<?>, ConfiguredFeature<?>> features = dynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), DynamicHelper::deserializeConfiguredFeature));
-                        List<String> subBiomes = dynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
 
-                        BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
-                        blocks.forEach(biomeData::addBiomeBlock);
-                        entities.forEach(biomeData::addEntitySpawn);
-                        features.forEach((featureDynamic, feature) -> biomeData.addFeature(DynamicHelper.deserializeGenerationStage(featureDynamic), feature));
-                        this.subBiomeData.put(biomeName, subBiomes);
-                        this.biomeData.put(biomeName, biomeData);
-
-                        if(!biomeData.isSubBiome())
+                        if(generationWeight > 0)
                         {
-                            this.biomeEntries.put(biomeName, new BiomeManager.BiomeEntry(biome, generationWeight));
+                            boolean useDefaultFeatures = dynamic.getValue().getAsJsonObject().get("use_default_features").getAsBoolean();
+                            boolean isSubBiome = dynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
+                            Map<BiomeData.BlockType, BlockState> blocks = dynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
+                            List<Biome.SpawnListEntry> entities = dynamic.get("entities").asList(DynamicHelper::deserializeSpawnListEntry);
+                            Map<Dynamic<?>, ConfiguredFeature<?>> features = dynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), DynamicHelper::deserializeConfiguredFeature));
+                            List<String> subBiomes = dynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
+
+                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
+                            blocks.forEach(biomeData::addBiomeBlock);
+                            entities.forEach(biomeData::addEntitySpawn);
+                            features.forEach((featureDynamic, feature) -> biomeData.addFeature(DynamicHelper.deserializeGenerationStage(featureDynamic), feature));
+                            this.subBiomeData.put(biomeName, subBiomes);
+                            this.biomeData.put(biomeName, biomeData);
+
+                            if(!biomeData.isSubBiome())
+                            {
+                                this.biomeEntries.put(biomeName, new BiomeManager.BiomeEntry(biome, generationWeight));
+                            }
                         }
                     }
-
-                    IOUtils.closeQuietly(inputStream);
-                    IOUtils.closeQuietly(reader);
-                    IOUtils.closeQuietly(resource);
                 }
 
                 for(Map.Entry<ResourceLocation, List<String>> entry : this.subBiomeData.entrySet())
