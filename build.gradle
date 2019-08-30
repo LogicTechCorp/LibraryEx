@@ -44,6 +44,8 @@ minecraft {
             }
         }
     }
+
+    accessTransformer = file('src/main/resources/META-INF/libraryex_at.cfg')
 }
 
 repositories {
