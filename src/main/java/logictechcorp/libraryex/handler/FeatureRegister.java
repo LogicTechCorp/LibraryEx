@@ -19,6 +19,7 @@ package logictechcorp.libraryex.handler;
 
 import logictechcorp.libraryex.LibraryEx;
 import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
+import logictechcorp.libraryex.world.generation.feature.OreFeature;
 import logictechcorp.libraryex.world.generation.feature.PoolFeature;
 import logictechcorp.libraryex.world.generation.feature.TriplePlantFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -36,6 +37,7 @@ public class FeatureRegister
         registerFeature("biome_data_feature_wrapper", new BiomeDataFeatureWrapper(BiomeDataFeatureWrapper.Config::deserialize));
         registerFeature("triple_plant", new TriplePlantFeature(TriplePlantFeature.Config::deserialize));
         registerFeature("pool", new PoolFeature(PoolFeature.Config::deserialize));
+        registerFeature("ore", new OreFeature(OreFeature.Config::deserialize));
     }
 
     private static void registerFeature(String name, Feature<?> feature)
