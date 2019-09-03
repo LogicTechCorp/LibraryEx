@@ -21,6 +21,7 @@ import com.mojang.datafixers.Dynamic;
 import logictechcorp.libraryex.LibraryEx;
 import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -137,7 +138,15 @@ public class BiomeData
 
     public void addEntitySpawn(Biome.SpawnListEntry spawnListEntry)
     {
-        this.spawns.computeIfAbsent(spawnListEntry.entityType.getClassification(), k -> new ArrayList<>()).add(spawnListEntry);
+        if(spawnListEntry.itemWeight > 0)
+        {
+            this.spawns.computeIfAbsent(spawnListEntry.entityType.getClassification(), k -> new ArrayList<>()).add(spawnListEntry);
+        }
+
+        for(EntityClassification classification : EntityClassification.values())
+        {
+            this.biome.getSpawns(classification).removeIf(entry -> entry.entityType == spawnListEntry.entityType);
+        }
     }
 
     public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?> feature)
@@ -170,14 +179,19 @@ public class BiomeData
         return this.isSubBiome;
     }
 
+    public BlockState getBiomeBlock(BlockType blockType)
+    {
+        return this.blocks.computeIfAbsent(blockType, k -> Blocks.AIR.getDefaultState());
+    }
+
+    public List<Biome.SpawnListEntry> getSpawns(EntityClassification classification)
+    {
+        return this.spawns.computeIfAbsent(classification, k -> new ArrayList<>());
+    }
+
     public List<BiomeData> getSubBiomes()
     {
         return this.subBiomes;
-    }
-
-    public BlockState getBiomeBlock(BlockType blockType)
-    {
-        return this.blocks.get(blockType);
     }
 
     public enum BlockType

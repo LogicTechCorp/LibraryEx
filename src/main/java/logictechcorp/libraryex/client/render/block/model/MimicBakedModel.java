@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.client.render.model;
+package logictechcorp.libraryex.client.render.block.model;
 
 import logictechcorp.libraryex.block.MimicBlock;
 import net.minecraft.block.Block;
