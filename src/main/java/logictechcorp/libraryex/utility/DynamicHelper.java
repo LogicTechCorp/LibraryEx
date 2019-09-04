@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.utilities;
+package logictechcorp.libraryex.utility;
 
 import com.mojang.datafixers.Dynamic;
 import net.minecraft.entity.EntityType;

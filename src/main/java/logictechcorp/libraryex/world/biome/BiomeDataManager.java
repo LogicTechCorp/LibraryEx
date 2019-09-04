@@ -24,7 +24,7 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import logictechcorp.libraryex.LibraryEx;
-import logictechcorp.libraryex.utilities.DynamicHelper;
+import logictechcorp.libraryex.utility.DynamicHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
