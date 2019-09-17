@@ -15,19 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.handler;
+package logictechcorp.libraryex.world.generation.feature;
 
 import logictechcorp.libraryex.LibraryEx;
-import logictechcorp.libraryex.world.generation.feature.*;
+import logictechcorp.libraryex.utility.InjectionHelper;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ObjectHolder;
 
+@ObjectHolder(LibraryEx.MOD_ID)
 @Mod.EventBusSubscriber(modid = LibraryEx.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class FeatureRegister
+public class LibraryExFeatures
 {
+    public static final Feature<BiomeDataFeatureWrapper.Config> BIOME_DATA_FEATURE_WRAPPER = InjectionHelper.nullValue();
+    public static final Feature<TriplePlantFeature.Config> TRIPLE_PLANT = InjectionHelper.nullValue();
+    public static final Feature<PoolFeature.Config> POOL = InjectionHelper.nullValue();
+    public static final Feature<OreFeature.Config> ORE = InjectionHelper.nullValue();
+    public static final Feature<ScatterFeature.Config> SCATTER = InjectionHelper.nullValue();
+
     @SubscribeEvent
     public static void onFeatureRegister(RegistryEvent.Register<Feature<?>> event)
     {
