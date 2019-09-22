@@ -35,7 +35,6 @@ public class ExplosionDecayFunctionJson implements IEntryFunction
     {
     }
 
-
     @Override
     public JsonElement serialize()
     {

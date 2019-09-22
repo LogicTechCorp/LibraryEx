@@ -108,7 +108,6 @@ public class EternalFireBlock extends Block
         return world.getBlockState(downPos).func_224755_d(world, downPos, Direction.UP) || this.areNeighborsFlammable(world, pos);
     }
 
-
     @Override
     public int tickRate(IWorldReader world)
     {
@@ -269,7 +268,6 @@ public class EternalFireBlock extends Block
         }
     }
 
-
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean isMoving)
     {
@@ -381,7 +379,6 @@ public class EternalFireBlock extends Block
     {
         builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
     }
-
 
     public boolean canCatchFire(IBlockReader world, BlockPos pos, Direction face)
     {

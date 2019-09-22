@@ -51,7 +51,7 @@ public class ScatterFeature extends Feature<ScatterFeature.Config>
         {
             BlockPos randomPos = pos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
 
-            if (world.isAirBlock(randomPos))
+            if(world.isAirBlock(randomPos))
             {
                 BlockPos offsetPos = targetArea.offsetPos(randomPos);
 

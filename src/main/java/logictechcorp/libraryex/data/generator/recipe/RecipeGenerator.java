@@ -25,6 +25,7 @@ import com.ldtteam.datagenerators.recipes.RecipeResultJson;
 import com.ldtteam.datagenerators.recipes.shaped.ShapedPatternJson;
 import com.ldtteam.datagenerators.recipes.shaped.ShapedRecipeJson;
 import com.ldtteam.datagenerators.recipes.shapeless.ShaplessRecipeJson;
+import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
@@ -86,26 +87,111 @@ public class RecipeGenerator implements IDataProvider
         });
     }
 
-    public ShapedRecipeBuilder createShapedRecipe(ItemStack result, String group)
+    public ShapedRecipeBuilder createShapedRecipe(ItemStack output)
     {
-        return new ShapedRecipeBuilder(this, result, group);
+        return new ShapedRecipeBuilder(this, output);
     }
 
-    public ShapelessRecipeBuilder createShapelessRecipe(ItemStack result, String group)
+    public ShapelessRecipeBuilder createShapelessRecipe(ItemStack output)
     {
-        return new ShapelessRecipeBuilder(this, result, group);
+        return new ShapelessRecipeBuilder(this, output);
+    }
+
+    public RecipeGenerator addShapelessRecipe(ItemStack output, Object input)
+    {
+        return this.createShapelessRecipe(output).key(input).build();
+    }
+
+    public RecipeGenerator addShapelessRecipe(ItemStack output, Object inputOne, Object inputTwo)
+    {
+        return this.createShapelessRecipe(output).key(inputOne).key(inputTwo).build();
+    }
+
+    public RecipeGenerator addShapelessRecipe(ItemStack output, Object inputOne, Object inputTwo, Object inputThree)
+    {
+        return this.createShapelessRecipe(output).key(inputOne).key(inputTwo).key(inputThree).build();
+    }
+
+    public RecipeGenerator add1x2Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("#").pattern("#").key('#', input).build();
+    }
+
+    public RecipeGenerator add1x3Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("#").pattern("#").pattern("#").key('#', input).build();
+    }
+
+    public RecipeGenerator add2x1Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("##").key('#', input).build();
+    }
+
+    public RecipeGenerator add2x2Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("##").pattern("##").key('#', input).build();
+    }
+
+    public RecipeGenerator add2x3Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("##").pattern("##").pattern("##").key('#', input).build();
+    }
+
+    public RecipeGenerator add3x1Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("###").key('#', input).build();
+    }
+
+    public RecipeGenerator add3x2Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("###").pattern("###").key('#', input).build();
+    }
+
+    public RecipeGenerator add3x3Recipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("###").pattern("###").pattern("###").key('#', input).build();
+    }
+
+    public RecipeGenerator addSurroundedRecipe(ItemStack output, Item surrounding, Item center)
+    {
+        return this.createShapedRecipe(output).pattern("###").pattern("#*#").pattern("###").key('#', surrounding).key('*', center).build();
+    }
+
+    public RecipeGenerator addCrossRecipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern(" # ").pattern("###").pattern(" # ").key('#', input).build();
+    }
+
+    public RecipeGenerator addFilledCrossRecipe(ItemStack output, Item surrounding, Item center)
+    {
+        return this.createShapedRecipe(output).pattern(" # ").pattern("#*#").pattern(" # ").key('#', surrounding).key('*', center).build();
+    }
+
+    public RecipeGenerator addStairRecipe(ItemStack output, Object input)
+    {
+        return this.createShapedRecipe(output).pattern("#  ").pattern("## ").pattern("###").key('#', input).build();
+    }
+
+    public RecipeGenerator addFenceRecipe(ItemStack output, Object sides, Object center)
+    {
+        return this.createShapedRecipe(output).pattern("#*#").pattern("#*#").key('#', sides).key('*', center).build();
+    }
+
+    public RecipeGenerator addWallRecipe(ItemStack output, Object input)
+    {
+        return this.add3x2Recipe(output, input);
     }
 
     private String getRecipeName(String name)
     {
-        String baseRegistryName = this.modId + ":" + name;
+        String baseRegistryName = name.substring(name.lastIndexOf(":") + 1);
         String retRegistryName = baseRegistryName;
         int index = 0;
 
         while(this.recipeNames.contains(retRegistryName))
         {
             index++;
-            retRegistryName = this.modId + ":" + baseRegistryName + "_" + index;
+            retRegistryName = baseRegistryName + "_" + index;
         }
 
         this.recipeNames.add(retRegistryName);
@@ -128,21 +214,21 @@ public class RecipeGenerator implements IDataProvider
         return this.shapelessRecipeJsons;
     }
 
-    private class ShapedRecipeBuilder
+    public class ShapedRecipeBuilder
     {
         private final RecipeGenerator recipeGenerator;
         private final List<String> patterns;
         private final Map<String, RecipeIngredientKeyJson> keys;
-        private final ItemStack result;
-        private final String group;
+        private final ItemStack output;
+        private String group;
 
-        private ShapedRecipeBuilder(RecipeGenerator recipeGenerator, ItemStack result, String group)
+        private ShapedRecipeBuilder(RecipeGenerator recipeGenerator, ItemStack output)
         {
             this.recipeGenerator = recipeGenerator;
             this.patterns = new ArrayList<>();
             this.keys = new HashMap<>();
-            this.result = result;
-            this.group = group;
+            this.output = output;
+            this.group = null;
         }
 
         public ShapedRecipeBuilder pattern(String pattern)
@@ -156,9 +242,33 @@ public class RecipeGenerator implements IDataProvider
             return this;
         }
 
+        public ShapedRecipeBuilder key(char key, Object input)
+        {
+            if(input instanceof Item)
+            {
+                return this.key(key, (Item)input);
+            }
+            else if(input instanceof Block)
+            {
+                return this.key(key, (Block) input);
+            }
+            else if(input instanceof Tag<?>)
+            {
+                return this.key(key, (Tag<?>) input);
+            }
+
+            return this;
+        }
+
         public ShapedRecipeBuilder key(char key, Item item)
         {
             this.keys.put(Character.toString(key), new RecipeIngredientKeyJson(new RecipeIngredientJson(item.getRegistryName().toString(), false)));
+            return this;
+        }
+
+        public ShapedRecipeBuilder key(char key, Block block)
+        {
+            this.keys.put(Character.toString(key), new RecipeIngredientKeyJson(new RecipeIngredientJson(block.getRegistryName().toString(), false)));
             return this;
         }
 
@@ -167,41 +277,79 @@ public class RecipeGenerator implements IDataProvider
             this.keys.put(Character.toString(key), new RecipeIngredientKeyJson(new RecipeIngredientJson(tag.getId().toString(), true)));
             return this;
         }
+        
+        public ShapedRecipeBuilder group(String group)
+        {
+            this.group = group;
+            return this;
+        }
 
         public RecipeGenerator build()
         {
             ShapedPatternJson patternJson = new ShapedPatternJson();
             patternJson.setPartA(this.patterns.get(0));
-            patternJson.setPartB(this.patterns.get(1));
+
+            if(this.patterns.size() > 1)
+            {
+                patternJson.setPartB(this.patterns.get(1));
+            }
 
             if(this.patterns.size() > 2)
             {
-                patternJson.setPartB(this.patterns.get(2));
+                patternJson.setPartC(this.patterns.get(2));
+            }
+            else
+            {
+                patternJson.setPartC(null);
             }
 
-            this.recipeGenerator.getShapedRecipeJsons().add(new ShapedRecipeJson(this.group, patternJson, this.keys, new RecipeResultJson(this.result.getCount(), this.result.getItem().getRegistryName().toString())));
+            this.recipeGenerator.getShapedRecipeJsons().add(new ShapedRecipeJson(this.group, patternJson, this.keys, new RecipeResultJson(this.output.getCount(), this.output.getItem().getRegistryName().toString())));
             return this.recipeGenerator;
         }
     }
 
-    private class ShapelessRecipeBuilder
+    public class ShapelessRecipeBuilder
     {
         private final RecipeGenerator recipeGenerator;
         private final List<RecipeIngredientKeyJson> keys;
-        private final ItemStack result;
-        private final String group;
+        private final ItemStack output;
+        private String group;
 
-        private ShapelessRecipeBuilder(RecipeGenerator recipeGenerator, ItemStack result, String group)
+        private ShapelessRecipeBuilder(RecipeGenerator recipeGenerator, ItemStack output)
         {
             this.recipeGenerator = recipeGenerator;
             this.keys = new ArrayList<>();
-            this.result = result;
-            this.group = group;
+            this.output = output;
+            this.group = null;
+        }
+
+        public ShapelessRecipeBuilder key(Object input)
+        {
+            if(input instanceof Item)
+            {
+                return this.key((Item)input);
+            }
+            else if(input instanceof Block)
+            {
+                return this.key((Block) input);
+            }
+            else if(input instanceof Tag<?>)
+            {
+                return this.key((Tag<?>) input);
+            }
+
+            return this;
         }
 
         public ShapelessRecipeBuilder key(Item item)
         {
             this.keys.add(new RecipeIngredientKeyJson(new RecipeIngredientJson(item.getRegistryName().toString(), false)));
+            return this;
+        }
+
+        public ShapelessRecipeBuilder key(Block block)
+        {
+            this.keys.add(new RecipeIngredientKeyJson(new RecipeIngredientJson(block.getRegistryName().toString(), false)));
             return this;
         }
 
@@ -211,9 +359,15 @@ public class RecipeGenerator implements IDataProvider
             return this;
         }
 
+        public ShapelessRecipeBuilder group(String group)
+        {
+            this.group = group;
+            return this;
+        }
+
         public RecipeGenerator build()
         {
-            this.recipeGenerator.getShapelessRecipeJsons().add(new ShaplessRecipeJson(this.group, this.keys, new RecipeResultJson(this.result.getCount(), this.result.getItem().getRegistryName().toString())));
+            this.recipeGenerator.getShapelessRecipeJsons().add(new ShaplessRecipeJson(this.group, this.keys, new RecipeResultJson(this.output.getCount(), this.output.getItem().getRegistryName().toString())));
             return this.recipeGenerator;
         }
     }
