@@ -58,7 +58,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly "com.ldtteam:datagenerators:0.1.34-ALPHA"
+    compile "com.ldtteam:datagenerators:0.1.34-ALPHA"
 }
 
 jar {
