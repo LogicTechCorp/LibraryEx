@@ -246,7 +246,7 @@ public class RecipeGenerator implements IDataProvider
         {
             if(input instanceof Item)
             {
-                return this.key(key, (Item)input);
+                return this.key(key, (Item) input);
             }
             else if(input instanceof Block)
             {
@@ -277,7 +277,7 @@ public class RecipeGenerator implements IDataProvider
             this.keys.put(Character.toString(key), new RecipeIngredientKeyJson(new RecipeIngredientJson(tag.getId().toString(), true)));
             return this;
         }
-        
+
         public ShapedRecipeBuilder group(String group)
         {
             this.group = group;
@@ -327,7 +327,7 @@ public class RecipeGenerator implements IDataProvider
         {
             if(input instanceof Item)
             {
-                return this.key((Item)input);
+                return this.key((Item) input);
             }
             else if(input instanceof Block)
             {

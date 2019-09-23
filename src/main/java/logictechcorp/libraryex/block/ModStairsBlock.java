@@ -15,19 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.block;
 
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.StairsBlock;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public class ModStairsBlock extends StairsBlock
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    public LibraryEx()
+    public ModStairsBlock(BlockState state, Properties properties)
     {
+        super(state, properties);
     }
 }

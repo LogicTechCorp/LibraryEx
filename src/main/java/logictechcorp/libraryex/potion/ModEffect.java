@@ -15,19 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex;
+package logictechcorp.libraryex.potion;
 
-import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectType;
 
-@Mod(LibraryEx.MOD_ID)
-public class LibraryEx
+public class ModEffect extends Effect
 {
-    public static final String MOD_ID = "libraryex";
-    public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    public LibraryEx()
+    public ModEffect(EffectType type, int liquidColor)
     {
+        super(type, liquidColor);
     }
 }
