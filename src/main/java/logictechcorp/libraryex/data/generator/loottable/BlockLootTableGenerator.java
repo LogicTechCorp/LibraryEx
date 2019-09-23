@@ -174,6 +174,32 @@ public class BlockLootTableGenerator implements IDataProvider
         return this;
     }
 
+    public BlockLootTableGenerator addFragileLootTable(Block block)
+    {
+        if(block.getRegistryName() == null)
+        {
+            throw new NullPointerException("Tried to create a loot table for an unregistered block");
+        }
+
+        EntryJson lootEntryJson = new EntryJson();
+        lootEntryJson.setType(EntryTypeEnum.ITEM);
+        lootEntryJson.setName(block.getRegistryName().toString());
+
+        MatchToolConditionJson matchToolConditionJson = new MatchToolConditionJson();
+        matchToolConditionJson.setPredicate(new ItemPredicate(null, null, MinMaxBounds.IntBound.UNBOUNDED, MinMaxBounds.IntBound.UNBOUNDED, new EnchantmentPredicate[]{new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1))}, null, NBTPredicate.ANY));
+
+        PoolJson lootPoolJson = new PoolJson();
+        lootPoolJson.setEntries(Collections.singletonList(lootEntryJson));
+        lootPoolJson.setRolls(1);
+        lootPoolJson.setConditions(Collections.singletonList(matchToolConditionJson));
+
+        LootTableJson lootTableJson = new LootTableJson();
+        lootTableJson.setType(LootTableTypeEnum.BLOCK);
+        lootTableJson.setPools(Collections.singletonList(lootPoolJson));
+        this.lootTableJsons.put(block, lootTableJson);
+        return this;
+    }
+
     @Override
     public String getName()
     {
