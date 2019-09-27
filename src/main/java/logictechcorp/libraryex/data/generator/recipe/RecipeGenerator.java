@@ -45,6 +45,7 @@ public class RecipeGenerator implements IDataProvider
     private final String modId;
     private final List<ShapedRecipeJson> shapedRecipeJsons;
     private final List<ShaplessRecipeJson> shapelessRecipeJsons;
+    private final List<RepairRecipeJson> repairRecipeJsons;
     private final Set<String> recipeNames;
 
     public RecipeGenerator(DataGenerator generator, String modId)
@@ -53,6 +54,7 @@ public class RecipeGenerator implements IDataProvider
         this.modId = modId;
         this.shapedRecipeJsons = new ArrayList<>();
         this.shapelessRecipeJsons = new ArrayList<>();
+        this.repairRecipeJsons = new ArrayList<>();
         this.recipeNames = new HashSet<>();
     }
 
@@ -85,6 +87,19 @@ public class RecipeGenerator implements IDataProvider
                 e.printStackTrace();
             }
         });
+        this.repairRecipeJsons.forEach(recipeJson ->
+        {
+            Path recipePath = this.generator.getOutputFolder().resolve("data/" + this.modId + "/recipes/").resolve(this.getRecipeName(recipeJson.getResult().getItem()) + ".json");
+
+            try
+            {
+                IDataProvider.save(GSON, cache, recipeJson.serialize(), recipePath);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+        });
     }
 
     public ShapedRecipeBuilder createShapedRecipe(ItemStack output)
@@ -95,6 +110,11 @@ public class RecipeGenerator implements IDataProvider
     public ShapelessRecipeBuilder createShapelessRecipe(ItemStack output)
     {
         return new ShapelessRecipeBuilder(this, output);
+    }
+
+    public RepairRecipeBuilder createRepairRecipe(ItemStack brokenStack)
+    {
+        return new RepairRecipeBuilder(this, brokenStack);
     }
 
     public RecipeGenerator addShapelessRecipe(ItemStack output, Object input)
@@ -204,14 +224,19 @@ public class RecipeGenerator implements IDataProvider
         return this.modId + " Recipe Generator";
     }
 
-    public List<ShapedRecipeJson> getShapedRecipeJsons()
+    private List<ShapedRecipeJson> getShapedRecipeJsons()
     {
         return this.shapedRecipeJsons;
     }
 
-    public List<ShaplessRecipeJson> getShapelessRecipeJsons()
+    private List<ShaplessRecipeJson> getShapelessRecipeJsons()
     {
         return this.shapelessRecipeJsons;
+    }
+
+    private List<RepairRecipeJson> getRepairRecipeJsons()
+    {
+        return this.repairRecipeJsons;
     }
 
     public class ShapedRecipeBuilder
@@ -368,6 +393,52 @@ public class RecipeGenerator implements IDataProvider
         public RecipeGenerator build()
         {
             this.recipeGenerator.getShapelessRecipeJsons().add(new ShaplessRecipeJson(this.group, this.keys, new RecipeResultJson(this.output.getCount(), this.output.getItem().getRegistryName().toString())));
+            return this.recipeGenerator;
+        }
+    }
+
+    public class RepairRecipeBuilder
+    {
+        private final RecipeGenerator recipeGenerator;
+        private final ItemStack brokenStack;
+        private ItemStack repairStack;
+        private Tag<?> repairTag;
+        private int repairAmount;
+
+        private RepairRecipeBuilder(RecipeGenerator recipeGenerator, ItemStack brokenStack)
+        {
+            this.recipeGenerator = recipeGenerator;
+            this.brokenStack = brokenStack;
+        }
+
+        public RepairRecipeBuilder repairStack(ItemStack repairStack)
+        {
+            this.repairStack = repairStack;
+            return this;
+        }
+
+        public RepairRecipeBuilder repairTag(Tag<?> repairTag)
+        {
+            this.repairTag = repairTag;
+            return this;
+        }
+
+        public RepairRecipeBuilder repairAmount(int repairAmount)
+        {
+            this.repairAmount = repairAmount;
+            return this;
+        }
+
+        public RecipeGenerator build()
+        {
+            if(this.repairTag != null)
+            {
+                this.recipeGenerator.getRepairRecipeJsons().add(new RepairRecipeJson(new RecipeResultJson(0, this.brokenStack.getItem().getRegistryName().toString()), new RecipeIngredientKeyJson(new RecipeIngredientJson(this.repairTag.getId().toString(), true)), this.repairAmount));
+            }
+            else
+            {
+                this.recipeGenerator.getRepairRecipeJsons().add(new RepairRecipeJson(new RecipeResultJson(0, this.brokenStack.getItem().getRegistryName().toString()), new RecipeIngredientKeyJson(new RecipeIngredientJson(this.repairStack.getItem().getRegistryName().toString(), false)), this.repairAmount));
+            }
             return this.recipeGenerator;
         }
     }
