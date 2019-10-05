@@ -26,7 +26,7 @@ import com.mojang.datafixers.types.JsonOps;
 import logictechcorp.libraryex.LibraryEx;
 import logictechcorp.libraryex.utility.DynamicHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.JsonReloadListener;
+import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
@@ -47,10 +47,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BiomeDataManager extends JsonReloadListener
+public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonObject>>
 {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
+    private final String folderName;
     private final Map<ResourceLocation, BiomeData> biomeData;
     private final Map<ResourceLocation, List<String>> subBiomeData;
     private final Map<ResourceLocation, BiomeManager.BiomeEntry> biomeEntries;
@@ -60,9 +61,9 @@ public class BiomeDataManager extends JsonReloadListener
         this("biomes");
     }
 
-    public BiomeDataManager(String folder)
+    public BiomeDataManager(String folderName)
     {
-        super(GSON, folder);
+        this.folderName = folderName;
         this.biomeData = new HashMap<>();
         this.subBiomeData = new HashMap<>();
         this.biomeEntries = new HashMap<>();
@@ -71,11 +72,16 @@ public class BiomeDataManager extends JsonReloadListener
     @Override
     protected void apply(Map<ResourceLocation, JsonObject> locations, IResourceManager resourceManager, IProfiler profiler)
     {
-        locations.forEach(((location, object) ->
+        locations.forEach(((resourceLocation, object) ->
         {
             try
             {
-                IResource resource = resourceManager.getResource(this.getPreparedPath(location));
+                if(!resourceLocation.toString().contains(this.folderName))
+                {
+                    resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), this.folderName + "/" + resourceLocation.getPath() + ".json");
+                }
+
+                IResource resource = resourceManager.getResource(resourceLocation);
                 InputStream inputStream = resource.getInputStream();
                 Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, JSONUtils.fromJson(GSON, reader, JsonObject.class));
@@ -138,13 +144,57 @@ public class BiomeDataManager extends JsonReloadListener
                     }
                 }
 
-                this.biomeData.forEach((resourceLocation, biomeData) -> biomeData.configureBiome());
+                this.biomeData.forEach((location, biomeData) -> biomeData.configureBiome());
             }
             catch(IOException e)
             {
                 e.printStackTrace();
             }
         }));
+    }
+
+    @Override
+    protected Map<ResourceLocation, JsonObject> prepare(IResourceManager resourceManager, IProfiler profiler)
+    {
+        Map<ResourceLocation, JsonObject> map = new HashMap<>();
+
+        for(ResourceLocation resource : resourceManager.getAllResourceLocations(this.folderName, (fileName) -> fileName.endsWith(".json")))
+        {
+            String path = resource.getPath();
+            ResourceLocation truncatedResource;
+
+            if(!resource.getPath().startsWith(this.folderName))
+            {
+                truncatedResource = resource;
+            }
+            else
+            {
+                truncatedResource = new ResourceLocation(resource.getNamespace(), path.substring(this.folderName.length() + 1, path.lastIndexOf(".")));
+            }
+
+            try(Reader reader = new BufferedReader(new InputStreamReader(resourceManager.getResource(resource).getInputStream(), StandardCharsets.UTF_8)))
+            {
+                JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+
+                if(jsonObject != null)
+                {
+                    if(map.put(truncatedResource, jsonObject) != null)
+                    {
+                        LibraryEx.LOGGER.error("Duplicate data file: " + truncatedResource);
+                    }
+                }
+                else
+                {
+                    LibraryEx.LOGGER.error("Invalid data file: {}", truncatedResource);
+                }
+            }
+            catch(IOException e)
+            {
+                LibraryEx.LOGGER.error("Unreadable data file: {}", truncatedResource);
+            }
+        }
+
+        return map;
     }
 
     public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultFeatures, boolean isSubBiome)
