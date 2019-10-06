@@ -75,7 +75,7 @@ public class Trade extends MerchantRecipe
 
         if(this.hasSecondItemToBuy())
         {
-            inputTwoStack.setCount(RandomHelper.getNumberInRange(this.inputTwo.getMinCount(), this.inputTwo.maxCount, random));
+            inputTwoStack.setCount(RandomHelper.getNumberInRange(this.inputTwo.getMinCount(), this.inputTwo.getMaxCount(), random));
         }
 
         int tradesAvailable = RandomHelper.getNumberInRange(this.minTradeCount, this.maxTradeCount, random);
@@ -136,24 +136,24 @@ public class Trade extends MerchantRecipe
 
         if(!tradeConfig.contains("inputOne.minCount"))
         {
-            tradeConfig.add("inputOne.minCount", this.output.getMinCount());
+            tradeConfig.add("inputOne.minCount", this.inputOne.getMinCount());
         }
         if(!tradeConfig.contains("inputOne.maxCount"))
         {
-            tradeConfig.add("inputOne.maxCount", this.output.getMaxCount());
+            tradeConfig.add("inputOne.maxCount", this.inputOne.getMaxCount());
         }
 
-        if(!this.inputTwo.getItemStack().isEmpty())
+        if(this.hasSecondItemToBuy())
         {
             ConfigHelper.setItemStackSimple(tradeConfig, "inputTwo", this.inputTwo.getItemStack());
 
             if(!tradeConfig.contains("inputTwo.minCount"))
             {
-                tradeConfig.add("inputTwo.minCount", this.output.getMinCount());
+                tradeConfig.add("inputTwo.minCount", this.inputTwo.getMinCount());
             }
             if(!tradeConfig.contains("inputTwo.maxCount"))
             {
-                tradeConfig.add("inputTwo.maxCount", this.output.getMaxCount());
+                tradeConfig.add("inputTwo.maxCount", this.inputTwo.getMaxCount());
             }
         }
 
