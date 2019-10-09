@@ -85,7 +85,7 @@ public class BiomeData
 
             if(features != null)
             {
-                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.BIOME_DATA_FEATURE_WRAPPER, new BiomeDataFeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.BIOME_DATA_FEATURE_WRAPPER.get(), new BiomeDataFeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
             }
         }
     }

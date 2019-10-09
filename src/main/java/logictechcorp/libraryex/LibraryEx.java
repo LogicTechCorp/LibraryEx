@@ -17,7 +17,11 @@
 
 package logictechcorp.libraryex;
 
+import logictechcorp.libraryex.item.crafting.LibraryExRecipeSerializers;
+import logictechcorp.libraryex.world.generation.feature.LibraryExFeatures;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,5 +33,8 @@ public class LibraryEx
 
     public LibraryEx()
     {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        LibraryExRecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
+        LibraryExFeatures.FEATURES.register(modEventBus);
     }
 }

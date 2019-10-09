@@ -18,29 +18,14 @@
 package logictechcorp.libraryex.item.crafting;
 
 import logictechcorp.libraryex.LibraryEx;
-import logictechcorp.libraryex.utility.InjectionHelper;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.GameData;
-import net.minecraftforge.registries.ObjectHolder;
 
-@ObjectHolder(LibraryEx.MOD_ID)
-@Mod.EventBusSubscriber(modid = LibraryEx.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class LibraryExRecipeSerializers
 {
-    public static final IRecipeSerializer<RepairRecipe> CRAFTING_REPAIR = InjectionHelper.nullValue();
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPE_SERIALIZERS = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, LibraryEx.MOD_ID);
 
-    @SubscribeEvent
-    public static void onRecipeSerializer(RegistryEvent.Register<IRecipeSerializer<?>> event)
-    {
-        registerRecipeSerializer("crafting_repair", new RepairRecipe.Serializer());
-    }
-
-    private static void registerRecipeSerializer(String name, IRecipeSerializer<?> feature)
-    {
-        ForgeRegistries.RECIPE_SERIALIZERS.register(feature.setRegistryName(GameData.checkPrefix(name, true)));
-    }
+    public static final RegistryObject<IRecipeSerializer<RepairRecipe>> CRAFTING_REPAIR = RECIPE_SERIALIZERS.register("crafting_repair", RepairRecipe.Serializer::new);
 }

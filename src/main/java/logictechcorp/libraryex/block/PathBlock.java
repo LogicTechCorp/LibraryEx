@@ -31,26 +31,25 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class PathBlock extends Block
 {
-    protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+    private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+    private final Supplier<BlockState> stateSupplier;
 
-    private final RegistryObject<Block> originalBlock;
-
-    public PathBlock(Properties properties, RegistryObject<Block> originalBlock)
+    public PathBlock(Supplier<BlockState> stateSupplier, Properties properties)
     {
         super(properties);
-        this.originalBlock = originalBlock;
+        this.stateSupplier = stateSupplier;
     }
 
     @Override
     public void tick(BlockState state, World world, BlockPos pos, Random random)
     {
-        world.setBlockState(pos, nudgeEntitiesWithNewState(state, this.originalBlock.orElse(this).getDefaultState(), world, pos));
+        world.setBlockState(pos, nudgeEntitiesWithNewState(state, this.stateSupplier.get(), world, pos));
     }
 
     @Override

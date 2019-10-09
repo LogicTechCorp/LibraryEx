@@ -136,7 +136,7 @@ public class RepairRecipe implements ICraftingRecipe
     @Override
     public IRecipeSerializer<?> getSerializer()
     {
-        return LibraryExRecipeSerializers.CRAFTING_REPAIR;
+        return LibraryExRecipeSerializers.CRAFTING_REPAIR.get();
     }
 
     public ItemStack getBrokenStack()
