@@ -88,18 +88,17 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                 IOUtils.closeQuietly(reader);
                 IOUtils.closeQuietly(resource);
 
-                Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(dynamic.get("biome").asString("")));
-
-                if(biome != null)
+                if(dynamic.getValue() == null)
                 {
-                    ResourceLocation biomeName = biome.getRegistryName();
+                    LibraryEx.LOGGER.error("Couldn't load {} biome config from {} data pack.", resource.getLocation(), resource.getPackName());
+                }
+                else
+                {
+                    Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(dynamic.get("biome").asString("")));
 
-                    if(dynamic.getValue() == null)
+                    if(biome != null)
                     {
-                        LibraryEx.LOGGER.error("Couldn't load {} biome config from {} data pack.", resource.getLocation(), resource.getPackName());
-                    }
-                    else
-                    {
+                        ResourceLocation biomeName = biome.getRegistryName();
                         int generationWeight = dynamic.get("generation_weight").asInt(10);
 
                         if(generationWeight > 0)
