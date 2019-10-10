@@ -36,13 +36,13 @@ import java.util.Random;
 
 public abstract class TileEntityInventory extends TileEntity
 {
-    protected ItemStackHandler inventory;
+    protected LazyOptional<ItemStackHandler> optionalItemStackHandler;
     protected Random random;
 
     public TileEntityInventory(TileEntityType tileEntityType, int size)
     {
         super(tileEntityType);
-        this.inventory = new ItemStackHandler(size);
+        this.optionalItemStackHandler = LazyOptional.of(() -> new ItemStackHandler(size));
         this.random = new Random();
     }
 
@@ -50,7 +50,7 @@ public abstract class TileEntityInventory extends TileEntity
     public CompoundNBT write(CompoundNBT compound)
     {
         super.write(compound);
-        compound.put("Inventory", this.inventory.serializeNBT());
+        this.optionalItemStackHandler.ifPresent(itemStackHandler -> compound.put("Items", itemStackHandler.serializeNBT()));
         return compound;
     }
 
@@ -58,7 +58,7 @@ public abstract class TileEntityInventory extends TileEntity
     public void read(CompoundNBT compound)
     {
         super.read(compound);
-        this.inventory.deserializeNBT(compound.getCompound("Inventory"));
+        this.optionalItemStackHandler.ifPresent(itemStackHandler -> itemStackHandler.deserializeNBT(compound.getCompound("Items")));
     }
 
     @Override
@@ -78,7 +78,7 @@ public abstract class TileEntityInventory extends TileEntity
     {
         if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-            return (LazyOptional<T>) LazyOptional.of(() -> this.inventory);
+            return (LazyOptional<T>) this.optionalItemStackHandler;
         }
 
         return LazyOptional.empty();
@@ -86,15 +86,18 @@ public abstract class TileEntityInventory extends TileEntity
 
     public void dropInventoryItems(World world, BlockPos pos)
     {
-        for(int i = 0; i < this.inventory.getSlots(); i++)
+        this.optionalItemStackHandler.ifPresent(itemStackHandler ->
         {
-            ItemStack stack = this.inventory.getStackInSlot(i);
-
-            if(!stack.isEmpty())
+            for(int i = 0; i < itemStackHandler.getSlots(); i++)
             {
-                this.spawnItemStack(world, pos, stack);
+                ItemStack stack = itemStackHandler.getStackInSlot(i);
+
+                if(!stack.isEmpty())
+                {
+                    this.spawnItemStack(world, pos, stack);
+                }
             }
-        }
+        });
     }
 
     public void spawnItemStack(World world, BlockPos pos, ItemStack stack)
@@ -111,9 +114,9 @@ public abstract class TileEntityInventory extends TileEntity
         }
     }
 
-    public ItemStackHandler getInventory()
+    public ItemStackHandler getItemStackHandler()
     {
-        return this.inventory;
+        return this.optionalItemStackHandler.orElseThrow(NullPointerException::new);
     }
 
     public Random getRandom()
