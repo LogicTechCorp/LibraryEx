@@ -34,7 +34,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 
@@ -68,7 +67,6 @@ public class EternalFireBlock extends Block
     }
 
     @Override
-    @Nullable
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
         return this.getStateForPlacement(context.getWorld(), context.getPos());
