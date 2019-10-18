@@ -159,12 +159,12 @@ public class RepairRecipe implements ICraftingRecipe
         @Override
         public RepairRecipe read(ResourceLocation recipeId, JsonObject json)
         {
-            JsonObject brokenObject = JSONUtils.getJsonObject(json, "broken_item");
-            JsonObject repairObject = JSONUtils.getJsonObject(json, "repair_item");
+            JsonObject brokenObject = JSONUtils.getJsonObject(json, "ingredient");
+            JsonObject repairObject = JSONUtils.getJsonObject(json, "result");
 
             ItemStack brokenStack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(JSONUtils.getString(brokenObject, "item"))));
             Ingredient ingredient = Ingredient.EMPTY;
-            int repairAmount = JSONUtils.getInt(json, "repair_amount");
+            int repairAmount = JSONUtils.getInt(json, "count");
 
             if(repairObject.has("item"))
             {
