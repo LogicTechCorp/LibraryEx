@@ -7,7 +7,7 @@ modId="libraryex"
 version="${file.jarVersion}"
 displayName="LibraryEx"
 displayURL="https://minecraft.curseforge.com/projects/libraryex"
-logoFile="assets/libraryex/logo.png"
+logoFile="assets/libraryex/textures/logo.png"
 authors="LogicTechCorp"
 description="A library for mods that add expansions, explorations, and experiences to Minecraft."
 
