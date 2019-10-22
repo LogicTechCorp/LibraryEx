@@ -25,8 +25,8 @@ minecraft {
 
     runs {
         client {
-            ideaModule "${project.name}.main"
             workingDirectory project.file('run')
+
             mods {
                 libraryex {
                     source sourceSets.main
@@ -35,8 +35,8 @@ minecraft {
         }
 
         server {
-            ideaModule "${project.name}.main"
             workingDirectory project.file('run')
+
             mods {
                 libraryex {
                     source sourceSets.main

@@ -81,6 +81,18 @@ public class RepairRecipe implements ICraftingRecipe
     }
 
     @Override
+    public boolean canFit(int width, int height)
+    {
+        return width * height >= 2;
+    }
+
+    @Override
+    public boolean isDynamic()
+    {
+        return true;
+    }
+
+    @Override
     public ItemStack getCraftingResult(CraftingInventory inventory)
     {
         ItemStack brokenStack = ItemStack.EMPTY;
@@ -113,12 +125,6 @@ public class RepairRecipe implements ICraftingRecipe
         ItemStack output = brokenStack.copy();
         output.attemptDamageItem(-this.repairAmount, RandomHelper.getRandom(), null);
         return output;
-    }
-
-    @Override
-    public boolean canFit(int width, int height)
-    {
-        return width * height >= 2;
     }
 
     @Override
@@ -159,11 +165,11 @@ public class RepairRecipe implements ICraftingRecipe
         @Override
         public RepairRecipe read(ResourceLocation recipeId, JsonObject json)
         {
-            JsonObject brokenObject = JSONUtils.getJsonObject(json, "ingredient");
-            JsonObject repairObject = JSONUtils.getJsonObject(json, "result");
+            JsonObject repairObject = JSONUtils.getJsonObject(json, "ingredient");
+            String brokenObject = JSONUtils.getString(json, "result");
 
-            ItemStack brokenStack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(JSONUtils.getString(brokenObject, "item"))));
             Ingredient ingredient = Ingredient.EMPTY;
+            ItemStack brokenStack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(brokenObject)));
             int repairAmount = JSONUtils.getInt(json, "count");
 
             if(repairObject.has("item"))

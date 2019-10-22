@@ -158,8 +158,8 @@ public class ModLootTableProvider implements IDataProvider
         for(IItemProvider itemProvider : itemProviders)
         {
             LootEntry.Builder lootEntry = ItemLootEntry.builder(itemProvider)
-                    .acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 2.0F)))
-                    .acceptFunction(LootingEnchantBonus.func_215915_a(RandomValueRange.func_215837_a(0.0F, 1.0F)));
+                    .acceptFunction(SetCount.func_215932_a(RandomValueRange.of(0.0F, 2.0F)))
+                    .acceptFunction(LootingEnchantBonus.func_215915_a(RandomValueRange.of(0.0F, 1.0F)));
 
             LootPool.Builder lootPool = LootPool.builder()
                     .rolls(ConstantRange.of(1))
