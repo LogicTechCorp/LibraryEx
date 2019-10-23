@@ -17,11 +17,15 @@
 
 package logictechcorp.libraryex.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.MushroomBlock;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.gen.feature.BigMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.common.PlantType;
@@ -52,6 +56,23 @@ public class ModMushroomBlock extends MushroomBlock
         {
             world.setBlockState(pos, state, 3);
             return false;
+        }
+    }
+
+    @Override
+    public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos)
+    {
+        BlockPos posDown = pos.down();
+        BlockState stateDown = world.getBlockState(posDown);
+        Block blockDown = stateDown.getBlock();
+
+        if(blockDown != Blocks.MYCELIUM && blockDown != Blocks.PODZOL)
+        {
+            return stateDown.canSustainPlant(world, posDown, Direction.UP, this);
+        }
+        else
+        {
+            return true;
         }
     }
 
