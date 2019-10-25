@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.client.render.block.model;
+package logictechcorp.libraryex.client.render.model;
 
 import logictechcorp.libraryex.block.MimicBlock;
 import net.minecraft.block.Block;
@@ -25,56 +25,39 @@ import net.minecraft.client.renderer.BlockModelShapes;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
+import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
-import org.apache.commons.lang3.tuple.Pair;
 
-import javax.vecmath.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MimicBakedModel implements IDynamicBakedModel
+public class MimicBakedModel extends BakedModelWrapper<IBakedModel>
 {
-    private final IBakedModel originalModel;
     private final MimicBlock.MimicType mimicType;
 
     public MimicBakedModel(IBakedModel originalModel, MimicBlock.MimicType mimicType)
     {
-        this.originalModel = originalModel;
+        super(originalModel);
         this.mimicType = mimicType;
     }
 
     @Override
-    public boolean isAmbientOcclusion()
+    public TextureAtlasSprite getParticleTexture(IModelData modelData)
     {
-        return this.originalModel.isAmbientOcclusion();
+        return super.getParticleTexture(modelData);
     }
 
     @Override
-    public boolean isGui3d()
+    public List<BakedQuad> getQuads(BlockState state, Direction side, Random random, IModelData modelData)
     {
-        return this.originalModel.isGui3d();
-    }
-
-    @Override
-    public boolean isBuiltInRenderer()
-    {
-        return this.originalModel.isBuiltInRenderer();
-    }
-
-    @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, Random random, IModelData data)
-    {
-        List<BakedQuad> originalQuads = new ArrayList<>(this.originalModel.getQuads(state, side, random));
-        List<BakedQuad> mimickedQuads = new ArrayList<>(this.getMimickedModel(data.getData(MimicBlock.MIMIC_PROP)).getQuads(state, side, random));
+        List<BakedQuad> originalQuads = new ArrayList<>(this.originalModel.getQuads(state, side, random, modelData));
+        List<BakedQuad> mimickedQuads = new ArrayList<>(this.getMimickedModel(modelData.getData(MimicBlock.MIMIC_PROP)).getQuads(state, side, random, modelData));
         List<BakedQuad> retQuads;
 
         if(this.mimicType == MimicBlock.MimicType.OVERLAY)
@@ -106,24 +89,6 @@ public class MimicBakedModel implements IDynamicBakedModel
         }
 
         return modelData;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture()
-    {
-        return this.originalModel.getParticleTexture();
-    }
-
-    @Override
-    public ItemOverrideList getOverrides()
-    {
-        return this.originalModel.getOverrides();
-    }
-
-    @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType type)
-    {
-        return Pair.of(this, this.originalModel.handlePerspective(type).getRight());
     }
 
     private IBakedModel getMimickedModel(BlockState state)
