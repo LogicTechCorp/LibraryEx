@@ -1,8 +1,6 @@
-/*
-!/src/
-!.gitignore
-!gradlew*
-!/gradle/
-!/README.md
-!build.gradle
-!gradle.properties
+/.gradle/
+/.idea/
+/build/
+/out/
+/run/
+/src/generated/resources/.cache/
