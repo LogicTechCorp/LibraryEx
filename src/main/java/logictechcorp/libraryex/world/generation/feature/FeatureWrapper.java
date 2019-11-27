@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-public class WrapperFeature extends Feature<WrapperFeature.Config>
+public class FeatureWrapper extends Feature<FeatureWrapper.Config>
 {
-    public WrapperFeature(Function<Dynamic<?>, ? extends Config> configFactory)
+    public FeatureWrapper(Function<Dynamic<?>, ? extends Config> configFactory)
     {
         super(configFactory);
     }

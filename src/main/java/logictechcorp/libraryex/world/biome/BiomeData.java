@@ -18,8 +18,8 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.mojang.datafixers.Dynamic;
+import logictechcorp.libraryex.world.generation.feature.FeatureWrapper;
 import logictechcorp.libraryex.world.generation.feature.LibraryExFeatures;
-import logictechcorp.libraryex.world.generation.feature.WrapperFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
@@ -85,7 +85,7 @@ public class BiomeData
 
             if(features != null)
             {
-                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.BIOME_DATA_FEATURE_WRAPPER.get(), new WrapperFeature.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.FEATURE_WRAPPER.get(), new FeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
             }
         }
     }
@@ -105,7 +105,7 @@ public class BiomeData
                 {
                     DecoratedFeatureConfig decoratedFeatureConfig = (DecoratedFeatureConfig) featureConfig;
 
-                    if(decoratedFeatureConfig.feature.feature instanceof WrapperFeature)
+                    if(decoratedFeatureConfig.feature.feature instanceof FeatureWrapper)
                     {
                         features.remove();
                     }
