@@ -18,8 +18,8 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.mojang.datafixers.Dynamic;
-import logictechcorp.libraryex.world.generation.feature.BiomeDataFeatureWrapper;
 import logictechcorp.libraryex.world.generation.feature.LibraryExFeatures;
+import logictechcorp.libraryex.world.generation.feature.WrapperFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityClassification;
@@ -85,7 +85,7 @@ public class BiomeData
 
             if(features != null)
             {
-                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.BIOME_DATA_FEATURE_WRAPPER.get(), new BiomeDataFeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
+                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.BIOME_DATA_FEATURE_WRAPPER.get(), new WrapperFeature.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
             }
         }
     }
@@ -105,7 +105,7 @@ public class BiomeData
                 {
                     DecoratedFeatureConfig decoratedFeatureConfig = (DecoratedFeatureConfig) featureConfig;
 
-                    if(decoratedFeatureConfig.feature.feature instanceof BiomeDataFeatureWrapper)
+                    if(decoratedFeatureConfig.feature.feature instanceof WrapperFeature)
                     {
                         features.remove();
                     }
@@ -195,9 +195,6 @@ public class BiomeData
     {
         SURFACE_BLOCK("surface"),
         SUBSURFACE_BLOCK("subsurface"),
-        CAVE_CEILING_BLOCK("cave_ceiling"),
-        CAVE_WALL_BLOCK("cave_wall"),
-        CAVE_FLOOR_BLOCK("cave_floor"),
         LIQUID_BLOCK("liquid");
 
         private String identifier;

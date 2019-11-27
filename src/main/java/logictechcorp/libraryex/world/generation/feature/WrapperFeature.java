@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-public class BiomeDataFeatureWrapper extends Feature<BiomeDataFeatureWrapper.Config>
+public class WrapperFeature extends Feature<WrapperFeature.Config>
 {
-    public BiomeDataFeatureWrapper(Function<Dynamic<?>, ? extends Config> configFactory)
+    public WrapperFeature(Function<Dynamic<?>, ? extends Config> configFactory)
     {
         super(configFactory);
     }
