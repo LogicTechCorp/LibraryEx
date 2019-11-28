@@ -51,16 +51,16 @@ public class PoolFeature extends Feature<PoolFeature.Config>
             pos = pos.down();
         }
 
-        if(pos.getY() <= 4)
+        if(pos.down(4).getY() <= world.getSeaLevel())
         {
             return false;
         }
         else
         {
             pos = pos.down(4);
-            ChunkPos chunkpos = new ChunkPos(pos);
+            ChunkPos chunkPos = new ChunkPos(pos);
 
-            if(!world.getChunk(chunkpos.x, chunkpos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(Feature.VILLAGE.getStructureName()).isEmpty())
+            if(!world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(Feature.VILLAGE.getStructureName()).isEmpty())
             {
                 return false;
             }
