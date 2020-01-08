@@ -89,7 +89,7 @@ public class ModLootTableProvider implements IDataProvider
     {
         LootEntry.Builder lootEntry = ItemLootEntry.builder(block)
                 .acceptCondition(MatchTool.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1)))))
-                .func_216080_a(ItemLootEntry.builder(itemProvider).acceptFunction(ApplyBonus.func_215869_a(Enchantments.FORTUNE)).acceptFunction(ExplosionDecay.func_215863_b()));
+                .alternatively(ItemLootEntry.builder(itemProvider).acceptFunction(ApplyBonus.oreDrops(Enchantments.FORTUNE)).acceptFunction(ExplosionDecay.builder()));
 
         LootPool.Builder lootPool = LootPool.builder()
                 .rolls(ConstantRange.of(1))
@@ -126,7 +126,7 @@ public class ModLootTableProvider implements IDataProvider
     public void addSlabBlockLootTable(Block block)
     {
         LootEntry.Builder lootEntry = ItemLootEntry.builder(block)
-                .acceptFunction(SetCount.func_215932_a(ConstantRange.of(2)).acceptCondition(BlockStateProperty.builder(block).with(SlabBlock.TYPE, SlabType.DOUBLE)))
+                .acceptFunction(SetCount.builder(ConstantRange.of(2)).acceptCondition(BlockStateProperty.builder(block).with(SlabBlock.TYPE, SlabType.DOUBLE)))
                 .acceptCondition(SurvivesExplosion.builder());
 
         LootPool.Builder lootPool = LootPool.builder()
@@ -158,8 +158,8 @@ public class ModLootTableProvider implements IDataProvider
         for(IItemProvider itemProvider : itemProviders)
         {
             LootEntry.Builder lootEntry = ItemLootEntry.builder(itemProvider)
-                    .acceptFunction(SetCount.func_215932_a(RandomValueRange.of(0.0F, 2.0F)))
-                    .acceptFunction(LootingEnchantBonus.func_215915_a(RandomValueRange.of(0.0F, 1.0F)));
+                    .acceptFunction(SetCount.builder(RandomValueRange.of(0.0F, 2.0F)))
+                    .acceptFunction(LootingEnchantBonus.builder(RandomValueRange.of(0.0F, 1.0F)));
 
             LootPool.Builder lootPool = LootPool.builder()
                     .rolls(ConstantRange.of(1))

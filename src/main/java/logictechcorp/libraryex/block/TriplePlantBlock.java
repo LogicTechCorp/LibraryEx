@@ -51,12 +51,6 @@ public class TriplePlantBlock extends BushBlock
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity)
-    {
-        entity.attackEntityFrom(DamageSource.CACTUS, 1.0F);
-    }
-
-    @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
         builder.add(PART);
