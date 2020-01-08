@@ -31,6 +31,13 @@ public class RandomHelper
 
     public static int getNumberInRange(int min, int max, Random random)
     {
+        if(min > max)
+        {
+            int temp = min;
+            min = max;
+            max = temp;
+        }
+
         return random.nextInt(max - min + 1) + min;
     }
 

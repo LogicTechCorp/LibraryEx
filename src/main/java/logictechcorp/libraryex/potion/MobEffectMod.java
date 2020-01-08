@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.potion;
 
-import logictechcorp.libraryex.api.IModData;
+import logictechcorp.libraryex.IModData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.potion.Potion;

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.client.gui;
+package logictechcorp.libraryex.proxy;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-@FunctionalInterface
-@SideOnly(Side.CLIENT)
-public interface IGuiButtonPressed
+public interface IProxy
 {
-    void onPressed(GuiButton button);
+    void preInit();
+
+    void init();
+
+    void postInit();
+
+    void spawnParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
 }

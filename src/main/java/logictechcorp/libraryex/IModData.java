@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.entity.trade;
+package logictechcorp.libraryex;
 
-import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.INpc;
+import net.minecraft.creativetab.CreativeTabs;
 
-public interface ITrader extends INpc, IMerchant
+public interface IModData
 {
-    boolean useAlternateTexture();
+    String getModId();
+
+    CreativeTabs getCreativeTab();
 }

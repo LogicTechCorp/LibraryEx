@@ -17,7 +17,6 @@
 
 package logictechcorp.libraryex.client.gui;
 
-import logictechcorp.libraryex.api.client.gui.IGuiButtonPressed;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraftforge.fml.relauncher.Side;

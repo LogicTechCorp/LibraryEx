@@ -36,6 +36,13 @@ public class TradeStack
         this.stack = stack;
         this.minCount = minCount;
         this.maxCount = maxCount;
+
+        if(this.minCount > this.maxCount)
+        {
+            int temp = this.minCount;
+            this.minCount = this.maxCount;
+            this.maxCount = temp;
+        }
     }
 
     public TradeStack(Item item, int meta, int minCount, int maxCount)

@@ -15,33 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api;
+package logictechcorp.libraryex.world.generation;
 
-import logictechcorp.libraryex.api.internal.ILibraryExAPI;
-import logictechcorp.libraryex.api.internal.LibraryExAPIStub;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
-
-public final class LibraryExAPI
+public enum GenerationStage
 {
-    private static ILibraryExAPI instance = LibraryExAPIStub.INSTANCE;
+    TERRAIN_ALTERATION("terrain_alteration"),
+    DECORATION("decoration"),
+    PLANT_DECORATION("plant_decoration"),
+    ORE("ore"),
+    STRUCTURE("structure");
 
-    private LibraryExAPI()
+    private String identifier;
+
+    GenerationStage(String identifier)
     {
+        this.identifier = identifier;
     }
 
-    public static ILibraryExAPI getInstance()
+    public static GenerationStage getFromIdentifier(String identifier)
     {
-        return instance;
-    }
-
-    public static void setInstance(ILibraryExAPI instance)
-    {
-        ModContainer mod = Loader.instance().activeModContainer();
-
-        if(mod != null && mod.getModId().equals("libraryex"))
+        for(GenerationStage stage : values())
         {
-            LibraryExAPI.instance = instance;
+            if(stage.toString().equals(identifier))
+            {
+                return stage;
+            }
         }
+
+        return DECORATION;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.identifier;
     }
 }

@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api;
+package logictechcorp.libraryex.entity.trade;
 
-public interface IProxy
+import net.minecraft.entity.IMerchant;
+import net.minecraft.entity.INpc;
+
+public interface ITrader extends INpc, IMerchant
 {
-    void preInit();
-
-    void init();
-
-    void postInit();
-
-    void spawnParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ);
+    boolean useAlternateTexture();
 }

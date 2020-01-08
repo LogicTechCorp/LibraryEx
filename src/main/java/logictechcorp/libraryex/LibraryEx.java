@@ -17,25 +17,20 @@
 
 package logictechcorp.libraryex;
 
-import logictechcorp.libraryex.api.LibraryExAPI;
-import logictechcorp.libraryex.api.internal.ILibraryExAPI;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
-import logictechcorp.libraryex.world.generation.trait.BiomeTraitRegistry;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
 @Mod(modid = LibraryEx.MOD_ID, name = LibraryEx.NAME, version = LibraryEx.VERSION, dependencies = LibraryEx.DEPENDENCIES)
-public class LibraryEx implements ILibraryExAPI
+public class LibraryEx
 {
     static final String NAME = "LibraryEx";
-    static final String VERSION = "1.0.12";
+    static final String VERSION = "1.1.0";
     static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.4.2768,);";
 
     public static final String MOD_ID = "libraryex";
@@ -46,24 +41,6 @@ public class LibraryEx implements ILibraryExAPI
     public static LibraryEx instance;
 
     public static final Logger LOGGER = LogManager.getLogger("LibraryEx");
-
-    @Mod.EventHandler
-    public void onFMLPreInitialization(FMLPreInitializationEvent event)
-    {
-        LibraryExAPI.setInstance(this);
-    }
-
-    @Override
-    public boolean isStub()
-    {
-        return false;
-    }
-
-    @Override
-    public IBiomeTraitRegistry getBiomeTraitRegistry()
-    {
-        return BiomeTraitRegistry.INSTANCE;
-    }
 
     public static ResourceLocation getResource(String name)
     {

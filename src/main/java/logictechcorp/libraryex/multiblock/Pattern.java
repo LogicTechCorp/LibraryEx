@@ -20,7 +20,6 @@
 
 package logictechcorp.libraryex.multiblock;
 
-import logictechcorp.libraryex.api.tileentity.multiblock.IPatternComponent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;

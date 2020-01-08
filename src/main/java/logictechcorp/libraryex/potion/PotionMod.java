@@ -17,7 +17,7 @@
 
 package logictechcorp.libraryex.potion;
 
-import logictechcorp.libraryex.api.IModData;
+import logictechcorp.libraryex.IModData;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 

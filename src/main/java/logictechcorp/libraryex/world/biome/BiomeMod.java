@@ -17,11 +17,11 @@
 
 package logictechcorp.libraryex.world.biome;
 
-import logictechcorp.libraryex.api.IModData;
-import logictechcorp.libraryex.api.world.biome.data.IBiomeData;
+import logictechcorp.libraryex.IModData;
+import logictechcorp.libraryex.world.biome.data.BiomeData;
 import net.minecraft.world.biome.Biome;
 
-public abstract class BiomeMod<T extends IBiomeData> extends Biome
+public abstract class BiomeMod<T extends BiomeData> extends Biome
 {
     public BiomeMod(IModData data, BiomeProperties properties, String name)
     {

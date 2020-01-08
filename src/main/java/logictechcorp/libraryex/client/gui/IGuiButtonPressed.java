@@ -15,27 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package logictechcorp.libraryex.api.internal;
+package logictechcorp.libraryex.client.gui;
 
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public final class LibraryExAPIStub implements ILibraryExAPI
+@FunctionalInterface
+@SideOnly(Side.CLIENT)
+public interface IGuiButtonPressed
 {
-    public static final ILibraryExAPI INSTANCE = new LibraryExAPIStub();
-
-    private LibraryExAPIStub()
-    {
-    }
-
-    @Override
-    public boolean isStub()
-    {
-        return true;
-    }
-
-    @Override
-    public IBiomeTraitRegistry getBiomeTraitRegistry()
-    {
-        return BiomeTraitRegistryStub.INSTANCE;
-    }
+    void onPressed(GuiButton button);
 }

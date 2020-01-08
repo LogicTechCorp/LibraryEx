@@ -18,22 +18,18 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import logictechcorp.libraryex.LibraryEx;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitRegistry;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class BiomeTraitRegistry implements IBiomeTraitRegistry
+public final class BiomeTraitRegistry
 {
-    //NOT for use by modders. Please access using the api.
-    public static final IBiomeTraitRegistry INSTANCE = new BiomeTraitRegistry();
+    public static final BiomeTraitRegistry INSTANCE = new BiomeTraitRegistry();
 
-    private final Map<Class<? extends IBiomeTrait>, ResourceLocation> biomeTraitNames = new HashMap<>();
-    private final Map<ResourceLocation, IBiomeTraitBuilder> biomeTraitBuilders = new HashMap<>();
+    private final Map<Class<? extends BiomeTrait>, ResourceLocation> biomeTraitNames = new HashMap<>();
+    private final Map<ResourceLocation, BiomeTrait.Builder<?>> biomeTraitBuilders = new HashMap<>();
 
     private BiomeTraitRegistry()
     {
@@ -51,8 +47,7 @@ public final class BiomeTraitRegistry implements IBiomeTraitRegistry
         this.registerBiomeTrait(LibraryEx.getResource("structure"), new BiomeTraitStructure.Builder(), BiomeTraitStructure.class);
     }
 
-    @Override
-    public void registerBiomeTrait(ResourceLocation registryName, IBiomeTraitBuilder biomeTraitBuilder, Class<? extends IBiomeTrait> cls)
+    public void registerBiomeTrait(ResourceLocation registryName, BiomeTrait.Builder<?> biomeTraitBuilder, Class<? extends BiomeTrait> cls)
     {
         if(registryName == null || biomeTraitBuilder == null || cls == null)
         {
@@ -70,38 +65,32 @@ public final class BiomeTraitRegistry implements IBiomeTraitRegistry
         }
     }
 
-    @Override
     public void unregisterBiomeTrait(ResourceLocation registryName)
     {
         this.biomeTraitBuilders.remove(registryName);
     }
 
-    @Override
     public boolean hasBiomeTrait(ResourceLocation registryName)
     {
         return this.biomeTraitBuilders.containsKey(registryName);
     }
 
-    @Override
-    public ResourceLocation getBiomeTraitName(Class<? extends IBiomeTrait> cls)
+    public ResourceLocation getBiomeTraitName(Class<? extends BiomeTrait> cls)
     {
         return this.biomeTraitNames.get(cls);
     }
 
-    @Override
-    public IBiomeTraitBuilder getBiomeTraitBuilder(ResourceLocation registryName)
+    public BiomeTrait.Builder<?> getBiomeTraitBuilder(ResourceLocation registryName)
     {
         return this.biomeTraitBuilders.get(registryName);
     }
 
-    @Override
-    public Map<Class<? extends IBiomeTrait>, ResourceLocation> getBiomeTraitNames()
+    public Map<Class<? extends BiomeTrait>, ResourceLocation> getBiomeTraitNames()
     {
         return Collections.unmodifiableMap(this.biomeTraitNames);
     }
 
-    @Override
-    public Map<ResourceLocation, IBiomeTraitBuilder> getBiomeTraitBuilders()
+    public Map<ResourceLocation, BiomeTrait.Builder<?>> getBiomeTraitBuilders()
     {
         return Collections.unmodifiableMap(this.biomeTraitBuilders);
     }

@@ -122,44 +122,23 @@ public class Trade extends MerchantRecipe
     {
         Config tradeConfig = JsonFormat.newConfig(LinkedHashMap::new);
         ConfigHelper.setItemStackSimple(tradeConfig, "output", this.output.getItemStack());
-
-        if(!tradeConfig.contains("output.minCount"))
-        {
-            tradeConfig.add("output.minCount", this.output.getMinCount());
-        }
-        if(!tradeConfig.contains("output.maxCount"))
-        {
-            tradeConfig.add("output.maxCount", this.output.getMaxCount());
-        }
+        tradeConfig.set("output.minCount", this.output.getMinCount());
+        tradeConfig.set("output.maxCount", this.output.getMaxCount());
 
         ConfigHelper.setItemStackSimple(tradeConfig, "inputOne", this.inputOne.getItemStack());
-
-        if(!tradeConfig.contains("inputOne.minCount"))
-        {
-            tradeConfig.add("inputOne.minCount", this.inputOne.getMinCount());
-        }
-        if(!tradeConfig.contains("inputOne.maxCount"))
-        {
-            tradeConfig.add("inputOne.maxCount", this.inputOne.getMaxCount());
-        }
+        tradeConfig.set("inputOne.minCount", this.inputOne.getMinCount());
+        tradeConfig.set("inputOne.maxCount", this.inputOne.getMaxCount());
 
         if(this.hasSecondItemToBuy())
         {
             ConfigHelper.setItemStackSimple(tradeConfig, "inputTwo", this.inputTwo.getItemStack());
-
-            if(!tradeConfig.contains("inputTwo.minCount"))
-            {
-                tradeConfig.add("inputTwo.minCount", this.inputTwo.getMinCount());
-            }
-            if(!tradeConfig.contains("inputTwo.maxCount"))
-            {
-                tradeConfig.add("inputTwo.maxCount", this.inputTwo.getMaxCount());
-            }
+            tradeConfig.set("inputTwo.minCount", this.inputTwo.getMinCount());
+            tradeConfig.set("inputTwo.maxCount", this.inputTwo.getMaxCount());
         }
 
-        tradeConfig.add("minTradeCount", this.minTradeCount);
-        tradeConfig.add("maxTradeCount", this.maxTradeCount);
-        tradeConfig.add("tradeLevel", this.tradeLevel);
+        tradeConfig.set("minTradeCount", this.minTradeCount);
+        tradeConfig.set("maxTradeCount", this.maxTradeCount);
+        tradeConfig.set("tradeLevel", this.tradeLevel);
         return tradeConfig;
     }
 

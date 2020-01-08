@@ -18,9 +18,6 @@
 package logictechcorp.libraryex.world.generation.trait;
 
 import com.electronwill.nightconfig.core.Config;
-import logictechcorp.libraryex.api.LibraryExAPI;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTrait;
-import logictechcorp.libraryex.api.world.generation.trait.IBiomeTraitBuilder;
 import logictechcorp.libraryex.utility.RandomHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -30,7 +27,7 @@ import java.util.Random;
 /**
  * The base class for a biome trait.
  */
-public abstract class BiomeTrait implements IBiomeTrait
+public abstract class BiomeTrait
 {
     protected int generationAttempts;
     protected boolean randomizeGenerationAttempts;
@@ -47,10 +44,8 @@ public abstract class BiomeTrait implements IBiomeTrait
         this.maximumGenerationHeight = builder.maximumGenerationHeight;
     }
 
-    @Override
     public abstract boolean generate(World world, BlockPos pos, Random random);
 
-    @Override
     public void readFromConfig(Config config)
     {
         this.generationAttempts = config.getOrElse("generationAttempts", 4);
@@ -60,10 +55,9 @@ public abstract class BiomeTrait implements IBiomeTrait
         this.maximumGenerationHeight = config.getOrElse("maximumGenerationHeight", 255);
     }
 
-    @Override
     public void writeToConfig(Config config)
     {
-        config.add("trait", LibraryExAPI.getInstance().getBiomeTraitRegistry().getBiomeTraitName(this.getClass()).toString());
+        config.add("trait", BiomeTraitRegistry.INSTANCE.getBiomeTraitName(this.getClass()).toString());
         config.add("generationAttempts", this.generationAttempts);
         config.add("randomizeGenerationAttempts", this.randomizeGenerationAttempts);
         config.add("generationProbability", this.generationProbability);
@@ -71,13 +65,11 @@ public abstract class BiomeTrait implements IBiomeTrait
         config.add("maximumGenerationHeight", this.maximumGenerationHeight);
     }
 
-    @Override
     public boolean useRandomizedGenerationAttempts()
     {
         return this.randomizeGenerationAttempts;
     }
 
-    @Override
     public int getGenerationAttempts(World world, BlockPos pos, Random random)
     {
         int attempts = 0;
@@ -95,25 +87,22 @@ public abstract class BiomeTrait implements IBiomeTrait
         return attempts;
     }
 
-    @Override
     public double getGenerationProbability(World world, BlockPos pos, Random random)
     {
         return this.generationProbability;
     }
 
-    @Override
     public int getMinimumGenerationHeight(World world, BlockPos pos, Random random)
     {
         return this.minimumGenerationHeight;
     }
 
-    @Override
     public int getMaximumGenerationHeight(World world, BlockPos pos, Random random)
     {
         return this.maximumGenerationHeight;
     }
 
-    public static abstract class Builder implements IBiomeTraitBuilder<BiomeTrait>
+    public static abstract class Builder<T extends BiomeTrait>
     {
         protected int generationAttempts;
         protected boolean randomizeGenerationAttempts;
@@ -130,34 +119,36 @@ public abstract class BiomeTrait implements IBiomeTrait
             this.maximumGenerationHeight = 60;
         }
 
-        public Builder generationAttempts(int generationAttempts)
+        public Builder<?> generationAttempts(int generationAttempts)
         {
             this.generationAttempts = generationAttempts;
             return this;
         }
 
-        public Builder randomizeGenerationAttempts(boolean randomizeGenerationAttempts)
+        public Builder<?> randomizeGenerationAttempts(boolean randomizeGenerationAttempts)
         {
             this.randomizeGenerationAttempts = randomizeGenerationAttempts;
             return this;
         }
 
-        public Builder generationProbability(double generationProbability)
+        public Builder<?> generationProbability(double generationProbability)
         {
             this.generationProbability = generationProbability;
             return this;
         }
 
-        public Builder minimumGenerationHeight(int minimumGenerationHeight)
+        public Builder<?> minimumGenerationHeight(int minimumGenerationHeight)
         {
             this.minimumGenerationHeight = minimumGenerationHeight;
             return this;
         }
 
-        public Builder maximumGenerationHeight(int maximumGenerationHeight)
+        public Builder<?> maximumGenerationHeight(int maximumGenerationHeight)
         {
             this.maximumGenerationHeight = maximumGenerationHeight;
             return this;
         }
+
+        public abstract T create();
     }
 }
