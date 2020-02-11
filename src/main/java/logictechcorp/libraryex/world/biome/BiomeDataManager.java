@@ -24,16 +24,20 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import logictechcorp.libraryex.LibraryEx;
-import logictechcorp.libraryex.utility.DynamicHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.ReloadListener;
+import net.minecraft.entity.EntityType;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.io.IOUtils;
@@ -84,36 +88,62 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                 IResource resource = resourceManager.getResource(resourceLocation);
                 InputStream inputStream = resource.getInputStream();
                 Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, JSONUtils.fromJson(GSON, reader, JsonObject.class));
+                Dynamic<JsonElement> rootDynamic = new Dynamic<>(JsonOps.INSTANCE, JSONUtils.fromJson(GSON, reader, JsonObject.class));
                 IOUtils.closeQuietly(reader);
                 IOUtils.closeQuietly(resource);
 
-                if(dynamic.getValue() == null)
+                if(rootDynamic.getValue() == null)
                 {
                     LibraryEx.LOGGER.error("Couldn't load {} biome config from {} data pack.", resource.getLocation(), resource.getPackName());
                 }
                 else
                 {
-                    Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(dynamic.get("biome").asString("")));
+                    Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(rootDynamic.get("biome").asString("")));
 
                     if(biome != null)
                     {
                         ResourceLocation biomeName = biome.getRegistryName();
-                        int generationWeight = dynamic.get("generation_weight").asInt(10);
+                        int generationWeight = rootDynamic.get("generation_weight").asInt(10);
 
                         if(generationWeight > 0)
                         {
-                            boolean useDefaultFeatures = dynamic.getValue().getAsJsonObject().get("use_default_features").getAsBoolean();
-                            boolean isSubBiome = dynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
-                            Map<BiomeData.BlockType, BlockState> blocks = dynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
-                            List<Biome.SpawnListEntry> entities = dynamic.get("entities").asList(DynamicHelper::deserializeSpawnListEntry);
-                            Map<Dynamic<?>, ConfiguredFeature<?>> features = dynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), DynamicHelper::deserializeConfiguredFeature));
-                            List<String> subBiomes = dynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
+                            boolean useDefaultFeatures = rootDynamic.getValue().getAsJsonObject().get("use_default_features").getAsBoolean();
+                            boolean isSubBiome = rootDynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
+                            Map<BiomeData.BlockType, BlockState> blocks = rootDynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
+                            List<Biome.SpawnListEntry> entities = rootDynamic.get("entities").asList(entityDynamic ->
+                            {
+                                EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityDynamic.get("type").asString("minecraft:pig")));
+                                int spawnWeight = entityDynamic.get("spawn_weight").asInt(10);
+                                int minimumGroupCount = entityDynamic.get("minimum_group_count").asInt(1);
+                                int maximumGroupCount = entityDynamic.get("maximum_group_count").asInt(4);
+                                return new Biome.SpawnListEntry(entityType, spawnWeight, minimumGroupCount, maximumGroupCount);
+                            });
+                            Map<Dynamic<?>, ConfiguredFeature<?>> features = rootDynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), featureDynamic ->
+                            {
+                                ConfiguredFeature<?> configuredFeature = ConfiguredFeature.deserialize(featureDynamic.get("feature").orElseEmptyMap());
+                                ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(featureDynamic.get("decorator").orElseEmptyMap());
+                                return new ConfiguredFeature<>(Feature.DECORATED, new DecoratedFeatureConfig(configuredFeature, configuredPlacement));
+                            }));
+                            List<String> subBiomes = rootDynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
 
                             BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
                             blocks.forEach(biomeData::addBiomeBlock);
                             entities.forEach(biomeData::addEntitySpawn);
-                            features.forEach((featureDynamic, feature) -> biomeData.addFeature(DynamicHelper.deserializeGenerationStage(featureDynamic), feature));
+                            features.forEach((featureDynamic, feature) ->
+                            {
+                                GenerationStage.Decoration stage;
+
+                                try
+                                {
+                                    stage = GenerationStage.Decoration.valueOf(featureDynamic.get("stage").asString("").toUpperCase());
+                                }
+                                catch(Throwable ignored)
+                                {
+                                    stage = GenerationStage.Decoration.RAW_GENERATION;
+                                }
+
+                                biomeData.addFeature(stage, feature);
+                            });
                             this.subBiomeData.put(biomeName, subBiomes);
                             this.biomeData.put(biomeName, biomeData);
 
