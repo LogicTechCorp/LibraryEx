@@ -68,7 +68,7 @@ public class BiomeData
             this.defaultFeatures.computeIfAbsent(stage, k -> new ArrayList<>());
             List<ConfiguredFeature<?>> features = this.biome.getFeatures(stage);
 
-            for(ConfiguredFeature feature : features)
+            for(ConfiguredFeature<?> feature : features)
             {
                 this.defaultFeatures.get(stage).add(feature);
             }

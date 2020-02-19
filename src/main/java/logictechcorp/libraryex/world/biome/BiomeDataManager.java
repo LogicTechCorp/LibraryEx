@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonObject>>
 {
@@ -131,21 +132,13 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                             entities.forEach(biomeData::addEntitySpawn);
                             features.forEach((featureDynamic, feature) ->
                             {
-                                GenerationStage.Decoration stage;
-
-                                try
-                                {
-                                    stage = GenerationStage.Decoration.valueOf(featureDynamic.get("stage").asString("").toUpperCase());
-                                }
-                                catch(Throwable ignored)
-                                {
-                                    stage = GenerationStage.Decoration.RAW_GENERATION;
-                                }
-
+                                GenerationStage.Decoration stage = Stream.of(GenerationStage.Decoration.values())
+                                        .filter(value -> value.getName().equalsIgnoreCase(featureDynamic.get("stage").asString("").toUpperCase()))
+                                        .findAny().orElse(GenerationStage.Decoration.RAW_GENERATION);
                                 biomeData.addFeature(stage, feature);
                             });
-                            this.subBiomeData.put(biomeName, subBiomes);
                             this.biomeData.put(biomeName, biomeData);
+                            this.subBiomeData.put(biomeName, subBiomes);
 
                             if(!biomeData.isSubBiome())
                             {
@@ -229,6 +222,30 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
     public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultFeatures, boolean isSubBiome)
     {
         return new BiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
+    }
+
+    public BiomeData registerBiomeData(BiomeData biomeData)
+    {
+        Biome biome = biomeData.getBiome();
+        ResourceLocation biomeName = biome.getRegistryName();
+
+        this.biomeData.put(biomeName, biomeData);
+        this.subBiomeData.put(biomeName, biomeData.getSubBiomes().stream().map(subBiomeData -> subBiomeData.getBiome().getRegistryName().toString()).collect(Collectors.toList()));
+
+        if(!biomeData.isSubBiome())
+        {
+            this.biomeEntries.put(biomeName, new BiomeManager.BiomeEntry(biome, biomeData.getGenerationWeight()));
+        }
+
+        return biomeData;
+    }
+
+    public void unregisterBiomeData(BiomeData biomeData)
+    {
+        ResourceLocation biomeName = biomeData.getBiome().getRegistryName();
+        this.biomeData.remove(biomeName);
+        this.subBiomeData.remove(biomeName);
+        this.biomeEntries.remove(biomeName);
     }
 
     public void cleanup()
