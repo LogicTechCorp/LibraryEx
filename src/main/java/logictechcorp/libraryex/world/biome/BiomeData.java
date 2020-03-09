@@ -18,114 +18,63 @@
 package logictechcorp.libraryex.world.biome;
 
 import com.mojang.datafixers.Dynamic;
-import logictechcorp.libraryex.world.generation.feature.FeatureWrapper;
-import logictechcorp.libraryex.world.generation.feature.LibraryExFeatures;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ReportedException;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.util.SharedSeedRandom;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.feature.IFeatureConfig;
-import net.minecraft.world.gen.placement.IPlacementConfig;
-import net.minecraft.world.gen.placement.Placement;
 
 import java.util.*;
 
 public class BiomeData
 {
-    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, false);
+    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, true, false);
 
     protected final Biome biome;
     protected int generationWeight;
     protected boolean useDefaultFeatures;
+    protected boolean useDefaultCarvers;
     protected boolean isSubBiome;
     protected final Map<BlockType, BlockState> blocks;
     protected final Map<EntityClassification, List<Biome.SpawnListEntry>> spawns;
-    protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> defaultFeatures;
-    protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> customFeatures;
+    protected final Map<GenerationStage.Carving, List<ConfiguredCarver<?>>> carvers;
+    protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> features;
     protected final List<BiomeData> subBiomes;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
     {
         this.biome = biome;
         this.generationWeight = generationWeight;
+        this.useDefaultCarvers = useDefaultCarvers;
         this.useDefaultFeatures = useDefaultFeatures;
         this.isSubBiome = isSubBiome;
         this.blocks = new EnumMap<>(BlockType.class);
         this.spawns = new EnumMap<>(EntityClassification.class);
-        this.defaultFeatures = new EnumMap<>(GenerationStage.Decoration.class);
-        this.customFeatures = new EnumMap<>(GenerationStage.Decoration.class);
+        this.carvers = new EnumMap<>(GenerationStage.Carving.class);
+        this.features = new EnumMap<>(GenerationStage.Decoration.class);
         this.subBiomes = new ArrayList<>();
     }
 
     public void configureBiome()
     {
-        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
-        {
-            this.defaultFeatures.computeIfAbsent(stage, k -> new ArrayList<>());
-            List<ConfiguredFeature<?>> features = this.biome.getFeatures(stage);
 
-            for(ConfiguredFeature<?> feature : features)
-            {
-                this.defaultFeatures.get(stage).add(feature);
-            }
-
-            if(!this.useDefaultFeatures)
-            {
-                features.clear();
-            }
-        }
-
-        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
-        {
-            List<ConfiguredFeature<?>> features = this.customFeatures.get(stage);
-
-            if(features != null)
-            {
-                this.biome.addFeature(stage, Biome.createDecoratedFeature(LibraryExFeatures.FEATURE_WRAPPER.get(), new FeatureWrapper.Config(features), Placement.NOPE, IPlacementConfig.NO_PLACEMENT_CONFIG));
-            }
-        }
     }
 
     public void resetBiome()
     {
-        for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
-        {
-            Iterator<ConfiguredFeature<?>> features = this.biome.getFeatures(stage).iterator();
 
-            while(features.hasNext())
-            {
-                ConfiguredFeature<?> feature = features.next();
-                IFeatureConfig featureConfig = feature.config;
-
-                if(featureConfig instanceof DecoratedFeatureConfig)
-                {
-                    DecoratedFeatureConfig decoratedFeatureConfig = (DecoratedFeatureConfig) featureConfig;
-
-                    if(decoratedFeatureConfig.feature.feature instanceof FeatureWrapper)
-                    {
-                        features.remove();
-                    }
-                }
-            }
-        }
-
-        if(!this.useDefaultFeatures)
-        {
-            for(GenerationStage.Decoration stage : GenerationStage.Decoration.values())
-            {
-                this.defaultFeatures.computeIfAbsent(stage, k -> new ArrayList<>());
-                List<ConfiguredFeature<?>> features = this.defaultFeatures.get(stage);
-
-                for(ConfiguredFeature feature : features)
-                {
-                    this.biome.addFeature(stage, feature);
-                }
-            }
-        }
     }
 
     public void addBiomeBlock(BlockType blockType, BlockState blockState)
@@ -146,14 +95,87 @@ public class BiomeData
         }
     }
 
+    public void addCarver(GenerationStage.Carving stage, ConfiguredCarver<?> carver)
+    {
+        this.carvers.computeIfAbsent(stage, k -> new ArrayList<>()).add(carver);
+    }
+
     public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?> feature)
     {
-        this.customFeatures.computeIfAbsent(stage, k -> new ArrayList<>()).add(feature);
+        this.features.computeIfAbsent(stage, k -> new ArrayList<>()).add(feature);
     }
 
     public void addSubBiome(BiomeData subBiomeData)
     {
         this.subBiomes.add(subBiomeData);
+    }
+
+    public void carve(GenerationStage.Carving stage, IChunk chunk, long seed, int seaLevel)
+    {
+        ChunkPos chunkPos = chunk.getPos();
+        int chunkX = chunkPos.x;
+        int chunkZ = chunkPos.z;
+        SharedSeedRandom random = new SharedSeedRandom();
+
+        for(int posX = chunkX - 8; posX <= chunkX + 8; posX++)
+        {
+            for(int posZ = chunkZ - 8; posZ <= chunkZ + 8; posZ++)
+            {
+                List<ConfiguredCarver<?>> carvers = new ArrayList<>();
+
+                if(this.useDefaultCarvers)
+                {
+                    carvers.addAll(this.biome.getCarvers(stage));
+                }
+
+                carvers.addAll(this.getCarvers(stage));
+                ListIterator<ConfiguredCarver<?>> carverIter = carvers.listIterator();
+
+                while(carverIter.hasNext())
+                {
+                    int index = carverIter.nextIndex();
+                    ConfiguredCarver<?> carver = carverIter.next();
+                    random.setLargeFeatureSeed(seed + (long) index, posX, posZ);
+
+                    if(carver.shouldCarve(random, posX, posZ))
+                    {
+                        carver.carve(chunk, random, seaLevel, posX, posZ, chunkX, chunkZ, chunk.getCarvingMask(stage));
+                    }
+                }
+            }
+        }
+    }
+
+    public void decorate(GenerationStage.Decoration stage, ChunkGenerator<? extends GenerationSettings> chunkGenerator, IWorld world, long seed, SharedSeedRandom random, BlockPos pos)
+    {
+        int featureCount = 0;
+
+        List<ConfiguredFeature<?>> features = new ArrayList<>();
+
+        if(this.useDefaultFeatures)
+        {
+            features.addAll(this.biome.getFeatures(stage));
+        }
+
+        features.addAll(this.getFeatures(stage));
+
+        for(ConfiguredFeature<?> feature : features)
+        {
+            random.setFeatureSeed(seed, featureCount, stage.ordinal());
+
+            try
+            {
+                feature.place(world, chunkGenerator, random, pos);
+            }
+            catch(Exception exception)
+            {
+                CrashReport crashReport = CrashReport.makeCrashReport(exception, "Feature placement");
+                crashReport.makeCategory("Feature").addDetail("Id", feature.feature.getRegistryName()).addDetail("Description", feature.feature::toString);
+                throw new ReportedException(crashReport);
+            }
+
+            featureCount++;
+        }
     }
 
     public Biome getBiome()
@@ -164,6 +186,11 @@ public class BiomeData
     public int getGenerationWeight()
     {
         return this.generationWeight;
+    }
+
+    public boolean useDefaultCarvers()
+    {
+        return this.useDefaultCarvers;
     }
 
     public boolean useDefaultFeatures()
@@ -184,6 +211,16 @@ public class BiomeData
     public List<Biome.SpawnListEntry> getSpawns(EntityClassification classification)
     {
         return this.spawns.computeIfAbsent(classification, k -> new ArrayList<>());
+    }
+
+    public List<ConfiguredCarver<?>> getCarvers(GenerationStage.Carving stage)
+    {
+        return this.carvers.computeIfAbsent(stage, k -> new ArrayList<>());
+    }
+
+    public List<ConfiguredFeature<?>> getFeatures(GenerationStage.Decoration stage)
+    {
+        return this.features.computeIfAbsent(stage, k -> new ArrayList<>());
     }
 
     public List<BiomeData> getSubBiomes()

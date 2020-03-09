@@ -32,11 +32,16 @@ import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.carver.ICarverConfig;
+import net.minecraft.world.gen.carver.WorldCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.ProbabilityConfig;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -81,7 +86,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
         {
             try
             {
-                if(!resourceLocation.toString().contains(this.folderName))
+                if(!resourceLocation.getPath().startsWith(this.folderName))
                 {
                     resourceLocation = new ResourceLocation(resourceLocation.getNamespace(), this.folderName + "/" + resourceLocation.getPath() + ".json");
                 }
@@ -108,6 +113,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
 
                         if(generationWeight > 0)
                         {
+                            boolean useDefaultCarvers = rootDynamic.getValue().getAsJsonObject().get("use_default_carvers").getAsBoolean();
                             boolean useDefaultFeatures = rootDynamic.getValue().getAsJsonObject().get("use_default_features").getAsBoolean();
                             boolean isSubBiome = rootDynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
                             Map<BiomeData.BlockType, BlockState> blocks = rootDynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
@@ -119,17 +125,30 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                                 int maximumGroupCount = entityDynamic.get("maximum_group_count").asInt(4);
                                 return new Biome.SpawnListEntry(entityType, spawnWeight, minimumGroupCount, maximumGroupCount);
                             });
-                            Map<Dynamic<?>, ConfiguredFeature<?>> features = rootDynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), featureDynamic ->
+                            Map<Dynamic<?>, ConfiguredCarver<?>> carvers = rootDynamic.get("carvers").asStream().collect(Collectors.toMap(Function.identity(), carversDynamic ->
                             {
-                                ConfiguredFeature<?> configuredFeature = ConfiguredFeature.deserialize(featureDynamic.get("feature").orElseEmptyMap());
-                                ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(featureDynamic.get("decorator").orElseEmptyMap());
+                                WorldCarver<ICarverConfig> configuredCarver = (WorldCarver<ICarverConfig>) Registry.CARVER.getOrDefault(new ResourceLocation(carversDynamic.get("carver").orElseEmptyMap().get("name").asString("")));
+                                ProbabilityConfig carverConfig = ProbabilityConfig.deserialize(carversDynamic.get("decorator").orElseEmptyMap().get("config").orElseEmptyMap());
+                                return new ConfiguredCarver<>(configuredCarver, carverConfig);
+                            }));
+                            Map<Dynamic<?>, ConfiguredFeature<?>> features = rootDynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), featuresDynamic ->
+                            {
+                                ConfiguredFeature<?> configuredFeature = ConfiguredFeature.deserialize(featuresDynamic.get("feature").orElseEmptyMap());
+                                ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(featuresDynamic.get("decorator").orElseEmptyMap());
                                 return new ConfiguredFeature<>(Feature.DECORATED, new DecoratedFeatureConfig(configuredFeature, configuredPlacement));
                             }));
                             List<String> subBiomes = rootDynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
 
-                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
+                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultCarvers, useDefaultFeatures, isSubBiome);
                             blocks.forEach(biomeData::addBiomeBlock);
                             entities.forEach(biomeData::addEntitySpawn);
+                            carvers.forEach(((carverDynamic, carver) ->
+                            {
+                                GenerationStage.Carving stage = Stream.of(GenerationStage.Carving.values())
+                                        .filter(value -> value.getName().equalsIgnoreCase(carverDynamic.get("stage").asString("").toUpperCase()))
+                                        .findAny().orElse(GenerationStage.Carving.AIR);
+                                biomeData.addCarver(stage, carver);
+                            }));
                             features.forEach((featureDynamic, feature) ->
                             {
                                 GenerationStage.Decoration stage = Stream.of(GenerationStage.Decoration.values())
@@ -185,7 +204,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
             String path = resource.getPath();
             ResourceLocation truncatedResource;
 
-            if(!resource.getPath().startsWith(this.folderName))
+            if(!path.startsWith(this.folderName))
             {
                 truncatedResource = resource;
             }
@@ -202,7 +221,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                 {
                     if(map.put(truncatedResource, jsonObject) != null)
                     {
-                        LibraryEx.LOGGER.error("Duplicate data file: " + truncatedResource);
+                        LibraryEx.LOGGER.error("Duplicate data file: {}", truncatedResource);
                     }
                 }
                 else
@@ -219,9 +238,9 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
         return map;
     }
 
-    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
     {
-        return new BiomeData(biome, generationWeight, useDefaultFeatures, isSubBiome);
+        return new BiomeData(biome, generationWeight, useDefaultCarvers, useDefaultFeatures, isSubBiome);
     }
 
     public BiomeData registerBiomeData(BiomeData biomeData)
@@ -254,6 +273,11 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
         this.biomeData.clear();
         this.subBiomeData.clear();
         this.biomeEntries.clear();
+    }
+
+    public BiomeData getBiomeData(Biome biome)
+    {
+        return this.biomeData.getOrDefault(biome.getRegistryName(), BiomeData.EMPTY);
     }
 
     public Map<ResourceLocation, BiomeData> getBiomeData()
