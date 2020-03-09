@@ -26,7 +26,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.packs.ModFileResourcePack;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -68,13 +67,13 @@ public class BuiltinDataPack extends ModFileResourcePack implements IPackFinder
     @Override
     public boolean resourceExists(String name)
     {
-        return Files.exists(this.modFile.getLocator().findPath(this.modFile, "datapacks" + File.separator + this.packName + File.separator + name));
+        return Files.exists(this.modFile.getLocator().findPath(this.modFile, "datapacks", this.packName, name));
     }
 
     @Override
     public InputStream getInputStream(String name) throws IOException
     {
-        Path path = this.modFile.getLocator().findPath(this.modFile, "datapacks" + File.separator + this.packName + File.separator + name);
+        Path path = this.modFile.getLocator().findPath(this.modFile, "datapacks", this.packName, name);
         return Files.newInputStream(path, StandardOpenOption.READ);
     }
 
