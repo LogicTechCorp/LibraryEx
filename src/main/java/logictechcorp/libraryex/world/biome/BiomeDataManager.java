@@ -113,8 +113,10 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
 
                         if(generationWeight > 0)
                         {
-                            boolean useDefaultCarvers = rootDynamic.getValue().getAsJsonObject().get("use_default_carvers").getAsBoolean();
-                            boolean useDefaultFeatures = rootDynamic.getValue().getAsJsonObject().get("use_default_features").getAsBoolean();
+                            JsonObject rootObject = rootDynamic.getValue().getAsJsonObject();
+                            boolean useDefaultEntities = JSONUtils.getBoolean(rootObject, "use_default_entities", true);
+                            boolean useDefaultCarvers = JSONUtils.getBoolean(rootObject, "use_default_carvers", true);
+                            boolean useDefaultFeatures = JSONUtils.getBoolean(rootObject, "use_default_features", true);
                             boolean isSubBiome = rootDynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
                             Map<BiomeData.BlockType, BlockState> blocks = rootDynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
                             List<Biome.SpawnListEntry> entities = rootDynamic.get("entities").asList(entityDynamic ->
@@ -139,7 +141,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                             }));
                             List<String> subBiomes = rootDynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
 
-                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultCarvers, useDefaultFeatures, isSubBiome);
+                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, isSubBiome);
                             blocks.forEach(biomeData::addBiomeBlock);
                             entities.forEach(biomeData::addEntitySpawn);
                             carvers.forEach(((carverDynamic, carver) ->
@@ -238,9 +240,9 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
         return map;
     }
 
-    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
     {
-        return new BiomeData(biome, generationWeight, useDefaultCarvers, useDefaultFeatures, isSubBiome);
+        return new BiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, isSubBiome);
     }
 
     public BiomeData registerBiomeData(BiomeData biomeData)

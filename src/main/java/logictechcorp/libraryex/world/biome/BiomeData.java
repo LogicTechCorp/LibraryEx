@@ -40,10 +40,11 @@ import java.util.*;
 
 public class BiomeData
 {
-    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, true, false);
+    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, true, true, false);
 
     protected final Biome biome;
     protected int generationWeight;
+    protected boolean useDefaultEntities;
     protected boolean useDefaultFeatures;
     protected boolean useDefaultCarvers;
     protected boolean isSubBiome;
@@ -53,10 +54,11 @@ public class BiomeData
     protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> features;
     protected final List<BiomeData> subBiomes;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
     {
         this.biome = biome;
         this.generationWeight = generationWeight;
+        this.useDefaultEntities = useDefaultEntities;
         this.useDefaultCarvers = useDefaultCarvers;
         this.useDefaultFeatures = useDefaultFeatures;
         this.isSubBiome = isSubBiome;
@@ -186,6 +188,11 @@ public class BiomeData
     public int getGenerationWeight()
     {
         return this.generationWeight;
+    }
+
+    public boolean useDefaultEntities()
+    {
+        return this.useDefaultEntities;
     }
 
     public boolean useDefaultCarvers()
