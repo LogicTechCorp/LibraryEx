@@ -35,6 +35,7 @@ import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.surfacebuilders.ISurfaceBuilderConfig;
 
 import java.util.*;
 
@@ -212,7 +213,29 @@ public class BiomeData
 
     public BlockState getBiomeBlock(BlockType blockType)
     {
-        return this.blocks.computeIfAbsent(blockType, k -> Blocks.AIR.getDefaultState());
+        BlockState state = this.blocks.get(blockType);
+
+        if(state == null)
+        {
+            ISurfaceBuilderConfig surfaceBuilderConfig = this.biome.getSurfaceBuilderConfig();
+
+            switch(blockType)
+            {
+                case SURFACE_BLOCK:
+                    state = surfaceBuilderConfig.getTop();
+                    break;
+                case SUBSURFACE_BLOCK:
+                    state = surfaceBuilderConfig.getUnder();
+                    break;
+                case LIQUID_BLOCK:
+                    state = Blocks.LAVA.getDefaultState();
+                    break;
+            }
+
+            this.addBiomeBlock(blockType, state);
+        }
+
+        return state;
     }
 
     public List<Biome.SpawnListEntry> getSpawns(EntityClassification classification)
