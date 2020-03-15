@@ -48,7 +48,7 @@ public class BiomeDataManager
     private final Logger logger;
     private final Map<ResourceLocation, BiomeData> defaultBiomeData;
     private final Map<ResourceLocation, BiomeData> worldSpecificBiomeData;
-    private final Map<ResourceLocation, BiomeManager.BiomeEntry> WorldSpecificBiomeEntries;
+    private final Map<ResourceLocation, BiomeManager.BiomeEntry> worldSpecificBiomeEntries;
 
     public BiomeDataManager(String modId, String modName)
     {
@@ -56,7 +56,7 @@ public class BiomeDataManager
         this.logger = LogManager.getLogger(modName);
         this.defaultBiomeData = new HashMap<>();
         this.worldSpecificBiomeData = new HashMap<>();
-        this.WorldSpecificBiomeEntries = new ConcurrentHashMap<>();
+        this.worldSpecificBiomeEntries = new ConcurrentHashMap<>();
     }
 
     public void setup()
@@ -66,7 +66,7 @@ public class BiomeDataManager
 
     public void registerBiomeData(BiomeData biomeData)
     {
-        if(biomeData != null && biomeData.getBiome() != null)
+        if(biomeData != null && biomeData.getBiome() != null && biomeData != BiomeData.EMPTY)
         {
             Biome biome = biomeData.getBiome();
             ResourceLocation biomeRegistryName = biome.getRegistryName();
@@ -79,11 +79,11 @@ public class BiomeDataManager
             {
                 if(biomeData.isEnabled())
                 {
-                    this.WorldSpecificBiomeEntries.put(biomeRegistryName, new BiomeManager.BiomeEntry(biome, biomeData.getGenerationWeight()));
+                    this.worldSpecificBiomeEntries.put(biomeRegistryName, new BiomeManager.BiomeEntry(biome, biomeData.getGenerationWeight()));
                 }
                 else
                 {
-                    this.WorldSpecificBiomeEntries.remove(biomeRegistryName);
+                    this.worldSpecificBiomeEntries.remove(biomeRegistryName);
                 }
             }
         }
@@ -95,14 +95,14 @@ public class BiomeDataManager
         {
             ResourceLocation biomeRegistryName = biome.getRegistryName();
             this.worldSpecificBiomeData.remove(biomeRegistryName);
-            this.WorldSpecificBiomeEntries.remove(biomeRegistryName);
+            this.worldSpecificBiomeEntries.remove(biomeRegistryName);
         }
     }
 
     public void cleanup(WorldEvent.Unload event)
     {
         this.worldSpecificBiomeData.clear();
-        this.WorldSpecificBiomeEntries.clear();
+        this.worldSpecificBiomeEntries.clear();
     }
 
     public void readBiomeDataConfigs(WorldEvent.Load event)
@@ -202,14 +202,13 @@ public class BiomeDataManager
 
     public BiomeData getBiomeData(Biome biome)
     {
-        return this.worldSpecificBiomeData.get(biome.getRegistryName());
+        return this.worldSpecificBiomeData.getOrDefault(biome.getRegistryName(), BiomeData.EMPTY);
     }
 
     public Map<ResourceLocation, BiomeData> getDefaultBiomeData()
     {
         return Collections.unmodifiableMap(this.defaultBiomeData);
     }
-
 
     public Map<ResourceLocation, BiomeData> getWorldSpecificBiomeData()
     {
@@ -218,6 +217,6 @@ public class BiomeDataManager
 
     public Map<ResourceLocation, BiomeManager.BiomeEntry> getWorldSpecificBiomeEntries()
     {
-        return Collections.unmodifiableMap(this.WorldSpecificBiomeEntries);
+        return Collections.unmodifiableMap(this.worldSpecificBiomeEntries);
     }
 }

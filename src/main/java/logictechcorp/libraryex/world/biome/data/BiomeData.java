@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -41,6 +42,8 @@ import java.util.*;
  */
 public class BiomeData
 {
+    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, false);
+
     protected final Biome biome;
     protected int generationWeight;
     protected boolean useDefaultDecorations;
@@ -312,9 +315,29 @@ public class BiomeData
         return this.generationWeight > 0;
     }
 
-    public IBlockState getBiomeBlock(BlockType biomeBlock)
+    public IBlockState getBiomeBlock(BlockType blockType)
     {
-        return this.biomeBlocks.get(biomeBlock);
+        IBlockState state = this.biomeBlocks.get(blockType);
+
+        if(state == null)
+        {
+            switch(blockType)
+            {
+                case SURFACE_BLOCK:
+                    state = this.biome.topBlock;
+                    break;
+                case SUBSURFACE_BLOCK:
+                    state = this.biome.fillerBlock;
+                    break;
+                case LIQUID_BLOCK:
+                    state = Blocks.LAVA.getDefaultState();
+                    break;
+            }
+
+            this.addBiomeBlock(blockType, state);
+        }
+
+        return state;
     }
 
     public Map<BlockType, IBlockState> getBiomeBlocks()
