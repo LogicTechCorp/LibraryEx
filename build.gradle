@@ -13,19 +13,6 @@ buildscript {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-        resources {
-            srcDir 'src/main/resources'
-            srcDir 'src/generated/resources'
-        }
-        compileClasspath += sourceSets.main.compileClasspath
-    }
-}
-
 version = mod_version
 group = "com.github.logictechcorp"
 archivesBaseName = "${mod_name}-${minecraft_version}"
@@ -41,7 +28,7 @@ minecraft {
             workingDirectory project.file('run')
 
             mods {
-                libraryex {
+                LibraryEx {
                     source sourceSets.main
                 }
             }
@@ -51,7 +38,7 @@ minecraft {
             workingDirectory project.file('run')
 
             mods {
-                libraryex {
+                LibraryEx {
                     source sourceSets.main
                 }
             }
