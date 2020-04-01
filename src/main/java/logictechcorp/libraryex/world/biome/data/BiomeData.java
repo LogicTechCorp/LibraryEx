@@ -110,9 +110,9 @@ public class BiomeData
     {
         this.generationWeight = config.getOrElse("generationWeight", this.generationWeight);
 
-        if(this.generationWeight <= 0)
+        if(this.generationWeight < 0)
         {
-            this.generationWeight = 10;
+            this.generationWeight = 0;
         }
 
         this.useDefaultDecorations = config.getOrElse("useDefaultDecorations", true);
