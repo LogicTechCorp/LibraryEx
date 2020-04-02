@@ -87,7 +87,7 @@ public class ModLootTableProvider implements IDataProvider
 
     public void addOreBlockLootTable(Block block, IItemProvider itemProvider)
     {
-        LootEntry.Builder lootEntry = ItemLootEntry.builder(block)
+        LootEntry.Builder<?> lootEntry = ItemLootEntry.builder(block)
                 .acceptCondition(MatchTool.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1)))))
                 .alternatively(ItemLootEntry.builder(itemProvider).acceptFunction(ApplyBonus.oreDrops(Enchantments.FORTUNE)).acceptFunction(ExplosionDecay.builder()));
 
@@ -109,7 +109,7 @@ public class ModLootTableProvider implements IDataProvider
 
     public void addSilkBlockLootTable(Block block)
     {
-        LootEntry.Builder lootEntry = ItemLootEntry.builder(block)
+        LootEntry.Builder<?> lootEntry = ItemLootEntry.builder(block)
                 .acceptCondition(MatchTool.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.IntBound.atLeast(1)))));
 
         LootPool.Builder lootPool = LootPool.builder()
@@ -125,7 +125,7 @@ public class ModLootTableProvider implements IDataProvider
 
     public void addSlabBlockLootTable(Block block)
     {
-        LootEntry.Builder lootEntry = ItemLootEntry.builder(block)
+        LootEntry.Builder<?> lootEntry = ItemLootEntry.builder(block)
                 .acceptFunction(SetCount.builder(ConstantRange.of(2)).acceptCondition(BlockStateProperty.builder(block).with(SlabBlock.TYPE, SlabType.DOUBLE)))
                 .acceptCondition(SurvivesExplosion.builder());
 
@@ -157,7 +157,7 @@ public class ModLootTableProvider implements IDataProvider
 
         for(IItemProvider itemProvider : itemProviders)
         {
-            LootEntry.Builder lootEntry = ItemLootEntry.builder(itemProvider)
+            LootEntry.Builder<?> lootEntry = ItemLootEntry.builder(itemProvider)
                     .acceptFunction(SetCount.builder(RandomValueRange.of(0.0F, 2.0F)))
                     .acceptFunction(LootingEnchantBonus.builder(RandomValueRange.of(0.0F, 1.0F)));
 
