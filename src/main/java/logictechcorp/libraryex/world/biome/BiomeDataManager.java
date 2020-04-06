@@ -133,9 +133,9 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                                 ProbabilityConfig carverConfig = ProbabilityConfig.deserialize(carversDynamic.get("decorator").orElseEmptyMap().get("config").orElseEmptyMap());
                                 return new ConfiguredCarver<>(configuredCarver, carverConfig);
                             }));
-                            Map<Dynamic<?>, ConfiguredFeature<?>> features = rootDynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), featuresDynamic ->
+                            Map<Dynamic<?>, ConfiguredFeature<?, ?>> features = rootDynamic.get("features").asStream().collect(Collectors.toMap(Function.identity(), featuresDynamic ->
                             {
-                                ConfiguredFeature<?> configuredFeature = ConfiguredFeature.deserialize(featuresDynamic.get("feature").orElseEmptyMap());
+                                ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(featuresDynamic.get("feature").orElseEmptyMap());
                                 ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(featuresDynamic.get("decorator").orElseEmptyMap());
                                 return new ConfiguredFeature<>(Feature.DECORATED, new DecoratedFeatureConfig(configuredFeature, configuredPlacement));
                             }));

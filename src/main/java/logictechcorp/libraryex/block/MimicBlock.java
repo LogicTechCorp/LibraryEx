@@ -17,25 +17,41 @@
 
 package logictechcorp.libraryex.block;
 
+import logictechcorp.libraryex.tileentity.MimicTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.IWorldReader;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 
-public abstract class MimicBlock extends Block
+public abstract class MimicBlock<T extends MimicTileEntity> extends TileEntityBlock<T>
 {
     public static final ModelProperty<BlockState> MIMIC_PROP = new ModelProperty<>();
     private final MimicType mimicType;
 
-    public MimicBlock(Block.Properties properties, MimicType mimicType)
+    public MimicBlock(Block.Properties properties, MimicType mimicType, Class<T> cls)
     {
-        super(properties);
+        super(properties, cls);
         this.mimicType = mimicType;
     }
 
-    public abstract BlockState getMimickedState(BlockState state, IEnviromentBlockReader world, BlockPos pos);
+    public abstract BlockState getMimickedState(BlockState state, IWorldReader world, BlockPos pos);
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    {
+        TileEntity tileEntity = world.getTileEntity(pos);
+
+        if(tileEntity instanceof MimicTileEntity)
+        {
+            tileEntity.requestModelDataUpdate();
+        }
+    }
 
     public ModelResourceLocation getModelLocation()
     {

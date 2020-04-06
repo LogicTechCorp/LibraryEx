@@ -18,7 +18,6 @@
 package logictechcorp.libraryex.client.render.model;
 
 import logictechcorp.libraryex.block.MimicBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -28,10 +27,9 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
+import net.minecraft.world.ILightReader;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,15 +77,8 @@ public class MimicBakedModel extends BakedModelWrapper<IBakedModel>
     }
 
     @Override
-    public IModelData getModelData(IEnviromentBlockReader world, BlockPos pos, BlockState state, IModelData modelData)
+    public IModelData getModelData(ILightReader reader, BlockPos pos, BlockState state, IModelData modelData)
     {
-        Block block = state.getBlock();
-
-        if(block instanceof MimicBlock)
-        {
-            return new ModelDataMap.Builder().withInitial(MimicBlock.MIMIC_PROP, ((MimicBlock) block).getMimickedState(state, world, pos)).build();
-        }
-
         return modelData;
     }
 

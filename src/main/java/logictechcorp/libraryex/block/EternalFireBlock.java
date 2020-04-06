@@ -18,6 +18,7 @@
 package logictechcorp.libraryex.block;
 
 import net.minecraft.block.*;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
@@ -31,6 +32,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -103,7 +105,7 @@ public class EternalFireBlock extends Block
     public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos)
     {
         BlockPos downPos = pos.down();
-        return world.getBlockState(downPos).func_224755_d(world, downPos, Direction.UP) || this.areNeighborsFlammable(world, pos);
+        return world.getBlockState(downPos).isSolidSide(world, downPos, Direction.UP) || this.areNeighborsFlammable(world, pos);
     }
 
     @Override
@@ -113,7 +115,7 @@ public class EternalFireBlock extends Block
     }
 
     @Override
-    public void tick(BlockState state, World world, BlockPos pos, Random random)
+    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random)
     {
         if(world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK))
         {
@@ -150,7 +152,7 @@ public class EternalFireBlock extends Block
 
                     if(!this.areNeighborsFlammable(world, pos))
                     {
-                        if(!world.getBlockState(downPos).func_224755_d(world, downPos, Direction.UP))
+                        if(!world.getBlockState(downPos).isSolidSide(world, downPos, Direction.UP))
                         {
                             world.removeBlock(pos, false);
                         }
@@ -172,7 +174,7 @@ public class EternalFireBlock extends Block
                 this.tryCatchFire(world, pos.up(), 250 + humidityChance, random, age, Direction.DOWN);
                 this.tryCatchFire(world, pos.north(), 300 + humidityChance, random, age, Direction.SOUTH);
                 this.tryCatchFire(world, pos.south(), 300 + humidityChance, random, age, Direction.NORTH);
-                BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+                BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
                 for(int xOffset = -1; xOffset <= 1; ++xOffset)
                 {
@@ -364,12 +366,6 @@ public class EternalFireBlock extends Block
             }
         }
 
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

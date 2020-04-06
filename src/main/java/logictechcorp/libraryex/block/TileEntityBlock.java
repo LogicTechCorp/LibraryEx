@@ -65,10 +65,10 @@ public class TileEntityBlock<T extends TileEntity> extends Block
     }
 
     @Override
-    public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param)
+    public boolean eventReceived(BlockState state, World world, BlockPos pos, int id, int param)
     {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
-        return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
+        TileEntity tileEntity = world.getTileEntity(pos);
+        return tileEntity == null ? false : tileEntity.receiveClientEvent(id, param);
     }
 
     @Override
@@ -80,8 +80,7 @@ public class TileEntityBlock<T extends TileEntity> extends Block
     @Override
     public INamedContainerProvider getContainer(BlockState state, World world, BlockPos pos)
     {
-        TileEntity tileentity = world.getTileEntity(pos);
-        return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
+        TileEntity tileEntity = world.getTileEntity(pos);
+        return tileEntity instanceof INamedContainerProvider ? (INamedContainerProvider) tileEntity : null;
     }
-
 }

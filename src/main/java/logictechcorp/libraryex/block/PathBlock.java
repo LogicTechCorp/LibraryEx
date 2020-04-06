@@ -30,7 +30,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
 import java.util.function.Supplier;
@@ -47,7 +47,7 @@ public class PathBlock extends Block
     }
 
     @Override
-    public void tick(BlockState state, World world, BlockPos pos, Random random)
+    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random)
     {
         world.setBlockState(pos, nudgeEntitiesWithNewState(state, this.stateSupplier.get(), world, pos));
     }
@@ -77,7 +77,7 @@ public class PathBlock extends Block
     }
 
     @Override
-    public boolean func_220074_n(BlockState state)
+    public boolean isTransparent(BlockState state)
     {
         return true;
     }

@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.ChunkGenerator;
@@ -52,7 +53,7 @@ public class BiomeData
     protected final Map<BlockType, BlockState> blocks;
     protected final Map<EntityClassification, List<Biome.SpawnListEntry>> spawns;
     protected final Map<GenerationStage.Carving, List<ConfiguredCarver<?>>> carvers;
-    protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> features;
+    protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?, ?>>> features;
     protected final List<BiomeData> subBiomes;
 
     public BiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
@@ -103,7 +104,7 @@ public class BiomeData
         this.carvers.computeIfAbsent(stage, k -> new ArrayList<>()).add(carver);
     }
 
-    public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?> feature)
+    public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?, ?> feature)
     {
         this.features.computeIfAbsent(stage, k -> new ArrayList<>()).add(feature);
     }
@@ -113,7 +114,7 @@ public class BiomeData
         this.subBiomes.add(subBiomeData);
     }
 
-    public void carve(GenerationStage.Carving stage, IChunk chunk, long seed, int seaLevel)
+    public void carve(BiomeManager biomeManager, IChunk chunk, GenerationStage.Carving stage, long seed, int seaLevel)
     {
         ChunkPos chunkPos = chunk.getPos();
         int chunkX = chunkPos.x;
@@ -142,7 +143,7 @@ public class BiomeData
 
                     if(carver.shouldCarve(random, posX, posZ))
                     {
-                        carver.carve(chunk, random, seaLevel, posX, posZ, chunkX, chunkZ, chunk.getCarvingMask(stage));
+                        carver.func_227207_a_(chunk, biomeManager::getBiome, random, seaLevel, posX, posZ, chunkX, chunkZ, chunk.getCarvingMask(stage));
                     }
                 }
             }
@@ -153,7 +154,7 @@ public class BiomeData
     {
         int featureCount = 0;
 
-        List<ConfiguredFeature<?>> features = new ArrayList<>();
+        List<ConfiguredFeature<?, ?>> features = new ArrayList<>();
 
         if(this.useDefaultFeatures)
         {
@@ -162,7 +163,7 @@ public class BiomeData
 
         features.addAll(this.getFeatures(stage));
 
-        for(ConfiguredFeature<?> feature : features)
+        for(ConfiguredFeature<?, ?> feature : features)
         {
             random.setFeatureSeed(seed, featureCount, stage.ordinal());
 
@@ -173,7 +174,7 @@ public class BiomeData
             catch(Exception exception)
             {
                 CrashReport crashReport = CrashReport.makeCrashReport(exception, "Feature placement");
-                crashReport.makeCategory("Feature").addDetail("Id", feature.feature.getRegistryName()).addDetail("Description", feature.feature::toString);
+                crashReport.makeCategory("Feature").addDetail("Id", feature.feature.getRegistryName()).addDetail("Description", feature.feature.toString());
                 throw new ReportedException(crashReport);
             }
 
@@ -248,7 +249,7 @@ public class BiomeData
         return this.carvers.computeIfAbsent(stage, k -> new ArrayList<>());
     }
 
-    public List<ConfiguredFeature<?>> getFeatures(GenerationStage.Decoration stage)
+    public List<ConfiguredFeature<?, ?>> getFeatures(GenerationStage.Decoration stage)
     {
         return this.features.computeIfAbsent(stage, k -> new ArrayList<>());
     }

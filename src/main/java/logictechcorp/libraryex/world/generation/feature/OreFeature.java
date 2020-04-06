@@ -79,7 +79,7 @@ public class OreFeature extends Feature<OreFeature.Config>
     {
         int placements = 0;
         BitSet bitset = new BitSet(width * height * width);
-        BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
         double[] adouble = new double[config.getSize() * 4];
 
         for(int size = 0; size < config.getSize(); size++)

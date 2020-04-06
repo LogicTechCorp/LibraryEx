@@ -42,7 +42,7 @@ public class FeatureWrapper extends Feature<FeatureWrapper.Config>
     @Override
     public boolean place(IWorld world, ChunkGenerator<? extends GenerationSettings> generator, Random random, BlockPos pos, Config config)
     {
-        for(ConfiguredFeature<?> feature : config.getFeatures())
+        for(ConfiguredFeature<?, ?> feature : config.getFeatures())
         {
             feature.place(world, generator, random, pos);
         }
@@ -52,9 +52,9 @@ public class FeatureWrapper extends Feature<FeatureWrapper.Config>
 
     public static class Config implements IFeatureConfig
     {
-        private final List<ConfiguredFeature<?>> features;
+        private final List<ConfiguredFeature<?, ?>> features;
 
-        public Config(List<ConfiguredFeature<?>> features)
+        public Config(List<ConfiguredFeature<?, ?>> features)
         {
             this.features = features;
         }
@@ -70,7 +70,7 @@ public class FeatureWrapper extends Feature<FeatureWrapper.Config>
             return new Config(new ArrayList<>());
         }
 
-        public List<ConfiguredFeature<?>> getFeatures()
+        public List<ConfiguredFeature<?, ?>> getFeatures()
         {
             return this.features;
         }

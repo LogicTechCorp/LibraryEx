@@ -78,20 +78,20 @@ public class BuiltinDataPack extends ModFileResourcePack implements IPackFinder
     }
 
     @Override
-    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String pathIn, int maxDepth, Predicate<String> filter)
+    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String resourceNamespace, String path, int maxDepth, Predicate<String> filter)
     {
         try
         {
             Path root = this.modFile.getLocator().findPath(this.modFile, "datapacks").toAbsolutePath();
-            Path inputPath = root.getFileSystem().getPath(pathIn);
+            Path inputPath = root.getFileSystem().getPath(path);
 
             return Files.walk(root)
-                    .map(path -> root.relativize(path.toAbsolutePath()))
-                    .filter(path -> path.getNameCount() > 3 && path.getNameCount() - 1 <= maxDepth)
-                    .filter(path -> !path.toString().endsWith(".mcmeta"))
-                    .filter(path -> path.subpath(3, path.getNameCount()).startsWith(inputPath))
-                    .filter(path -> filter.test(path.getFileName().toString()))
-                    .map(path -> new ResourceLocation(path.getName(2).toString(), Joiner.on('/').join(path.subpath(3, Math.min(maxDepth, path.getNameCount())))))
+                    .map(currentPath -> root.relativize(currentPath.toAbsolutePath()))
+                    .filter(currentPath -> currentPath.getNameCount() > 3 && currentPath.getNameCount() - 1 <= maxDepth)
+                    .filter(currentPath -> !currentPath.toString().endsWith(".mcmeta"))
+                    .filter(currentPath -> currentPath.subpath(3, currentPath.getNameCount()).startsWith(inputPath))
+                    .filter(currentPath -> filter.test(currentPath.getFileName().toString()))
+                    .map(currentPath -> new ResourceLocation(currentPath.getName(2).toString(), Joiner.on('/').join(currentPath.subpath(3, Math.min(maxDepth, currentPath.getNameCount())))))
                     .collect(Collectors.toList());
         }
         catch(IOException e)

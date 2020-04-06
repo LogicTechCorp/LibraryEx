@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.data.DataGenerator;
@@ -126,7 +127,7 @@ public class ModLootTableProvider implements IDataProvider
     public void addSlabBlockLootTable(Block block)
     {
         LootEntry.Builder<?> lootEntry = ItemLootEntry.builder(block)
-                .acceptFunction(SetCount.builder(ConstantRange.of(2)).acceptCondition(BlockStateProperty.builder(block).with(SlabBlock.TYPE, SlabType.DOUBLE)))
+                .acceptFunction(SetCount.builder(ConstantRange.of(2)).acceptCondition(BlockStateProperty.builder(block).fromProperties(StatePropertiesPredicate.Builder.newBuilder().withProp(SlabBlock.TYPE, SlabType.DOUBLE))))
                 .acceptCondition(SurvivesExplosion.builder());
 
         LootPool.Builder lootPool = LootPool.builder()
