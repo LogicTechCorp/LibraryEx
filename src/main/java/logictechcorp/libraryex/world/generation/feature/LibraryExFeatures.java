@@ -27,9 +27,6 @@ public class LibraryExFeatures
 {
     public static final DeferredRegister<Feature<?>> FEATURES = new DeferredRegister<>(ForgeRegistries.FEATURES, LibraryEx.MOD_ID);
 
-    public static final RegistryObject<Feature<FeatureWrapper.Config>> FEATURE_WRAPPER = FEATURES.register("feature_wrapper", () -> new FeatureWrapper(FeatureWrapper.Config::deserialize));
     public static final RegistryObject<Feature<TriplePlantFeature.Config>> TRIPLE_PLANT = FEATURES.register("triple_plant", () -> new TriplePlantFeature(TriplePlantFeature.Config::deserialize));
     public static final RegistryObject<Feature<PoolFeature.Config>> POOL = FEATURES.register("pool", () -> new PoolFeature(PoolFeature.Config::deserialize));
-    public static final RegistryObject<Feature<OreFeature.Config>> ORE = FEATURES.register("ore", () -> new OreFeature(OreFeature.Config::deserialize));
-    public static final RegistryObject<Feature<ScatterFeature.Config>> SCATTER = FEATURES.register("scatter", () -> new ScatterFeature(ScatterFeature.Config::deserialize));
 }

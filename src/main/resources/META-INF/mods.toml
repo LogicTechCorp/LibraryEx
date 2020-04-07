@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[28.2,)"
+loaderVersion="[31.1,)"
 issueTrackerURL="https://github.com/LogicTechCorp/LibraryEx/issues"
 
 [[mods]]
@@ -14,6 +14,6 @@ description="A library for mods that add expansions, explorations, and experienc
 [[dependencies.libraryex]]
 modId="forge"
 mandatory=true
-versionRange="[28.2.0,)"
+versionRange="[31.1.37,)"
 ordering="NONE"
 side="BOTH"
