@@ -18,14 +18,16 @@
 package logictechcorp.libraryex.block;
 
 import net.minecraft.block.*;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.*;
+import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -129,30 +131,28 @@ public class EternalFireBlock extends Block
             }
 
             BlockPos downPos = pos.down();
-            boolean isBlockFireSource = world.getBlockState(downPos).isFireSource(world, downPos, Direction.UP);
+            boolean isFireSource = world.getBlockState(downPos).isFireSource(world, downPos, Direction.UP);
             int age = state.get(AGE);
 
-            if(!isBlockFireSource && world.isRaining() && this.canDie(world, pos) && random.nextFloat() < 0.2F + (float) age * 0.03F)
+            if(!isFireSource && world.isRaining() && this.isBeingRainedOn(world, pos) && age > 0 && random.nextFloat() < 0.2F + (float) age * 0.03F)
             {
                 world.removeBlock(pos, false);
             }
             else
             {
-                int randomAge = Math.min(15, age + random.nextInt(3) / 2);
-
-                if(age != randomAge)
+                if(age > 0 && age < 15)
                 {
-                    state = state.with(AGE, randomAge);
+                    state = state.with(AGE, age + random.nextInt(3) / 2);
                     world.setBlockState(pos, state, 4);
                 }
 
-                if(!isBlockFireSource)
+                if(!isFireSource)
                 {
                     world.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(world) + random.nextInt(10));
 
                     if(!this.areNeighborsFlammable(world, pos))
                     {
-                        if(!world.getBlockState(downPos).isSolidSide(world, downPos, Direction.UP))
+                        if(!world.getBlockState(downPos).isSolidSide(world, downPos, Direction.UP) || age > 3)
                         {
                             world.removeBlock(pos, false);
                         }
@@ -168,12 +168,12 @@ public class EternalFireBlock extends Block
 
                 boolean isHighHumidity = world.isBlockinHighHumidity(pos);
                 int humidityChance = world.isBlockinHighHumidity(pos) ? -50 : 0;
-                this.tryCatchFire(world, pos.east(), 300 + humidityChance, random, age, Direction.WEST);
-                this.tryCatchFire(world, pos.west(), 300 + humidityChance, random, age, Direction.EAST);
-                this.tryCatchFire(world, pos.down(), 250 + humidityChance, random, age, Direction.UP);
-                this.tryCatchFire(world, pos.up(), 250 + humidityChance, random, age, Direction.DOWN);
-                this.tryCatchFire(world, pos.north(), 300 + humidityChance, random, age, Direction.SOUTH);
-                this.tryCatchFire(world, pos.south(), 300 + humidityChance, random, age, Direction.NORTH);
+                this.tryCatchFire(world, pos, 300 + humidityChance, random, age, Direction.WEST);
+                this.tryCatchFire(world, pos, 300 + humidityChance, random, age, Direction.EAST);
+                this.tryCatchFire(world, pos, 250 + humidityChance, random, age, Direction.UP);
+                this.tryCatchFire(world, pos, 250 + humidityChance, random, age, Direction.DOWN);
+                this.tryCatchFire(world, pos, 300 + humidityChance, random, age, Direction.SOUTH);
+                this.tryCatchFire(world, pos, 300 + humidityChance, random, age, Direction.NORTH);
                 BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
                 for(int xOffset = -1; xOffset <= 1; ++xOffset)
@@ -203,9 +203,9 @@ public class EternalFireBlock extends Block
                                         adjustedEncouragement /= 2;
                                     }
 
-                                    if(adjustedEncouragement > 0 && random.nextInt(encouragement) <= adjustedEncouragement && (!world.isRaining() && !this.canDie(world, mutablePos)))
+                                    if(adjustedEncouragement > 0 && random.nextInt(encouragement) <= adjustedEncouragement && (!world.isRaining() && !this.isBeingRainedOn(world, mutablePos)))
                                     {
-                                        int neighborAge = Math.min(15, age + random.nextInt(5) / 4);
+                                        int neighborAge = Math.min(15, age + 1);
                                         world.setBlockState(mutablePos, this.getStateForPlacement(world, mutablePos).with(AGE, neighborAge), 3);
                                     }
                                 }
@@ -213,28 +213,27 @@ public class EternalFireBlock extends Block
                         }
                     }
                 }
-
             }
         }
     }
 
-    protected boolean canDie(World world, BlockPos pos)
+    protected boolean isBeingRainedOn(World world, BlockPos pos)
     {
-        return false;
+        return world.isRainingAt(pos) || world.isRainingAt(pos.west()) || world.isRainingAt(pos.east()) || world.isRainingAt(pos.north()) || world.isRainingAt(pos.south());
     }
 
     protected void tryCatchFire(World world, BlockPos pos, int chance, Random random, int age, Direction face)
     {
         if(random.nextInt(chance) < world.getBlockState(pos).getFlammability(world, pos, face))
         {
+            BlockState state = world.getBlockState(pos);
             Block block = world.getBlockState(pos).getBlock();
 
             if(block instanceof TNTBlock)
             {
-                TNTBlock.explode(world, pos);
+                block.catchFire(state, world, pos, face, null);
             }
         }
-
     }
 
     private boolean areNeighborsFlammable(IBlockReader world, BlockPos pos)
@@ -313,7 +312,7 @@ public class EternalFireBlock extends Block
 
             if(this.canCatchFire(world, pos.east(), Direction.WEST))
             {
-                for(int particle = 0; particle < 2; ++particle)
+                for(int particle = 0; particle < 2; particle++)
                 {
                     double posX = (double) (pos.getX() + 1) - rand.nextDouble() * (double) 0.1F;
                     double posY = (double) pos.getY() + rand.nextDouble();
@@ -324,7 +323,7 @@ public class EternalFireBlock extends Block
 
             if(this.canCatchFire(world, pos.north(), Direction.SOUTH))
             {
-                for(int particle = 0; particle < 2; ++particle)
+                for(int particle = 0; particle < 2; particle++)
                 {
                     double posX = (double) pos.getX() + rand.nextDouble();
                     double posY = (double) pos.getY() + rand.nextDouble();
@@ -335,7 +334,7 @@ public class EternalFireBlock extends Block
 
             if(this.canCatchFire(world, pos.south(), Direction.NORTH))
             {
-                for(int particle = 0; particle < 2; ++particle)
+                for(int particle = 0; particle < 2; particle++)
                 {
                     double posX = (double) pos.getX() + rand.nextDouble();
                     double posY = (double) pos.getY() + rand.nextDouble();
@@ -346,7 +345,7 @@ public class EternalFireBlock extends Block
 
             if(this.canCatchFire(world, pos.up(), Direction.DOWN))
             {
-                for(int particle = 0; particle < 2; ++particle)
+                for(int particle = 0; particle < 2; particle++)
                 {
                     double posX = (double) pos.getX() + rand.nextDouble();
                     double posY = (double) (pos.getY() + 1) - rand.nextDouble() * (double) 0.1F;
@@ -357,7 +356,7 @@ public class EternalFireBlock extends Block
         }
         else
         {
-            for(int particle = 0; particle < 3; ++particle)
+            for(int particle = 0; particle < 3; particle++)
             {
                 double posX = (double) pos.getX() + rand.nextDouble();
                 double posY = (double) pos.getY() + rand.nextDouble() * 0.5D + 0.5D;
