@@ -30,7 +30,7 @@ import java.io.File;
 public class LibraryEx
 {
     static final String NAME = "LibraryEx";
-    static final String VERSION = "1.1.2";
+    static final String VERSION = "1.1.3";
     static final String DEPENDENCIES = "required-after:forge@[1.12.2-14.23.4.2768,);";
 
     public static final String MOD_ID = "libraryex";

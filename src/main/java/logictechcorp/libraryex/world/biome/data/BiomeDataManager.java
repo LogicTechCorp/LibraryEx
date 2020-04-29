@@ -107,65 +107,73 @@ public class BiomeDataManager
 
     public void readBiomeDataConfigs(WorldEvent.Load event)
     {
-        Path path = new File(WorldHelper.getSaveDirectory(event.getWorld()), "/config/" + this.modId + "/nether_biomes/").toPath();
-        this.logger.info("Reading Nether biome data configs.");
+        Path path = Paths.get(WorldHelper.getSaveDirectory(event.getWorld()), "config", this.modId, "nether_biomes");
 
-        try
+        if(Files.isReadable(path))
         {
-            Files.createDirectories(path);
-            Iterator<Path> pathIter = Files.walk(path).iterator();
+            this.logger.info("Reading Nether biome data configs.");
 
-            while(pathIter.hasNext())
+            try
             {
-                File configFile = pathIter.next().toFile();
+                Files.createDirectories(path);
+                Iterator<Path> pathIter = Files.walk(path).iterator();
 
-                if(FileHelper.getFileExtension(configFile).equals("json"))
+                while(pathIter.hasNext())
                 {
-                    String fileText = FileUtils.readFileToString(configFile, Charset.defaultCharset()).trim();
+                    File configFile = pathIter.next().toFile();
 
-                    if(fileText.isEmpty() || !fileText.startsWith("{") || !fileText.endsWith("}"))
+                    if(FileHelper.getFileExtension(configFile).equals("json"))
                     {
-                        String filePath = configFile.getPath();
-                        String fileBackupPath = filePath + "_backup";
-                        Files.move(configFile.toPath(), Paths.get(fileBackupPath));
-                        this.logger.warn("The biome config at {} was invalid and was backed up as {}.", filePath, fileBackupPath);
-                        continue;
-                    }
+                        String fileText = FileUtils.readFileToString(configFile, Charset.defaultCharset()).trim();
 
-                    FileConfig config = FileConfig.builder(configFile, JsonFormat.fancyInstance()).preserveInsertionOrder().build();
-                    config.load();
-
-                    Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(config.get("biome")));
-
-                    if(biome != null)
-                    {
-                        BiomeData biomeData;
-
-                        if(this.hasBiomeData(biome))
+                        if(fileText.isEmpty() || !fileText.startsWith("{") || !fileText.endsWith("}"))
                         {
-                            biomeData = this.getBiomeData(biome);
-                        }
-                        else
-                        {
-                            biomeData = new BiomeData(biome.getRegistryName(), 10, true, false);
+                            String filePath = configFile.getPath();
+                            String fileBackupPath = filePath + "_backup";
+                            Files.move(configFile.toPath(), Paths.get(fileBackupPath));
+                            this.logger.warn("The biome config at {} was invalid and was backed up as {}.", filePath, fileBackupPath);
+                            continue;
                         }
 
-                        biomeData.readFromConfig(this, config);
-                        this.registerBiomeData(biomeData);
-                    }
+                        FileConfig config = FileConfig.builder(configFile, JsonFormat.fancyInstance()).preserveInsertionOrder().build();
+                        config.load();
 
-                    config.save();
-                    config.close();
-                }
-                else if(!configFile.isDirectory() && !FileHelper.getFileExtension(configFile).equals("json_backup"))
-                {
-                    this.logger.warn("Skipping file located at, {}, as it is not a json file.", configFile.getPath());
+                        Biome biome = ForgeRegistries.BIOMES.getValue(new ResourceLocation(config.get("biome")));
+
+                        if(biome != null)
+                        {
+                            BiomeData biomeData;
+
+                            if(this.hasBiomeData(biome))
+                            {
+                                biomeData = this.getBiomeData(biome);
+                            }
+                            else
+                            {
+                                biomeData = new BiomeData(biome.getRegistryName(), 10, true, false);
+                            }
+
+                            biomeData.readFromConfig(this, config);
+                            this.registerBiomeData(biomeData);
+                        }
+
+                        config.save();
+                        config.close();
+                    }
+                    else if(!configFile.isDirectory() && !FileHelper.getFileExtension(configFile).equals("json_backup"))
+                    {
+                        this.logger.warn("Skipping file located at, {}, as it is not a json file.", configFile.getPath());
+                    }
                 }
             }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch(IOException e)
+        else
         {
-            e.printStackTrace();
+            this.logger.warn("Unable to read Biome configs. The default configs will be used.");
         }
     }
 
