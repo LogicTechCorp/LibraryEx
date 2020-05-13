@@ -14,6 +14,6 @@ description="A library for mods that add expansions, explorations, and experienc
 [[dependencies.libraryex]]
 modId="forge"
 mandatory=true
-versionRange="[31.1.37,)"
+versionRange="[31.1.87,)"
 ordering="NONE"
 side="BOTH"
