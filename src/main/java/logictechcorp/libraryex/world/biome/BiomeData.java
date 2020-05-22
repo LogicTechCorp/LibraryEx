@@ -35,38 +35,45 @@ import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.surfacebuilders.ISurfaceBuilderConfig;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class BiomeData
 {
-    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, true, true, false);
+    public static final BiomeData EMPTY = new BiomeData(Biomes.PLAINS, 10, true, true, true, true, false);
 
     protected final Biome biome;
     protected int generationWeight;
     protected boolean useDefaultEntities;
-    protected boolean useDefaultFeatures;
     protected boolean useDefaultCarvers;
+    protected boolean useDefaultFeatures;
+    protected boolean useDefaultStructures;
     protected boolean isSubBiome;
     protected final Map<BlockType, BlockState> blocks;
     protected final Map<EntityClassification, List<Biome.SpawnListEntry>> spawns;
     protected final Map<GenerationStage.Carving, List<ConfiguredCarver<?>>> carvers;
     protected final Map<GenerationStage.Decoration, List<ConfiguredFeature<?>>> features;
+    protected final Map<Structure<?>, IFeatureConfig> structures;
     protected final List<BiomeData> subBiomes;
 
-    public BiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean useDefaultStructures, boolean isSubBiome)
     {
         this.biome = biome;
         this.generationWeight = generationWeight;
         this.useDefaultEntities = useDefaultEntities;
         this.useDefaultCarvers = useDefaultCarvers;
         this.useDefaultFeatures = useDefaultFeatures;
+        this.useDefaultStructures = useDefaultStructures;
         this.isSubBiome = isSubBiome;
         this.blocks = new EnumMap<>(BlockType.class);
         this.spawns = new EnumMap<>(EntityClassification.class);
         this.carvers = new EnumMap<>(GenerationStage.Carving.class);
         this.features = new EnumMap<>(GenerationStage.Decoration.class);
+        this.structures = new HashMap<>();
         this.subBiomes = new ArrayList<>();
     }
 
@@ -106,6 +113,11 @@ public class BiomeData
     public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?> feature)
     {
         this.features.computeIfAbsent(stage, k -> new ArrayList<>()).add(feature);
+    }
+
+    public <C extends IFeatureConfig> void addStructure(Structure<?> structure, C config)
+    {
+        this.structures.put(structure, config);
     }
 
     public void addSubBiome(BiomeData subBiomeData)
@@ -181,6 +193,11 @@ public class BiomeData
         }
     }
 
+    public <C extends IFeatureConfig> boolean hasStructure(Structure<C> structure)
+    {
+        return this.structures.containsKey(structure) ? true : this.useDefaultStructures ? this.biome.hasStructure(structure) : false;
+    }
+
     public Biome getBiome()
     {
         return this.biome;
@@ -204,6 +221,11 @@ public class BiomeData
     public boolean useDefaultFeatures()
     {
         return this.useDefaultFeatures;
+    }
+
+    public boolean useDefaultStructures()
+    {
+        return this.useDefaultStructures;
     }
 
     public boolean isSubBiome()
@@ -251,6 +273,12 @@ public class BiomeData
     public List<ConfiguredFeature<?>> getFeatures(GenerationStage.Decoration stage)
     {
         return this.features.computeIfAbsent(stage, k -> new ArrayList<>());
+    }
+
+    public <C extends IFeatureConfig> C getStructureConfig(Structure<C> structure)
+    {
+        IFeatureConfig config = this.structures.get(structure);
+        return config != null ? (C) config : this.useDefaultStructures ? this.biome.getStructureConfig(structure) : null;
     }
 
     public List<BiomeData> getSubBiomes()
