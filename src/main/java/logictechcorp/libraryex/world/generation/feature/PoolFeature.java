@@ -66,6 +66,11 @@ public class PoolFeature extends Feature<PoolFeature.Config>
             }
             else
             {
+                if(pos.getY() + 8 >= world.getWorld().getDimension().getActualHeight())
+                {
+                    return false;
+                }
+
                 boolean[] positions = new boolean[2048];
                 int i = random.nextInt(4) + 4;
 

@@ -23,6 +23,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
+import com.mojang.realmsclient.util.JsonUtils;
 import logictechcorp.libraryex.LibraryEx;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.ReloadListener;
@@ -38,10 +39,8 @@ import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ICarverConfig;
 import net.minecraft.world.gen.carver.WorldCarver;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.ProbabilityConfig;
+import net.minecraft.world.gen.feature.*;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.placement.ConfiguredPlacement;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -117,6 +116,7 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                             boolean useDefaultEntities = JSONUtils.getBoolean(rootObject, "use_default_entities", true);
                             boolean useDefaultCarvers = JSONUtils.getBoolean(rootObject, "use_default_carvers", true);
                             boolean useDefaultFeatures = JSONUtils.getBoolean(rootObject, "use_default_features", true);
+                            boolean useDefaultStructures = JSONUtils.getBoolean(rootObject, "use_default_structures", true);
                             boolean isSubBiome = rootDynamic.getValue().getAsJsonObject().get("is_sub_biome").getAsBoolean();
                             Map<BiomeData.BlockType, BlockState> blocks = rootDynamic.get("blocks").asMap(BiomeData.BlockType::deserialize, BlockState::deserialize);
                             List<Biome.SpawnListEntry> entities = rootDynamic.get("entities").asList(entityDynamic ->
@@ -139,24 +139,46 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
                                 ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(featuresDynamic.get("decorator").orElseEmptyMap());
                                 return new ConfiguredFeature<>(Feature.DECORATED, new DecoratedFeatureConfig(configuredFeature, configuredPlacement));
                             }));
+                            Map<Dynamic<?>, ConfiguredFeature<?, ?>> structures = rootDynamic.get("structures").asStream().collect(Collectors.toMap(Function.identity(), structuresDynamic ->
+                            {
+                                ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(structuresDynamic.get("structure").orElseEmptyMap());
+                                ConfiguredPlacement<?> configuredPlacement = ConfiguredPlacement.deserialize(structuresDynamic.get("decorator").orElseEmptyMap());
+                                return new ConfiguredFeature<>(Feature.DECORATED, new DecoratedFeatureConfig(configuredFeature, configuredPlacement));
+                            }));
                             List<String> subBiomes = rootDynamic.get("sub_biomes").asList(subBiomeDynamic -> subBiomeDynamic.asString(""));
 
-                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, isSubBiome);
+                            BiomeData biomeData = this.createBiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, useDefaultStructures, isSubBiome);
                             blocks.forEach(biomeData::addBiomeBlock);
                             entities.forEach(biomeData::addEntitySpawn);
-                            carvers.forEach(((carverDynamic, carver) ->
+                            carvers.forEach(((carverDynamic, configuredCarver) ->
                             {
                                 GenerationStage.Carving stage = Stream.of(GenerationStage.Carving.values())
                                         .filter(value -> value.getName().equalsIgnoreCase(carverDynamic.get("stage").asString("").toUpperCase()))
                                         .findAny().orElse(GenerationStage.Carving.AIR);
-                                biomeData.addCarver(stage, carver);
+                                biomeData.addCarver(stage, configuredCarver);
                             }));
-                            features.forEach((featureDynamic, feature) ->
+                            features.forEach((featureDynamic, configuredFeature) ->
                             {
                                 GenerationStage.Decoration stage = Stream.of(GenerationStage.Decoration.values())
                                         .filter(value -> value.getName().equalsIgnoreCase(featureDynamic.get("stage").asString("").toUpperCase()))
                                         .findAny().orElse(GenerationStage.Decoration.RAW_GENERATION);
-                                biomeData.addFeature(stage, feature);
+                                biomeData.addFeature(stage, configuredFeature);
+                            });
+                            structures.forEach((featureDynamic, configuredFeature) ->
+                            {
+                                DecoratedFeatureConfig decoratedFeatureConfig = (DecoratedFeatureConfig) configuredFeature.config;
+                                Feature<?> feature = decoratedFeatureConfig.feature.feature;
+                                IFeatureConfig config = decoratedFeatureConfig.feature.config;
+
+                                if(feature instanceof Structure<?>)
+                                {
+                                    Structure<?> structure = (Structure<?>) feature;
+                                    biomeData.addStructure(structure, config);
+                                    GenerationStage.Decoration stage = Stream.of(GenerationStage.Decoration.values())
+                                            .filter(value -> value.getName().equalsIgnoreCase(featureDynamic.get("stage").asString("").toUpperCase()))
+                                            .findAny().orElse(GenerationStage.Decoration.RAW_GENERATION);
+                                    biomeData.addFeature(stage, configuredFeature);
+                                }
                             });
                             this.biomeData.put(biomeName, biomeData);
                             this.subBiomeData.put(biomeName, subBiomes);
@@ -240,9 +262,9 @@ public class BiomeDataManager extends ReloadListener<Map<ResourceLocation, JsonO
         return map;
     }
 
-    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean isSubBiome)
+    public BiomeData createBiomeData(Biome biome, int generationWeight, boolean useDefaultEntities, boolean useDefaultCarvers, boolean useDefaultFeatures, boolean useDefaultStructures, boolean isSubBiome)
     {
-        return new BiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, isSubBiome);
+        return new BiomeData(biome, generationWeight, useDefaultEntities, useDefaultCarvers, useDefaultFeatures, useDefaultStructures, isSubBiome);
     }
 
     public BiomeData registerBiomeData(BiomeData biomeData)
