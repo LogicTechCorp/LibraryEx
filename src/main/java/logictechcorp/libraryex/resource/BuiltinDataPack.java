@@ -89,6 +89,7 @@ public class BuiltinDataPack extends ModFileResourcePack implements IPackFinder
                     .map(path -> root.relativize(path.toAbsolutePath()))
                     .filter(path -> path.getNameCount() > 3 && path.getNameCount() - 1 <= maxDepth)
                     .filter(path -> !path.toString().endsWith(".mcmeta"))
+                    .filter(path -> path.startsWith(this.packName))
                     .filter(path -> path.subpath(3, path.getNameCount()).startsWith(inputPath))
                     .filter(path -> filter.test(path.getFileName().toString()))
                     .map(path -> new ResourceLocation(path.getName(2).toString(), Joiner.on('/').join(path.subpath(3, Math.min(maxDepth, path.getNameCount())))))
