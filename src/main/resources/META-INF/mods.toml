@@ -1,19 +1,19 @@
-modLoader="javafml"
-loaderVersion="[31.1,)"
-issueTrackerURL="https://github.com/LogicTechCorp/LibraryEx/issues"
+modLoader = "javafml"
+loaderVersion = "[31.1,)"
+issueTrackerURL = "https://github.com/LogicTechCorp/LibraryEx/issues"
 
 [[mods]]
-modId="libraryex"
-version="${file.jarVersion}"
-displayName="LibraryEx"
-displayURL="https://minecraft.curseforge.com/projects/libraryex"
-logoFile="assets/libraryex/textures/logo.png"
-authors="LogicTechCorp"
-description="A library for mods that add expansions, explorations, and experiences to Minecraft."
+modId = "libraryex"
+version = "${file.jarVersion}"
+displayName = "LibraryEx"
+displayURL = "https://minecraft.curseforge.com/projects/libraryex"
+logoFile = "logo.png"
+authors = "LogicTechCorp"
+description = "A library for mods that add expansions, explorations, and experiences to Minecraft."
 
 [[dependencies.libraryex]]
-modId="forge"
-mandatory=true
-versionRange="[31.1.87,)"
-ordering="NONE"
-side="BOTH"
+modId = "forge"
+mandatory = true
+versionRange = "[31.1.87,)"
+ordering = "NONE"
+side = "BOTH"
