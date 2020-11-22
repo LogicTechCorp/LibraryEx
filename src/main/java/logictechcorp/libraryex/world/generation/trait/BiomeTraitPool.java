@@ -175,7 +175,7 @@ public class BiomeTraitPool extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitPool>
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToSurround;

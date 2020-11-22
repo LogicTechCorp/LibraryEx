@@ -27,9 +27,9 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class RecipeRepairItemMod extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
 {
-    private ItemStack brokenStack;
-    private Ingredient repairIngredient;
-    private int repairAmount;
+    private final ItemStack brokenStack;
+    private final Ingredient repairIngredient;
+    private final int repairAmount;
 
     public RecipeRepairItemMod(ItemStack brokenStack, Ingredient repairIngredient, int repairAmount)
     {

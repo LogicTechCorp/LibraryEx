@@ -22,7 +22,7 @@ import net.minecraft.block.state.IBlockState;
 
 public class PatternElementOre extends PatternElement
 {
-    private String[] ores;
+    private final String[] ores;
 
     PatternElementOre(IBlockState state, char identifier, String... ores)
     {

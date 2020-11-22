@@ -121,17 +121,17 @@ public class Trade extends MerchantRecipe
     public Config getAsConfig()
     {
         Config tradeConfig = JsonFormat.newConfig(LinkedHashMap::new);
-        ConfigHelper.setItemStackSimple(tradeConfig, "output", this.output.getItemStack());
+        ConfigHelper.setItemStackComplex(tradeConfig, "output", this.output.getItemStack());
         tradeConfig.set("output.minCount", this.output.getMinCount());
         tradeConfig.set("output.maxCount", this.output.getMaxCount());
 
-        ConfigHelper.setItemStackSimple(tradeConfig, "inputOne", this.inputOne.getItemStack());
+        ConfigHelper.setItemStackComplex(tradeConfig, "inputOne", this.inputOne.getItemStack());
         tradeConfig.set("inputOne.minCount", this.inputOne.getMinCount());
         tradeConfig.set("inputOne.maxCount", this.inputOne.getMaxCount());
 
         if(this.hasSecondItemToBuy())
         {
-            ConfigHelper.setItemStackSimple(tradeConfig, "inputTwo", this.inputTwo.getItemStack());
+            ConfigHelper.setItemStackComplex(tradeConfig, "inputTwo", this.inputTwo.getItemStack());
             tradeConfig.set("inputTwo.minCount", this.inputTwo.getMinCount());
             tradeConfig.set("inputTwo.maxCount", this.inputTwo.getMaxCount());
         }

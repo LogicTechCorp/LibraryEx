@@ -80,9 +80,9 @@ public abstract class BlockModPortal extends BlockMod
 
         for(int i = 0; i < 4; i++)
         {
-            double posX = (double) ((float) pos.getX() + random.nextFloat());
-            double posY = (double) ((float) pos.getY() + random.nextFloat());
-            double posZ = (double) ((float) pos.getZ() + random.nextFloat());
+            double posX = ((float) pos.getX() + random.nextFloat());
+            double posY = ((float) pos.getY() + random.nextFloat());
+            double posZ = ((float) pos.getZ() + random.nextFloat());
             double speedX = ((double) random.nextFloat() - 0.5D) * 0.5D;
             double speedY = ((double) random.nextFloat() - 0.5D) * 0.5D;
             double speedZ = ((double) random.nextFloat() - 0.5D) * 0.5D;
@@ -91,12 +91,12 @@ public abstract class BlockModPortal extends BlockMod
             if(world.getBlockState(pos.west()).getBlock() != this && world.getBlockState(pos.east()).getBlock() != this)
             {
                 posX = (double) pos.getX() + 0.5D + 0.25D * (double) multiplier;
-                speedX = (double) (random.nextFloat() * 2.0F * (float) multiplier);
+                speedX = (random.nextFloat() * 2.0F * (float) multiplier);
             }
             else
             {
                 posZ = (double) pos.getZ() + 0.5D + 0.25D * (double) multiplier;
-                speedZ = (double) (random.nextFloat() * 2.0F * (float) multiplier);
+                speedZ = (random.nextFloat() * 2.0F * (float) multiplier);
             }
 
             world.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, speedX, speedY, speedZ);

@@ -22,7 +22,7 @@ package logictechcorp.libraryex.multiblock;
 
 public class PatternLayer implements IPatternComponent
 {
-    private PatternRow[] rows;
+    private final PatternRow[] rows;
 
     PatternLayer(PatternRow... rows)
     {

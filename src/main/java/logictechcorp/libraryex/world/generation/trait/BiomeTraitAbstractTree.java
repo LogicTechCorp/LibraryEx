@@ -89,7 +89,7 @@ public abstract class BiomeTraitAbstractTree extends BiomeTrait
         return state.getBlock().isAir(state, world, pos) || state.getBlock().isLeaves(state, world, pos) || state.getBlock().isWood(world, pos) || this.canGrowInto(state.getBlock());
     }
 
-    public abstract static class Builder extends BiomeTrait.Builder
+    public abstract static class Builder extends BiomeTrait.Builder<BiomeTraitAbstractTree>
     {
         protected IBlockState logBlock;
         protected IBlockState leafBlock;
@@ -137,6 +137,6 @@ public abstract class BiomeTraitAbstractTree extends BiomeTrait
         }
 
         @Override
-        public abstract BiomeTrait create();
+        public abstract BiomeTraitAbstractTree create();
     }
 }

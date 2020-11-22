@@ -22,17 +22,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-public class FluidLibEx extends Fluid
+public class FluidMod extends Fluid
 {
     private IModData data;
 
-    public FluidLibEx(IModData data, String fluidName)
+    public FluidMod(IModData data, String fluidName)
     {
         this(data, fluidName, fluidName);
         this.data = data;
     }
 
-    public FluidLibEx(IModData data, String fluidName, String textureName)
+    public FluidMod(IModData data, String fluidName, String textureName)
     {
         super(fluidName, new ResourceLocation(data.getModId() + ":blocks/" + textureName + "_still"), new ResourceLocation(data.getModId() + ":blocks/" + textureName + "_flow"), new ResourceLocation(data.getModId() + ":blocks/" + textureName + "_overlay"));
         this.data = data;

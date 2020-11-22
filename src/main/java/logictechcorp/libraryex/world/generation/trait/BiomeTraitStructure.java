@@ -244,7 +244,7 @@ public class BiomeTraitStructure extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitStructure>
     {
         private List<ResourceLocation> structures;
         private StructureType structureType;

@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class TraderProfession<P extends TraderProfession<P, C>, C extends TraderProfession.Career> extends IForgeRegistryEntry.Impl<P>
+public abstract class TraderProfession<P extends TraderProfession<P, C>, C extends TraderProfession.Career<P, C>> extends IForgeRegistryEntry.Impl<P>
 {
-    private ResourceLocation name;
-    private List<C> careers = new ArrayList<>();
+    private final ResourceLocation name;
+    private final List<C> careers = new ArrayList<>();
 
     public TraderProfession(ResourceLocation name)
     {
@@ -89,13 +89,13 @@ public abstract class TraderProfession<P extends TraderProfession<P, C>, C exten
 
     public static abstract class Career<P extends TraderProfession<P, C>, C extends TraderProfession.Career<P, C>>
     {
-        private ResourceLocation name;
-        private P profession;
-        private ResourceLocation lootTable;
-        private ResourceLocation texture;
-        private ResourceLocation alternateTexture;
-        private int id;
+        private final ResourceLocation name;
+        private final P profession;
+        private final ResourceLocation lootTable;
+        private final ResourceLocation texture;
+        private final ResourceLocation alternateTexture;
         private final List<Trade> trades;
+        private int id;
 
         protected Career(ResourceLocation name, P profession, ResourceLocation lootTable, ResourceLocation texture, ResourceLocation alternateTexture)
         {

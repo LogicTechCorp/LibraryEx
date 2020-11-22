@@ -273,7 +273,7 @@ public class BiomeTraitBigMushroom extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitBigMushroom>
     {
         private IBlockState mushroomCap;
         private IBlockState mushroomStem;

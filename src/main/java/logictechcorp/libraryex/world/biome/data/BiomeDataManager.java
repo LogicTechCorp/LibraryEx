@@ -20,7 +20,6 @@ package logictechcorp.libraryex.world.biome.data;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import com.electronwill.nightconfig.json.JsonFormat;
 import logictechcorp.libraryex.utility.FileHelper;
-import logictechcorp.libraryex.utility.WorldHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeManager;
@@ -42,26 +41,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BiomeDataManager
+public abstract class BiomeDataManager
 {
-    private final String modId;
-    private final Logger logger;
-    private final Map<ResourceLocation, BiomeData> defaultBiomeData;
-    private final Map<ResourceLocation, BiomeData> worldSpecificBiomeData;
-    private final Map<ResourceLocation, BiomeManager.BiomeEntry> worldSpecificBiomeEntries;
+    protected final Map<ResourceLocation, BiomeData> defaultBiomeData;
+    protected final Map<ResourceLocation, BiomeData> currentBiomeData;
+    protected final Map<ResourceLocation, BiomeManager.BiomeEntry> currentBiomeEntries;
+    protected final Logger logger;
 
-    public BiomeDataManager(String modId, String modName)
+    public BiomeDataManager(String loggerName)
     {
-        this.modId = modId;
-        this.logger = LogManager.getLogger(modName);
         this.defaultBiomeData = new HashMap<>();
-        this.worldSpecificBiomeData = new HashMap<>();
-        this.worldSpecificBiomeEntries = new ConcurrentHashMap<>();
+        this.currentBiomeData = new HashMap<>();
+        this.currentBiomeEntries = new ConcurrentHashMap<>();
+        this.logger = LogManager.getLogger(loggerName);
     }
 
     public void setup()
     {
-        this.worldSpecificBiomeData.forEach(this.defaultBiomeData::put);
+        this.defaultBiomeData.putAll(this.currentBiomeData);
+        this.currentBiomeData.clear();
     }
 
     public void registerBiomeData(BiomeData biomeData)
@@ -70,20 +68,17 @@ public class BiomeDataManager
         {
             Biome biome = biomeData.getBiome();
             ResourceLocation biomeRegistryName = biome.getRegistryName();
+            this.currentBiomeData.put(biomeRegistryName, biomeData);
 
-            if(!this.worldSpecificBiomeData.containsKey(biomeRegistryName))
-            {
-                this.worldSpecificBiomeData.put(biomeRegistryName, biomeData);
-            }
             if(!biomeData.isSubBiome())
             {
                 if(biomeData.isEnabled())
                 {
-                    this.worldSpecificBiomeEntries.put(biomeRegistryName, new BiomeManager.BiomeEntry(biome, biomeData.getGenerationWeight()));
+                    this.currentBiomeEntries.put(biomeRegistryName, new BiomeManager.BiomeEntry(biome, biomeData.getGenerationWeight()));
                 }
                 else
                 {
-                    this.worldSpecificBiomeEntries.remove(biomeRegistryName);
+                    this.currentBiomeEntries.remove(biomeRegistryName);
                 }
             }
         }
@@ -94,29 +89,25 @@ public class BiomeDataManager
         if(biome != null)
         {
             ResourceLocation biomeRegistryName = biome.getRegistryName();
-            this.worldSpecificBiomeData.remove(biomeRegistryName);
-            this.worldSpecificBiomeEntries.remove(biomeRegistryName);
+            this.currentBiomeData.remove(biomeRegistryName);
+            this.currentBiomeEntries.remove(biomeRegistryName);
         }
     }
 
-    public void cleanup(WorldEvent.Unload event)
-    {
-        this.worldSpecificBiomeData.clear();
-        this.worldSpecificBiomeEntries.clear();
-    }
+    public abstract void onWorldLoad(WorldEvent.Load event);
 
-    public void readBiomeDataConfigs(WorldEvent.Load event)
-    {
-        Path path = Paths.get(WorldHelper.getSaveDirectory(event.getWorld()), "config", this.modId, "nether_biomes");
+    public abstract void onWorldUnload(WorldEvent.Unload event);
 
-        if(Files.isReadable(path))
+    public void readBiomeDataConfigs(Path biomeConfigDirectoryPath)
+    {
+        if(Files.isReadable(biomeConfigDirectoryPath))
         {
-            this.logger.info("Reading Nether biome data configs.");
+            this.logger.info("Reading biome configs.");
 
             try
             {
-                Files.createDirectories(path);
-                Iterator<Path> pathIter = Files.walk(path).iterator();
+                Files.createDirectories(biomeConfigDirectoryPath);
+                Iterator<Path> pathIter = Files.walk(biomeConfigDirectoryPath).iterator();
 
                 while(pathIter.hasNext())
                 {
@@ -131,7 +122,7 @@ public class BiomeDataManager
                             String filePath = configFile.getPath();
                             String fileBackupPath = filePath + "_backup";
                             Files.move(configFile.toPath(), Paths.get(fileBackupPath));
-                            this.logger.warn("The biome config at {} was invalid and was backed up as {}.", filePath, fileBackupPath);
+                            this.logger.warn("The biome config at {} was invalid and was backed up to {}.", filePath, fileBackupPath);
                             continue;
                         }
 
@@ -150,7 +141,7 @@ public class BiomeDataManager
                             }
                             else
                             {
-                                biomeData = new BiomeData(biome.getRegistryName(), 10, true, false);
+                                biomeData = this.createBiomeData(biome.getRegistryName(), 10, true, false);
                             }
 
                             biomeData.readFromConfig(this, config);
@@ -162,7 +153,7 @@ public class BiomeDataManager
                     }
                     else if(!configFile.isDirectory() && !FileHelper.getFileExtension(configFile).equals("json_backup"))
                     {
-                        this.logger.warn("Skipping file located at, {}, as it is not a json file.", configFile.getPath());
+                        this.logger.warn("Skipping file located at, {}, since it is not a json file.", configFile.getPath());
                     }
                 }
             }
@@ -173,19 +164,20 @@ public class BiomeDataManager
         }
         else
         {
-            this.logger.warn("Unable to read Biome configs. The default configs will be used.");
+            this.logger.warn("Unable to read biome configs.");
         }
     }
 
-    public void createBiomeDataConfigs(WorldEvent.Load event)
+    public void createBiomeDataConfigs(Path biomeConfigDirectoryPath)
     {
-        this.logger.info("Creating Nether biome data configs.");
+        this.logger.info("Creating biome configs.");
 
         try
         {
-            for(BiomeData biomeData : this.getDefaultBiomeData().values())
+            for(BiomeData biomeData : this.defaultBiomeData.values())
             {
-                File configFile = new File(WorldHelper.getSaveDirectory(event.getWorld()), "config/" + this.modId + "/nether_biomes/" + biomeData.getBiome().getRegistryName().toString().replace(":", "/") + ".json");
+                ResourceLocation biomeRegistryName = biomeData.getBiome().getRegistryName();
+                File configFile = new File(biomeConfigDirectoryPath.toFile(), biomeRegistryName.toString().replace(":", "/") + ".json");
 
                 if(!configFile.exists())
                 {
@@ -203,14 +195,19 @@ public class BiomeDataManager
         }
     }
 
+    public BiomeData createBiomeData(ResourceLocation biomeRegistryName, int generationWeight, boolean useDefaultDecorations, boolean isSubBiome)
+    {
+        return new BiomeData(biomeRegistryName, generationWeight, useDefaultDecorations, isSubBiome);
+    }
+
     public boolean hasBiomeData(Biome biome)
     {
-        return this.worldSpecificBiomeData.containsKey(biome.getRegistryName());
+        return this.currentBiomeData.containsKey(biome.getRegistryName());
     }
 
     public BiomeData getBiomeData(Biome biome)
     {
-        return this.worldSpecificBiomeData.getOrDefault(biome.getRegistryName(), BiomeData.EMPTY);
+        return this.currentBiomeData.getOrDefault(biome.getRegistryName(), BiomeData.EMPTY);
     }
 
     public Map<ResourceLocation, BiomeData> getDefaultBiomeData()
@@ -218,13 +215,13 @@ public class BiomeDataManager
         return Collections.unmodifiableMap(this.defaultBiomeData);
     }
 
-    public Map<ResourceLocation, BiomeData> getWorldSpecificBiomeData()
+    public Map<ResourceLocation, BiomeData> getCurrentBiomeData()
     {
-        return Collections.unmodifiableMap(this.worldSpecificBiomeData);
+        return Collections.unmodifiableMap(this.currentBiomeData);
     }
 
-    public Map<ResourceLocation, BiomeManager.BiomeEntry> getWorldSpecificBiomeEntries()
+    public Map<ResourceLocation, BiomeManager.BiomeEntry> getCurrentBiomeEntries()
     {
-        return Collections.unmodifiableMap(this.worldSpecificBiomeEntries);
+        return Collections.unmodifiableMap(this.currentBiomeEntries);
     }
 }

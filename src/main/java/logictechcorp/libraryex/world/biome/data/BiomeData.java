@@ -23,6 +23,7 @@ import logictechcorp.libraryex.utility.ConfigHelper;
 import logictechcorp.libraryex.world.generation.GenerationStage;
 import logictechcorp.libraryex.world.generation.trait.BiomeTrait;
 import logictechcorp.libraryex.world.generation.trait.BiomeTraitRegistry;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -31,7 +32,9 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
@@ -290,6 +293,59 @@ public class BiomeData
         }
     }
 
+    public void generateTerrain(World world, Random random, ChunkPrimer primer, int chunkX, int chunkZ, double noise)
+    {
+        IBlockState surfaceState = this.getBiomeBlock(BiomeData.BlockType.SURFACE_BLOCK);
+        IBlockState subSurfaceState = this.getBiomeBlock(BiomeData.BlockType.SUBSURFACE_BLOCK);
+        IBlockState liquidState = this.getBiomeBlock(BiomeData.BlockType.LIQUID_BLOCK);
+
+        int posX = (chunkX & 15);
+        int posZ = (chunkZ & 15);
+        boolean wasLastBlockNonSolid = false;
+
+        for(int posY = 127; posY >= 0; posY--)
+        {
+            if(posY < (127 - random.nextInt(5)) && posY > random.nextInt(5))
+            {
+                IBlockState checkState = primer.getBlockState(posZ, posY, posX);
+
+                if(checkState.getMaterial() == Material.AIR)
+                {
+                    wasLastBlockNonSolid = true;
+                }
+                else if(checkState == Blocks.NETHERRACK.getDefaultState())
+                {
+                    if(wasLastBlockNonSolid)
+                    {
+                        if(posY < world.getSeaLevel())
+                        {
+                            primer.setBlockState(posZ, posY, posX, liquidState);
+                        }
+                        else
+                        {
+                            primer.setBlockState(posZ, posY, posX, surfaceState);
+                        }
+                    }
+                    else
+                    {
+                        primer.setBlockState(posZ, posY, posX, subSurfaceState);
+                    }
+
+                    wasLastBlockNonSolid = false;
+                }
+                else if(checkState == Blocks.LAVA.getDefaultState())
+                {
+                    primer.setBlockState(posZ, posY, posX, liquidState);
+                    wasLastBlockNonSolid = true;
+                }
+            }
+            else
+            {
+                primer.setBlockState(posZ, posY, posX, Blocks.BEDROCK.getDefaultState());
+            }
+        }
+    }
+
     public Biome getBiome()
     {
         return this.biome;
@@ -366,7 +422,7 @@ public class BiomeData
         SUBSURFACE_BLOCK("subsurface"),
         LIQUID_BLOCK("liquid");
 
-        private String identifier;
+        private final String identifier;
 
         BlockType(String identifier)
         {

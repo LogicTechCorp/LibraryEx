@@ -132,7 +132,7 @@ public class BiomeTraitScatter extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitScatter>
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;

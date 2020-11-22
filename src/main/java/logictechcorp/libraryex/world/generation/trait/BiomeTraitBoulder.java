@@ -113,7 +113,7 @@ public class BiomeTraitBoulder extends BiomeTrait
                         }
                     }
 
-                    pos = pos.add(-(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2), 0 - random.nextInt(2), -(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2));
+                    pos = pos.add(-(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2), -random.nextInt(2), -(this.boulderRadius + 1) + random.nextInt(2 + this.boulderRadius * 2));
                 }
 
                 return true;
@@ -123,7 +123,7 @@ public class BiomeTraitBoulder extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitBoulder>
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;

@@ -70,7 +70,7 @@ public class PlayerHelper
 
                 for(Entity entity : world.getEntitiesInAABBexcluding(player, player.getEntityBoundingBox().expand(playerLook.x * reachDistance, playerLook.y * reachDistance, playerLook.z * reachDistance).grow(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, entity -> entity != null && entity.canBeCollidedWith())))
                 {
-                    AxisAlignedBB entityBoundingBox = entity.getEntityBoundingBox().grow((double) entity.getCollisionBorderSize());
+                    AxisAlignedBB entityBoundingBox = entity.getEntityBoundingBox().grow(entity.getCollisionBorderSize());
                     RayTraceResult testResult = entityBoundingBox.calculateIntercept(playerEyePosition, playerLookReach);
 
                     if(entityBoundingBox.contains(playerEyePosition))

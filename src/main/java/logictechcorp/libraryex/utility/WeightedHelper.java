@@ -31,7 +31,7 @@ public class WeightedHelper
 
     public static class NamedItem extends WeightedRandom.Item
     {
-        private String name;
+        private final String name;
 
         public NamedItem(String name, int weight)
         {

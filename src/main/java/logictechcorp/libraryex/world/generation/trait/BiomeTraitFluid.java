@@ -148,7 +148,7 @@ public class BiomeTraitFluid extends BiomeTrait
         }
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitFluid>
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToTarget;

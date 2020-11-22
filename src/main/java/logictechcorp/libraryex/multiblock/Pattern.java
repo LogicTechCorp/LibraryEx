@@ -36,8 +36,8 @@ public class Pattern
     private static final PatternElement AIR_ELEMENT = new PatternElement(Blocks.AIR.getDefaultState(), ' ');
     private static final PatternElement VOID_ELEMENT = new PatternElement(Blocks.STRUCTURE_VOID.getDefaultState(), '*');
 
-    private List<PatternLayer> layers = new ArrayList<>();
-    private Map<Character, PatternElement> elements = new HashMap<>();
+    private final List<PatternLayer> layers = new ArrayList<>();
+    private final Map<Character, PatternElement> elements = new HashMap<>();
 
     private Pattern(IPatternComponent... components)
     {

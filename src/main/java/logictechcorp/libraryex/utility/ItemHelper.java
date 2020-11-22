@@ -34,23 +34,14 @@ public class ItemHelper
 {
     private static final List<PotionType> POTION_TYPES = getPotions();
 
-    public static ItemStack getRandomlyEnchantedBook(int amountOfEnchantments)
+    public static ItemStack getRandomlyEnchantedBook(int level)
     {
-        ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
-
-        for(int i = 0; i < amountOfEnchantments; i++)
-        {
-            EnchantmentHelper.addRandomEnchantment(RandomHelper.getRandom(), stack, 8 + RandomHelper.getRandom().nextInt(25), true);
-        }
-
-        return stack;
+        return EnchantmentHelper.addRandomEnchantment(RandomHelper.getRandom(), new ItemStack(Items.BOOK), RandomHelper.getRandom().nextInt(10) + 5 + level, true);
     }
 
     public static ItemStack getRandomPotion()
     {
-        ItemStack stack = new ItemStack(Items.POTIONITEM);
-        PotionUtils.addPotionToItemStack(stack, POTION_TYPES.get(RandomHelper.getRandom().nextInt(POTION_TYPES.size())));
-        return stack;
+        return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), POTION_TYPES.get(RandomHelper.getRandom().nextInt(POTION_TYPES.size())));
     }
 
     public static boolean isOreDict(String id, Item item)
@@ -74,7 +65,6 @@ public class ItemHelper
         potionTypes.remove(PotionTypes.MUNDANE);
         potionTypes.remove(PotionTypes.THICK);
         potionTypes.remove(PotionTypes.AWKWARD);
-
         return potionTypes;
     }
 }

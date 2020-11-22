@@ -24,8 +24,8 @@ import net.minecraft.block.state.IBlockState;
 
 public class PatternElement implements IPatternComponent
 {
-    private IBlockState state;
-    private char identifier;
+    private final IBlockState state;
+    private final char identifier;
 
     PatternElement(IBlockState state, char identifier)
     {

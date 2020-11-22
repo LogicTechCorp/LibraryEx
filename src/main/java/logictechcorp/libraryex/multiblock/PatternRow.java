@@ -22,7 +22,7 @@ package logictechcorp.libraryex.multiblock;
 
 public class PatternRow implements IPatternComponent
 {
-    private String sections;
+    private final String sections;
 
     PatternRow(String sections)
     {

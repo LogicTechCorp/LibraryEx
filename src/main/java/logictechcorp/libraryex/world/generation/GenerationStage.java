@@ -25,7 +25,7 @@ public enum GenerationStage
     ORE("ore"),
     STRUCTURE("structure");
 
-    private String identifier;
+    private final String identifier;
 
     GenerationStage(String identifier)
     {

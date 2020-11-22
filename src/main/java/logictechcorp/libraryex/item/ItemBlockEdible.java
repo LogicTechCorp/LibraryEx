@@ -37,9 +37,9 @@ public class ItemBlockEdible extends ItemBlockMod
     private final int healAmount;
     private final float saturation;
     private final boolean isWolfFood;
-    private boolean alwaysEdible;
-    private PotionEffect potionEffect;
-    private float potionEffectProbability;
+    private final boolean alwaysEdible;
+    private final PotionEffect potionEffect;
+    private final float potionEffectProbability;
 
     public ItemBlockEdible(Block block, ItemEdibleProperties properties)
     {

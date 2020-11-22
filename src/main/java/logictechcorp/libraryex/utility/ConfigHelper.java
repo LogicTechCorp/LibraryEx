@@ -281,8 +281,6 @@ public class ConfigHelper
                 config.set(path + ".meta", stack.getMetadata());
             }
 
-            config.set(path + ".count", stack.getCount());
-
             NBTTagCompound display = stack.getSubCompound("display");
 
             if(display != null)
@@ -313,7 +311,7 @@ public class ConfigHelper
                 }
             }
 
-            if(stack.isItemEnchanted())
+            if(stack.isItemEnchanted() || stack.getItem() == Items.ENCHANTED_BOOK)
             {
                 List<Config> enchantmentConfigs = new ArrayList<>();
 

@@ -77,12 +77,12 @@ public class BiomeTraitOre extends BiomeTrait
         }
 
         float f = random.nextFloat() * (float) Math.PI;
-        double d0 = (double) ((float) pos.getX() + MathHelper.sin(f) * (float) this.veinSize / 8.0F);
-        double d1 = (double) ((float) pos.getX() - MathHelper.sin(f) * (float) this.veinSize / 8.0F);
-        double d2 = (double) ((float) pos.getZ() + MathHelper.cos(f) * (float) this.veinSize / 8.0F);
-        double d3 = (double) ((float) pos.getZ() - MathHelper.cos(f) * (float) this.veinSize / 8.0F);
-        double d4 = (double) (pos.getY() + random.nextInt(3) - 2);
-        double d5 = (double) (pos.getY() + random.nextInt(3) - 2);
+        double d0 = ((float) pos.getX() + MathHelper.sin(f) * (float) this.veinSize / 8.0F);
+        double d1 = ((float) pos.getX() - MathHelper.sin(f) * (float) this.veinSize / 8.0F);
+        double d2 = ((float) pos.getZ() + MathHelper.cos(f) * (float) this.veinSize / 8.0F);
+        double d3 = ((float) pos.getZ() - MathHelper.cos(f) * (float) this.veinSize / 8.0F);
+        double d4 = (pos.getY() + random.nextInt(3) - 2);
+        double d5 = (pos.getY() + random.nextInt(3) - 2);
 
         for(int i = 0; i < this.veinSize; ++i)
         {
@@ -136,7 +136,7 @@ public class BiomeTraitOre extends BiomeTrait
         return true;
     }
 
-    public static class Builder extends BiomeTrait.Builder
+    public static class Builder extends BiomeTrait.Builder<BiomeTraitOre>
     {
         private IBlockState blockToSpawn;
         private IBlockState blockToReplace;

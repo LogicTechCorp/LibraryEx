@@ -35,7 +35,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelHelper
 {
-    private static StateMapperBase stringMapper = new StateMapperBase()
+    private static final StateMapperBase STRING_MAPPER = new StateMapperBase()
     {
         @Override
         protected ModelResourceLocation getModelResourceLocation(IBlockState state)
@@ -51,7 +51,7 @@ public class ModelHelper
 
         if(item != Items.AIR)
         {
-            registerItemModel(item, new ModelResourceLocation(block.getRegistryName(), stringMapper.getPropertyString(state.getProperties())));
+            registerItemModel(item, new ModelResourceLocation(block.getRegistryName(), STRING_MAPPER.getPropertyString(state.getProperties())));
         }
     }
 
