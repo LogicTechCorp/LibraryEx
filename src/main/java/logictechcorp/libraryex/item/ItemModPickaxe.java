@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemModPickaxe extends ItemPickaxe
 {
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemModPickaxe(ResourceLocation registryName, ItemToolProperties properties)
     {

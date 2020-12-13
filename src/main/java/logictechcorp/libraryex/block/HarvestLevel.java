@@ -26,7 +26,7 @@ public enum HarvestLevel
     DIAMOND(3),
     OBSIDIAN(4);
 
-    private int level;
+    private final int level;
 
     HarvestLevel(int level)
     {

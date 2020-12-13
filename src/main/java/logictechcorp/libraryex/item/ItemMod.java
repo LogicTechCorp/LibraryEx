@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemMod extends Item
 {
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemMod(ResourceLocation registryName, ItemProperties properties)
     {

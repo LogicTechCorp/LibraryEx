@@ -28,7 +28,7 @@ import net.minecraft.item.ItemStack;
 public class ItemBlockMod extends ItemBlock
 {
     private CreativeTabs creativeTab;
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemBlockMod(Block block, ItemProperties properties)
     {

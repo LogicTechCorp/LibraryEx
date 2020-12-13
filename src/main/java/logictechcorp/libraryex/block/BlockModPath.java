@@ -35,7 +35,7 @@ import java.util.Random;
 
 public class BlockModPath extends BlockMod
 {
-    private Block original;
+    private final Block original;
     private static final AxisAlignedBB PATH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.9375D, 1.0D);
 
     public BlockModPath(ResourceLocation registryName, Block original, BlockProperties properties)

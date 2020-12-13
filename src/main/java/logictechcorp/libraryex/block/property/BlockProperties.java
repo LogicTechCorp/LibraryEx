@@ -25,8 +25,8 @@ import net.minecraft.block.material.Material;
 
 public class BlockProperties
 {
-    private Material material;
-    private MapColor mapColor;
+    private final Material material;
+    private final MapColor mapColor;
     private SoundType soundType = SoundType.STONE;
     private float lightLevel;
     private String harvestTool;

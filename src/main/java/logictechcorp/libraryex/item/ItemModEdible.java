@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemModEdible extends ItemFood
 {
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemModEdible(ResourceLocation registryName, ItemEdibleProperties properties)
     {

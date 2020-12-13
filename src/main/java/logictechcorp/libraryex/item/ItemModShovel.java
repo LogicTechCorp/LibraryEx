@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemModShovel extends ItemSpade
 {
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemModShovel(ResourceLocation registryName, ItemToolProperties properties)
     {

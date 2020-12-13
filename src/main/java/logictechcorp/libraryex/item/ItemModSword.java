@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ItemModSword extends ItemSword
 {
-    private EnumRarity rarity;
+    private final EnumRarity rarity;
 
     public ItemModSword(ResourceLocation registryName, ItemToolProperties properties)
     {
