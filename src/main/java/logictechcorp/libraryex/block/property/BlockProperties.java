@@ -23,6 +23,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 
+import java.util.Locale;
+
 public class BlockProperties
 {
     private final Material material;
@@ -55,7 +57,7 @@ public class BlockProperties
 
     public BlockProperties harvestLevel(HarvestTool harvestTool, HarvestLevel harvestLevel)
     {
-        this.harvestTool = harvestTool.toString().toLowerCase();
+        this.harvestTool = harvestTool.toString().toLowerCase(Locale.ENGLISH);
         this.harvestLevel = harvestLevel.getLevel();
         return this;
     }

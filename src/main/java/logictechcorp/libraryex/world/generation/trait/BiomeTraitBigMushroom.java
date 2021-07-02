@@ -25,6 +25,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -65,7 +66,7 @@ public class BiomeTraitBigMushroom extends BiomeTrait
     public void writeToConfig(Config config)
     {
         super.writeToConfig(config);
-        config.add("shape", this.shape == null ? null : this.shape.toString().toLowerCase());
+        config.add("shape", this.shape == null ? null : this.shape.toString().toLowerCase(Locale.ENGLISH));
         ConfigHelper.setBlockState(config, "blockToPlaceOn", this.blockToPlaceOn);
         ConfigHelper.setBlockState(config, "mushroomStem", this.mushroomStem);
         ConfigHelper.setBlockState(config, "mushroomCap", this.mushroomCap);

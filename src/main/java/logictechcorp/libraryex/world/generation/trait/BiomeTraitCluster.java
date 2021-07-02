@@ -25,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -62,7 +63,7 @@ public class BiomeTraitCluster extends BiomeTrait
     public void writeToConfig(Config config)
     {
         super.writeToConfig(config);
-        config.add("direction", this.direction == null ? null : this.direction.toString().toLowerCase());
+        config.add("direction", this.direction == null ? null : this.direction.toString().toLowerCase(Locale.ENGLISH));
         ConfigHelper.setBlockState(config, "blockToAttachTo", this.blockToAttachTo);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
     }

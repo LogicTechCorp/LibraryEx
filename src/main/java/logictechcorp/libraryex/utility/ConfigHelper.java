@@ -37,10 +37,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ConfigHelper
 {
@@ -250,7 +247,7 @@ public class ConfigHelper
             {
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
                 {
-                    config.set(path + ".properties." + entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+                    config.set(path + ".properties." + entry.getKey().getName(), entry.getValue().toString().toLowerCase(Locale.ENGLISH));
                 }
             }
         }
@@ -269,7 +266,7 @@ public class ConfigHelper
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
                 {
-                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase(Locale.ENGLISH));
                 }
 
                 config.set(path + ".itemBlock", stack.getItem().getRegistryName().toString());
@@ -341,7 +338,7 @@ public class ConfigHelper
 
                 for(Map.Entry<IProperty<?>, Comparable<?>> entry : state.getProperties().entrySet())
                 {
-                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase());
+                    propertyConfig.set(entry.getKey().getName(), entry.getValue().toString().toLowerCase(Locale.ENGLISH));
                 }
 
                 config.set(path + ".itemBlock", stack.getItem().getRegistryName().toString());

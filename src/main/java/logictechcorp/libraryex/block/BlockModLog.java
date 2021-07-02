@@ -27,6 +27,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class BlockModLog extends BlockMod
 {
     public static final PropertyEnum<EnumAxis> AXIS = PropertyEnum.create("axis", EnumAxis.class);
@@ -122,7 +124,7 @@ public class BlockModLog extends BlockMod
         @Override
         public String getName()
         {
-            return this.toString().toLowerCase();
+            return this.toString().toLowerCase(Locale.ENGLISH);
         }
 
         public static EnumAxis fromMeta(int meta)

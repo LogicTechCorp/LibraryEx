@@ -116,7 +116,7 @@ public class BiomeTraitStructure extends BiomeTrait
         }
 
         config.add("structures", structureNames);
-        config.add("structureType", this.structureType.toString().toLowerCase());
+        config.add("structureType", this.structureType.toString().toLowerCase(Locale.ENGLISH));
 
         if(!this.orientRandomly)
         {

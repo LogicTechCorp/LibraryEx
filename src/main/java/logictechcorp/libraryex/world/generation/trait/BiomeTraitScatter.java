@@ -25,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Consumer;
 
@@ -64,7 +65,7 @@ public class BiomeTraitScatter extends BiomeTrait
         super.writeToConfig(config);
         ConfigHelper.setBlockState(config, "blockToSpawn", this.blockToSpawn);
         ConfigHelper.setBlockState(config, "blockToTarget", this.blockToTarget);
-        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase());
+        config.add("placement", this.placement == null ? null : this.placement.toString().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
