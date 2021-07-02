@@ -35,6 +35,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraftforge.common.PlantType;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 import java.util.Random;
 
 public class TriplePlantBlock extends BushBlock
@@ -162,7 +163,7 @@ public class TriplePlantBlock extends BushBlock
         @Override
         public String getName()
         {
-            return this.toString().toLowerCase();
+            return this.toString().toLowerCase(Locale.ENGLISH);
         }
 
         public static Part fromMeta(int meta)

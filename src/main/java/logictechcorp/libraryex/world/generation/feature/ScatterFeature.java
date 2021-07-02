@@ -30,6 +30,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
@@ -168,7 +169,7 @@ public class ScatterFeature extends Feature<ScatterFeature.Config>
             @Override
             public String toString()
             {
-                return this.name().toLowerCase();
+                return this.name().toLowerCase(Locale.ENGLISH);
             }
         }
     }
